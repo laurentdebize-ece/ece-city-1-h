@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22.3)
 project(ece_city_1_h C)
 
 set(CMAKE_C_STANDARD 11)
