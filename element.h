@@ -13,6 +13,7 @@
 #define PRIX_CHATEAU 100000
 #define PRIX_ROUTE 10
 #define PRIX_CONSTRUCTION 1000
+#define PRIX_ECOLE 1000
 #define ACTIF 0
 #define NON_ACTIF -1
 #define NON_EVOLUTIF -1
@@ -26,6 +27,8 @@
 #define LONGUEUR_LIGNELEC 1
 #define LARGEUR_CHATEAU 4
 #define LONGUEUR_CHATEAU 6
+#define LARGEUR_ECOLE 3
+#define LONGUEUR_ECOLE 3
 #define LARGEUR_CENTRALE 4
 #define LONGUEUR_CENTRALE 6
 #define LARGEUR_CONSTRUCTION 3
@@ -36,7 +39,7 @@
 #define GRILLE_Y 35
 #define CAPA_CENTRALE 1900
 
-enum type {CHATEAU, CENTRALE, CONSTRUCTION, ROUTE};
+enum type {CHATEAU, CENTRALE, CONSTRUCTION, ROUTE, ECOLE};
 
 
 typedef struct {
@@ -48,6 +51,7 @@ typedef struct {
     int listeIndexElementsConnectes[MAX_CONSTRUCTION];
     int nbElementConnects;
     int nbHabitantElement;
+    int niveauEduElement;//Si situé à proximité d'une école, le pourcentage d'édu augmente
     int tabDistanceAvecInfraConnectees[MAX_CONSTRUCTION];
     bool viable; // Est alimenté par une CENTRALE et un CHATEAU
     bool isPowered; // Est alimenté par une CENTRALE

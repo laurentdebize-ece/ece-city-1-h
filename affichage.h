@@ -45,7 +45,7 @@ typedef struct {
 void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris);
 void carte();
 
-#endif //UNTITLED3_TABLEAU_H
+//#endif //UNTITLED3_TABLEAU_H
 
 
 

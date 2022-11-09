@@ -41,6 +41,7 @@ void initTabParcoursChateau(){
 void initialisationJeu(){
 
     monJeu.argent = ARGENT_INIT;
+    monJeu.niveauEducation = 0;//niveau edu global = moyenne entre toutes les zones, édu et non édu
     monJeu.nbhabitants = NB_HABITANT_INIT;
     monJeu.nbHabitantParConstruction[RUINE] = NB_HAB_RUINE;
     monJeu.nbHabitantParConstruction[TERRAIN_VAGUE] = NB_HAB_RUINE;//mm habitants que terrain vague
@@ -305,6 +306,23 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
             break;
+
+        case ECOLE: // On fera spawn une bibliothèque qui pourra s'améliorer en école d'ingé (3x3 cases)
+            monJeu.element[monJeu.nbElements].actif = ACTIF;
+            monJeu.argent = monJeu.argent - PRIX_ECOLE;
+            monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
+            monJeu.element[monJeu.nbElements].affichageElement.positionY = positionY;
+            monJeu.element[monJeu.nbElements].affichageElement.largeurX = LARGEUR_ECOLE;
+            monJeu.element[monJeu.nbElements].affichageElement.largeurY = LONGUEUR_ECOLE;
+            monJeu.element[monJeu.nbElements].type = ECOLE;
+            monJeu.element[monJeu.nbElements].niveau = EVOLUTIF;
+            monJeu.element[monJeu.nbElements].niveauEduElement = 1;//le nv global est 1 quand on pose une école
+            monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
+            monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
+            monJeu.nbElements++;
+            break;
+
+
     }
 }
 
@@ -336,41 +354,53 @@ void ameliorerConstruction(int numeroElement){
 
 void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si ameliore
     int niveau = monJeu.element[numeroElement].niveau;
-    switch (niveau) {
-        case RUINE :
-            monJeu.element[numeroElement].nbHabitantElement = 0;
-            break;
-        case TERRAIN_VAGUE:
-            monJeu.element[numeroElement].nbHabitantElement = 0;
-            break;
-        case CABANE:
-            monJeu.element[numeroElement].nbHabitantElement = 10;
-            break;
-        case MAISON:
-            monJeu.element[numeroElement].nbHabitantElement = 50;
-            break;
-        case IMMEUBLE:
-            monJeu.element[numeroElement].nbHabitantElement = 100;
-            break;
-        case GRATTE_CIEL:
-            monJeu.element[numeroElement].nbHabitantElement = 1000;
-            break;
+    if (monJeu.element[numeroElement].type == CONSTRUCTION){
+        switch (niveau) {
+            case RUINE :
+                monJeu.element[numeroElement].nbHabitantElement = 0;
+                break;
+            case TERRAIN_VAGUE:
+                monJeu.element[numeroElement].nbHabitantElement = 0;
+                break;
+            case CABANE:
+                monJeu.element[numeroElement].nbHabitantElement = 10;
+                break;
+            case MAISON:
+                monJeu.element[numeroElement].nbHabitantElement = 50;
+                break;
+            case IMMEUBLE:
+                monJeu.element[numeroElement].nbHabitantElement = 100;
+                break;
+            case GRATTE_CIEL:
+                monJeu.element[numeroElement].nbHabitantElement = 1000;
+                break;
+        }
+        if(ameliorer == 0){
+            monJeu.nbhabitants = monJeu.nbhabitants + monJeu.element[numeroElement].nbHabitantElement; //on met à jour les habitants totaux
+        }
+        if(ameliorer == -1){//Cas de régression. On regarde cb d'habitant on enlève au total
+            if(monJeu.element[numeroElement].niveau == RUINE || TERRAIN_VAGUE){
+                monJeu.nbhabitants = monJeu.nbhabitants - NB_HAB_CABANE;
+            }
+            if(monJeu.element[numeroElement].niveau == CABANE){
+                monJeu.nbhabitants = monJeu.nbhabitants - 40;
+            }
+            if(monJeu.element[numeroElement].niveau == MAISON){
+                monJeu.nbhabitants = monJeu.nbhabitants - 50;
+            }
+            if(monJeu.element[numeroElement].niveau == IMMEUBLE){
+                monJeu.nbhabitants = monJeu.nbhabitants - 900;
+            }
+        }
+
     }
-    if(ameliorer == 0){
-        monJeu.nbhabitants = monJeu.nbhabitants + monJeu.element[numeroElement].nbHabitantElement; //on met à jour les habitants totaux
-    }
-    if(ameliorer == -1){//Cas de régression. On regarde cb d'habitant on enlève au total
-        if(monJeu.element[numeroElement].niveau == RUINE || TERRAIN_VAGUE){
-            monJeu.nbhabitants = monJeu.nbhabitants - NB_HAB_CABANE;
-        }
-        if(monJeu.element[numeroElement].niveau == CABANE){
-            monJeu.nbhabitants = monJeu.nbhabitants - 40;
-        }
-        if(monJeu.element[numeroElement].niveau == MAISON){
-            monJeu.nbhabitants = monJeu.nbhabitants - 50;
-        }
-        if(monJeu.element[numeroElement].niveau == IMMEUBLE){
-            monJeu.nbhabitants = monJeu.nbhabitants - 900;
+    if (monJeu.element[numeroElement].type == ECOLE){//On a fait monter d'un niveau la bibliothèque pour que ce soit une école d'ingé
+        if(monJeu.element[numeroElement].niveau == 1){// si c'est une école d'ingé et plus une bibliothèque
+            puts("ecole d'ingé");
+            monJeu.element[numeroElement].niveauEduElement++;//les gens dans l'élement sont plus éduqués
+            // on va l'initialiser à 1 quand on pose une biblio, à 2 quand il passe école d'ingé
+            monJeu.niveauEducation++;//la ville globale améliore son nv d'édu
+
         }
     }
 }
@@ -378,7 +408,7 @@ void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si a
 
 
 void ChangerNiveauConstruction(int numeroElement, int ameliorer){//0 On améliore pas, 1 oui, -1 l'élement regresse
-    if(monJeu.element[numeroElement].type == CONSTRUCTION){//On vérifie que ce ne soit pas un chateau, centrale
+    if(monJeu.element[numeroElement].type == CONSTRUCTION || ECOLE){//On vérifie que ce ne soit pas un chateau, centrale, école
         if(ameliorer == -1){
             regresserConstruction(numeroElement);
             initConstruction(numeroElement,-1);
@@ -457,6 +487,7 @@ void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
 
 
 void test(){
+    /*
     ajouterElement(CONSTRUCTION, 1, 1);
     ajouterElement(ROUTE, 2, 4);
     ajouterElement(ROUTE, 4,2);
@@ -516,6 +547,8 @@ void test(){
     ajouterElement(ROUTE, 11,6 );//56
     ajouterElement(ROUTE, 11,7 );//57
     ajouterElement(ROUTE, 12,7 );//58
+     */
+    ajouterElement(ECOLE, 1, 1);
 }
 
 void afficherEltConnectes(int numeroElement){
@@ -651,7 +684,7 @@ void detecteConstructionsViables(){
     }
 }
 
-void detecteConstructionAlimenteesparChateau(){
+void detecteConstructionAlimenteesparChateau(){//
     int capaciteRestante = CAPA_CHATEAU;
     int indexChateauCourant = -1;
     int indexDestination = -1;
@@ -664,17 +697,27 @@ void detecteConstructionAlimenteesparChateau(){
         //Est ce que c'est une construction ?
         indexDestination = monJeu.tabParcoursChateau[i].destination;
         if(monJeu.element[indexDestination].type == CONSTRUCTION && !monJeu.element[indexDestination].isPowered){
-            //if(capaciteRestante >= monJeu.element[indexDestination].nbHabitantElement){// est ce que la capacité le permet
+            if(capaciteRestante >= monJeu.element[indexDestination].nbHabitantElement){// est ce que la capacité le permet
                 monJeu.element[i].isPowered = true;
             capaciteRestante -= monJeu.element[indexDestination].nbHabitantElement;
             printf ("%2d CONSTRUCTION (%3d ha) alimentée en eau (capa restante %3d sur château %2d)\n",
                         indexDestination, monJeu.element[indexDestination].nbHabitantElement,
                         capaciteRestante, indexChateauCourant);
-           // }
+
+            }
+            else{
+                //donc si la capa ne le permet pas
+                //récupérer la capacité restante du chateau
+                //passer au chateau d'eau le plus proche...jsp ça
+                //prendre toute la capa restante du chateau d'eau initial
+                //alimenter le reste via le nv chateau le plus proche, en verifiant s'il a la capa aussi
+                //soustraire la capa distribuée aux 2 chateaux
+                //pq pas mettre un booléen de chateau qui indique quand il a plus de capacité (cas du premier)
+                //sinon si pas assez de capa, on passe encore au chateau lpp suivant
+            }
         }
 
     }
-
 }
 
 void detecteConstructionsAlimenteesParCentrale(){
@@ -864,15 +907,17 @@ int main() {
     afficheTabParcoursCentrale();
 
     //detecte toutes les constructions alimentees par toutes les centrales et indique les capacités restantes des centrales
-    detecteConstructionsAlimenteesParCentrale();
-    //detecteConstructionAlimenteesparChateau();
-    //detecteConstructionsAlimenteesParChateau(); A faire
+    //detecteConstructionsAlimenteesParCentrale();
+    detecteConstructionAlimenteesparChateau();
 //    ChangerNiveauConstruction(0, 1);
 //    detecteConstructionsAlimenteesParCentrale();
     // Détection des maisons VIABLES
     // Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
     //detecteConstructionsViables();
     // Libération
+    ChangerNiveauConstruction(0, 1);
+    printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
+    printf("niveau global d'édu de la ville %d\n", monJeu.niveauEducation);
     free (tabCheminParcouru);
     free (route);
     return 0;

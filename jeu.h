@@ -50,6 +50,7 @@ typedef struct {
     int coutConstruction[NIVEAU_BATIMENT];
     int nbHabitantParConstruction[NIVEAU_BATIMENT];
     int modeJeu;
+    int niveauEducation;
     int nbElements;
     int nbhabitants;
     //ALLEGRO_BITMAP* bitmapConstruction[NIVEAU_BATIMENT];
