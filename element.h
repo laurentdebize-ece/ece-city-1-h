@@ -14,6 +14,7 @@
 #define PRIX_ROUTE 10
 #define PRIX_CONSTRUCTION 1000
 #define PRIX_ECOLE 1000
+#define PRIX_MUSEE 1500
 #define ACTIF 0
 #define NON_ACTIF -1
 #define NON_EVOLUTIF -1
@@ -39,7 +40,7 @@
 #define GRILLE_Y 35
 #define CAPA_CENTRALE 1900
 
-enum type {CHATEAU, CENTRALE, CONSTRUCTION, ROUTE, ECOLE};
+enum type {CHATEAU, CENTRALE, CONSTRUCTION, ROUTE, ECOLE, MUSEE};
 
 
 typedef struct {

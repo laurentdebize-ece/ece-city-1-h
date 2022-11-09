@@ -309,6 +309,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
 
         case ECOLE: // On fera spawn une bibliothèque qui pourra s'améliorer en école d'ingé (3x3 cases)
             monJeu.element[monJeu.nbElements].actif = ACTIF;
+            monJeu.niveauEducation++;
             monJeu.argent = monJeu.argent - PRIX_ECOLE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
             monJeu.element[monJeu.nbElements].affichageElement.positionY = positionY;
@@ -322,9 +323,28 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.nbElements++;
             break;
 
+        case MUSEE: // On fera spawn un musée, qui rapportera 2 points d'éducation + de l'argent à chaque cycle
+            monJeu.element[monJeu.nbElements].actif = ACTIF;
+            monJeu.niveauEducation = monJeu.niveauEducation +2;
+            monJeu.argent = monJeu.argent - PRIX_MUSEE;
+            //toute les cycles ça rapporte de l'argent, mais y'a que quand on le pose que ça rapporte de l'éducation
+            monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
+            monJeu.element[monJeu.nbElements].affichageElement.positionY = positionY;
+            monJeu.element[monJeu.nbElements].affichageElement.largeurX = LARGEUR_ECOLE;
+            monJeu.element[monJeu.nbElements].affichageElement.largeurY = LONGUEUR_ECOLE;
+            monJeu.element[monJeu.nbElements].type = MUSEE;
+            monJeu.element[monJeu.nbElements].niveau = NON_EVOLUTIF;
+            monJeu.element[monJeu.nbElements].niveauEduElement = 2;//le nv global est 1 quand on pose une école
+            monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
+            monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
+            monJeu.nbElements++;
+            break;
+
+
 
     }
 }
+
 
 int distanceEntre2Routes(int Element1, int Element2){
     int x1 = monJeu.element[Element1].affichageElement.positionX;
@@ -549,6 +569,7 @@ void test(){
     ajouterElement(ROUTE, 12,7 );//58
      */
     ajouterElement(ECOLE, 1, 1);
+    ajouterElement(ROUTE, 2, 3);
 }
 
 void afficherEltConnectes(int numeroElement){
@@ -898,6 +919,7 @@ int main() {
     ChangerNiveauConstruction(38, 1);
     ChangerNiveauConstruction(38, 1);
 
+
 // On classe le tableau des CENTRALES
     classeParcoursCentrale();
     classeParcoursChateau();
@@ -917,7 +939,7 @@ int main() {
     // Libération
     ChangerNiveauConstruction(0, 1);
     printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
-    printf("niveau global d'édu de la ville %d\n", monJeu.niveauEducation);
+    printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
     free (tabCheminParcouru);
     free (route);
     return 0;
