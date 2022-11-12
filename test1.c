@@ -309,7 +309,6 @@ void ajouterElement(int typeElement, int positionX, int positionY){
 
         case ECOLE: // On fera spawn une bibliothèque qui pourra s'améliorer en école d'ingé (3x3 cases)
             monJeu.element[monJeu.nbElements].actif = ACTIF;
-            monJeu.niveauEducation++;
             monJeu.argent = monJeu.argent - PRIX_ECOLE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
             monJeu.element[monJeu.nbElements].affichageElement.positionY = positionY;
@@ -317,7 +316,9 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].affichageElement.largeurY = LONGUEUR_ECOLE;
             monJeu.element[monJeu.nbElements].type = ECOLE;
             monJeu.element[monJeu.nbElements].niveau = EVOLUTIF;
-            monJeu.element[monJeu.nbElements].niveauEduElement = 1;//le nv global est 1 quand on pose une école
+            monJeu.element[monJeu.nbElements].niveauEduElement = 1;
+            monJeu.niveauEducation++;
+            //le nv global est 1 quand on pose une école
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
@@ -325,7 +326,6 @@ void ajouterElement(int typeElement, int positionX, int positionY){
 
         case MUSEE: // On fera spawn un musée, qui rapportera 2 points d'éducation + de l'argent à chaque cycle
             monJeu.element[monJeu.nbElements].actif = ACTIF;
-            monJeu.niveauEducation = monJeu.niveauEducation +2;
             monJeu.argent = monJeu.argent - PRIX_MUSEE;
             //toute les cycles ça rapporte de l'argent, mais y'a que quand on le pose que ça rapporte de l'éducation
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -334,7 +334,9 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].affichageElement.largeurY = LONGUEUR_ECOLE;
             monJeu.element[monJeu.nbElements].type = MUSEE;
             monJeu.element[monJeu.nbElements].niveau = NON_EVOLUTIF;
-            monJeu.element[monJeu.nbElements].niveauEduElement = 2;//le nv global est 1 quand on pose une école
+            monJeu.element[monJeu.nbElements].niveauEduElement = 2;
+            monJeu.niveauEducation = monJeu.niveauEducation +monJeu.element[monJeu.nbElements].niveauEduElement;
+            //le nv global est 1 quand on pose une école
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
@@ -569,7 +571,8 @@ void test(){
     ajouterElement(ROUTE, 12,7 );//58
      */
     ajouterElement(ECOLE, 1, 1);
-    ajouterElement(ROUTE, 2, 3);
+    ajouterElement(ROUTE, 4, 5);
+    ajouterElement(MUSEE, 5, 6);
 }
 
 void afficherEltConnectes(int numeroElement){
@@ -705,7 +708,10 @@ void detecteConstructionsViables(){
     }
 }
 
-void detecteConstructionAlimenteesparChateau(){//
+
+
+void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered et maj de la capacité restante
+    //voir ttes les constructions alimentées par des châteaux d'eaux
     int capaciteRestante = CAPA_CHATEAU;
     int indexChateauCourant = -1;
     int indexDestination = -1;
@@ -717,9 +723,9 @@ void detecteConstructionAlimenteesparChateau(){//
         }
         //Est ce que c'est une construction ?
         indexDestination = monJeu.tabParcoursChateau[i].destination;
-        if(monJeu.element[indexDestination].type == CONSTRUCTION && !monJeu.element[indexDestination].isPowered){
+        if(monJeu.element[indexDestination].type == CONSTRUCTION && !monJeu.element[indexDestination].isWatered){
             if(capaciteRestante >= monJeu.element[indexDestination].nbHabitantElement){// est ce que la capacité le permet
-                monJeu.element[i].isPowered = true;
+                monJeu.element[i].isWatered = true;
             capaciteRestante -= monJeu.element[indexDestination].nbHabitantElement;
             printf ("%2d CONSTRUCTION (%3d ha) alimentée en eau (capa restante %3d sur château %2d)\n",
                         indexDestination, monJeu.element[indexDestination].nbHabitantElement,
@@ -865,9 +871,9 @@ void classeParcoursChateau(){
 
 int main() {
     initialisationJeu();
-    test();
-
     printf("DEBUT\n");
+
+    test();
 
     //ChangerNiveauConstruction(0, 1);
     for(int i = 0; i<monJeu.nbElements;i++){
@@ -912,32 +918,81 @@ int main() {
     ChangerNiveauConstruction(0, 1);
     ChangerNiveauConstruction(0, 1);
     ChangerNiveauConstruction(0, 1);
-    //ChangerNiveauConstruction(0, 1);
+    ChangerNiveauConstruction(0, 1);
     ChangerNiveauConstruction(38, 1);
     ChangerNiveauConstruction(38, 1);
     ChangerNiveauConstruction(38, 1);
     ChangerNiveauConstruction(38, 1);
-    ChangerNiveauConstruction(38, 1);
+    //ChangerNiveauConstructioute[distance]=i;
+    //calculeDistanceAvecLesInfraConnectees(i, i, &distance, tabCheminParcouru, route);
+
+
+/*
+// Affichage des PARCOURS
+afficheTabParcoursConstruction();
+afficheTabParcoursChateau();
+afficheTabParcoursCentrale();
+// Détection des CONSTRUCTIONS alimentées par CENTRALE
+ChangerNiveauConstruction(0, 1);
+ChangerNiveauConstruction(0, 1);
+ChangerNiveauConstruction(0, 1);
+ChangerNiveauConstruction(0, 1);
+ChangerNiveauConstruction(0, 1);
+ChangerNiveauConstruction(38, 1);
+ChangerNiveauConstruction(38, 1);
+ChangerNiveauConstruction(38, 1);
+ChangerNiveauConstruction(38, 1);
+ChangerNiveauConstruction(38, 1);
+ */
 
 
 // On classe le tableau des CENTRALES
+/*
     classeParcoursCentrale();
     classeParcoursChateau();
     classeParcoursConstruction();
     afficheTabParcoursConstruction();
     afficheTabParcoursChateau();
     afficheTabParcoursCentrale();
+    */
+
+//detecte toutes les constructions alimentees par toutes les centrales et indique les capacités restantes des centrales
+//detecteConstructionsAlimenteesParCentrale();
+detecteConstructionAlimenteesparChateau();
+//    ChangerNiveauConstruction(0, 1);
+//    detecteConstructionsAlimenteesParCentrale();
+// Détection des maisons VIABLES
+// Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
+//detecteConstructionsViables();
+// Libération
+//ChangerNiveauConstruction(0, 1);
+printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
+printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
+free (tabCheminParcouru);
+free (route);
+return 0;
+
+
+// On classe le tableau des CENTRALES
+/*
+    classeParcoursCentrale();
+    classeParcoursChateau();
+    classeParcoursConstruction();
+    afficheTabParcoursConstruction();
+    afficheTabParcoursChateau();
+    afficheTabParcoursCentrale();
+    */
 
     //detecte toutes les constructions alimentees par toutes les centrales et indique les capacités restantes des centrales
     //detecteConstructionsAlimenteesParCentrale();
-    detecteConstructionAlimenteesparChateau();
+    //detecteConstructionAlimenteesparChateau();
 //    ChangerNiveauConstruction(0, 1);
 //    detecteConstructionsAlimenteesParCentrale();
     // Détection des maisons VIABLES
     // Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
     //detecteConstructionsViables();
     // Libération
-    ChangerNiveauConstruction(0, 1);
+    //ChangerNiveauConstruction(0, 1);
     printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
     printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
     free (tabCheminParcouru);
