@@ -1,4 +1,3 @@
-#include "element.h"
 #define ECE_CITY_1_H_AFFICHAGE_H
 #define MAX_X 44
 #define MAX_Y 34
@@ -43,7 +42,8 @@ typedef struct {
 }Texte;
 
 void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris);
-void carte();
+void toto();
+void carteTest();
 
 //#endif //UNTITLED3_TABLEAU_H
 

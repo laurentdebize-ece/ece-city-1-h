@@ -1,5 +1,5 @@
 #include "affichage.h"
-
+#define ECE_CITY_1_H_AFFICHAGE_H
 void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris) {
 
     //al_clear_to_color(al_map_rgb(159,232,85));
@@ -62,7 +62,11 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
     al_flip_display();
 }
 
-void carte() {
+void cartetest(){
+
+}
+
+void toto() {
     bool end = false;
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_DISPLAY *display = NULL;

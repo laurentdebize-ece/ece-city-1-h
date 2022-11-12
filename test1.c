@@ -4,6 +4,7 @@
 #include "jeu.h"
 #include "stdbool.h"
 
+
 void initTabParcours(){
     for (int i=0;i<MAX_PARCOURS;i++){
         for (int j=0; j<LG_MAX_PARCOURS; j++) {
@@ -68,6 +69,7 @@ void initialisationJeu(){
                 monJeu.element[j].viable = false;
                 monJeu.element[j].isPowered = false;
                 monJeu.element[j].isWatered = false;
+                monJeu.element[j].waterLevel = 0;
                 monJeu.element[j].niveau = TERRAIN_VAGUE;
             }
     }
@@ -509,7 +511,7 @@ void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
 
 
 void test(){
-    /*
+
     ajouterElement(CONSTRUCTION, 1, 1);
     ajouterElement(ROUTE, 2, 4);
     ajouterElement(ROUTE, 4,2);
@@ -569,10 +571,19 @@ void test(){
     ajouterElement(ROUTE, 11,6 );//56
     ajouterElement(ROUTE, 11,7 );//57
     ajouterElement(ROUTE, 12,7 );//58
-     */
+    ajouterElement(CHATEAU, 24,13 );//59
+    ajouterElement(ROUTE, 23,15 );
+    ajouterElement(ROUTE, 22,15 );
+    ajouterElement(ROUTE, 21,15 );
+    ajouterElement(ROUTE, 20,15 );
+    ajouterElement(ROUTE, 19,15 );
+    ajouterElement(ROUTE, 18, 15);
+    ajouterElement(ROUTE, 17,15 );
+/*
     ajouterElement(ECOLE, 1, 1);
     ajouterElement(ROUTE, 4, 5);
     ajouterElement(MUSEE, 5, 6);
+*/
 }
 
 void afficherEltConnectes(int numeroElement){
@@ -691,6 +702,17 @@ void detecteConstructionsViables(){
     bool hasDestCentrale = false;
     bool hasDestChateau = false;
     int indexDest;
+
+    for (int i=0; i<monJeu.nbElements;i++){
+        if (monJeu.element[i].type == CONSTRUCTION){
+            if (monJeu.element[i].isWatered && monJeu.element[i].isPowered){
+                monJeu.element[i].viable = true;
+                printf("CONSTRUCTION n°%02d VIABLE\n",i);
+            }
+        }
+    }
+
+    /*
     for (int i=0; i<monJeu.nbParcoursConstruction;i++){
         if (indexSource != monJeu.tabParcoursConstruction[i].source){
             hasDestCentrale = false;
@@ -706,6 +728,7 @@ void detecteConstructionsViables(){
             printf ("%2D VIABLE\n", indexSource);
         }
     }
+     */
 }
 
 
@@ -715,35 +738,46 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
     int capaciteRestante = CAPA_CHATEAU;
     int indexChateauCourant = -1;
     int indexDestination = -1;
+
     for (int i=0; i<monJeu.nbParcoursChateau; i++){
         // Est ce que c'est toujours le mm chateau
         if(indexChateauCourant != monJeu.tabParcoursChateau[i].source){
             capaciteRestante = CAPA_CHATEAU;
-            indexChateauCourant = monJeu.tabParcoursChateau[i].source;//Du plus proche
+            indexChateauCourant = monJeu.tabParcoursChateau[i].source;
         }
+        // Si pour cette CHATEAU la capacite restante est NULLE on passe le tour
+        if (capaciteRestante == 0) continue;
+
         //Est ce que c'est une construction ?
         indexDestination = monJeu.tabParcoursChateau[i].destination;
-        if(monJeu.element[indexDestination].type == CONSTRUCTION && !monJeu.element[indexDestination].isWatered){
-            if(capaciteRestante >= monJeu.element[indexDestination].nbHabitantElement){// est ce que la capacité le permet
-                monJeu.element[i].isWatered = true;
-            capaciteRestante -= monJeu.element[indexDestination].nbHabitantElement;
-            printf ("%2d CONSTRUCTION (%3d ha) alimentée en eau (capa restante %3d sur château %2d)\n",
-                        indexDestination, monJeu.element[indexDestination].nbHabitantElement,
-                        capaciteRestante, indexChateauCourant);
+        if(monJeu.element[indexDestination].type == CONSTRUCTION) {
+            if (!monJeu.element[indexDestination].isWatered){
+                // Dans ce cas, le CHATEAU va fournir TOUT ou PARTIE de sa capacité en eau restante à cette construction
+                if(capaciteRestante >= (monJeu.element[indexDestination].nbHabitantElement-monJeu.element[indexDestination].waterLevel)){// est ce que la capacité le permet
+                    // Le CHATEAU fournit la CAPACITE nécessaire pour alimenter completement la CONSTRUCTION
+                    // La CAPACITE du CHATEAU est réduite d'autant
+                    capaciteRestante -= (monJeu.element[indexDestination].nbHabitantElement-monJeu.element[indexDestination].waterLevel);
+                    // La CONSTRUCTION devient completement ALIMENTEE en EAU
+                    monJeu.element[indexDestination].isWatered = true;
+                    monJeu.element[indexDestination].waterLevel = monJeu.element[indexDestination].nbHabitantElement;
+                    printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau (capa restante %3d sur château %2d)\n",
+                            indexDestination, monJeu.element[indexDestination].nbHabitantElement,
+                            capaciteRestante, indexChateauCourant);
+                }
+                else {
+                    // Dans ce cas, la capacité restante n'est pas suffisante pour alimenter complètement la CONSTRUCTION
+                    // Le CHATEAU va alimenter partiellement cette CONSTRUCTION
+                    monJeu.element[indexDestination].isWatered = false;
+                    monJeu.element[indexDestination].waterLevel += capaciteRestante;
+                    // Il va fournir tout le reste de son eau à cette CONSTRUCTION
+                    capaciteRestante = 0;
+                    printf ("CONSTRUCTION n°%02d (%3d ha) alimentée PARTIELLEMENT en eau %d (capa restante %3d sur château %2d)\n",
+                            indexDestination, monJeu.element[indexDestination].nbHabitantElement, monJeu.element[indexDestination].waterLevel,
+                            capaciteRestante, indexChateauCourant);
 
-            }
-            else{
-                //donc si la capa ne le permet pas
-                //récupérer la capacité restante du chateau
-                //passer au chateau d'eau le plus proche...jsp ça
-                //prendre toute la capa restante du chateau d'eau initial
-                //alimenter le reste via le nv chateau le plus proche, en verifiant s'il a la capa aussi
-                //soustraire la capa distribuée aux 2 chateaux
-                //pq pas mettre un booléen de chateau qui indique quand il a plus de capacité (cas du premier)
-                //sinon si pas assez de capa, on passe encore au chateau lpp suivant
+                }
             }
         }
-
     }
 }
 
@@ -761,6 +795,8 @@ void detecteConstructionsAlimenteesParCentrale(){
             capaciteRestante = CAPA_CENTRALE;
             indexCentraleCourante = monJeu.tabParcoursCentrale[i].source;
         }
+        // Si pour cette CENTRALE la capacite restante est NULLE on passe le tour
+        if (capaciteRestante == 0) continue;
         // On GET la DEST pour savoir si c'est une CONSTRUCTION
         indexDestination = monJeu.tabParcoursCentrale[i].destination;
         // On vérifie s'il s'agit d'une CONSTRUCTION
@@ -923,6 +959,12 @@ int main() {
     ChangerNiveauConstruction(38, 1);
     ChangerNiveauConstruction(38, 1);
     ChangerNiveauConstruction(38, 1);
+    ChangerNiveauConstruction(38, 1);
+    ChangerNiveauConstruction(23, 1);
+    ChangerNiveauConstruction(23, 1);
+    ChangerNiveauConstruction(23, 1);
+    ChangerNiveauConstruction(23, 1);
+    ChangerNiveauConstruction(23, 1);
     //ChangerNiveauConstructioute[distance]=i;
     //calculeDistanceAvecLesInfraConnectees(i, i, &distance, tabCheminParcouru, route);
 
@@ -960,16 +1002,18 @@ ChangerNiveauConstruction(38, 1);
 //detecteConstructionsAlimenteesParCentrale();
 detecteConstructionAlimenteesparChateau();
 //    ChangerNiveauConstruction(0, 1);
-//    detecteConstructionsAlimenteesParCentrale();
+detecteConstructionsAlimenteesParCentrale();
 // Détection des maisons VIABLES
 // Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
-//detecteConstructionsViables();
+detecteConstructionsViables();
 // Libération
 //ChangerNiveauConstruction(0, 1);
 printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
 printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
 free (tabCheminParcouru);
 free (route);
+//toto();
+//carteTest();
 return 0;
 
 
@@ -985,7 +1029,7 @@ return 0;
 
     //detecte toutes les constructions alimentees par toutes les centrales et indique les capacités restantes des centrales
     //detecteConstructionsAlimenteesParCentrale();
-    //detecteConstructionAlimenteesparChateau();
+    detecteConstructionAlimenteesparChateau();
 //    ChangerNiveauConstruction(0, 1);
 //    detecteConstructionsAlimenteesParCentrale();
     // Détection des maisons VIABLES

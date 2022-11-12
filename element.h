@@ -1,6 +1,7 @@
 #ifndef ECE_CITY_1_H_ELEMENT_H
 #define ECE_CITY_1_H_ELEMENT_H
 #include "stdbool.h"
+#include "affichage.h"
 
 #define NB_TYPE 4
 
@@ -8,7 +9,7 @@
 #define MAX_COLONNES 30
 #define MAX_CONSTRUCTION MAX_LIGNES*MAX_COLONNES
 #define TYPE 4
-#include "affichage.h"
+
 #define PRIX_CENTRALE 100000
 #define PRIX_CHATEAU 100000
 #define PRIX_ROUTE 10
@@ -35,10 +36,10 @@
 #define LARGEUR_CONSTRUCTION 3
 #define LONGUEUR_CONSTRUCTION 3
 
-#define CAPA_CHATEAU 5000
+#define CAPA_CHATEAU 2900
 #define GRILLE_X 45
 #define GRILLE_Y 35
-#define CAPA_CENTRALE 1900
+#define CAPA_CENTRALE 5000
 
 enum type {CHATEAU, CENTRALE, CONSTRUCTION, ROUTE, ECOLE, MUSEE};
 
@@ -56,7 +57,8 @@ typedef struct {
     int tabDistanceAvecInfraConnectees[MAX_CONSTRUCTION];
     bool viable; // Est alimenté par une CENTRALE et un CHATEAU
     bool isPowered; // Est alimenté par une CENTRALE
-    bool isWatered; // Est alimenté par un CHATEAU
+    bool isWatered; // Est alimenté TOTALEMENT par un CHATEAU
+    int waterLevel; // Niveau d'alimentation en eau
 }Element;
 
 
