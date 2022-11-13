@@ -1,6 +1,9 @@
 #ifndef ECE_CITY_1_H_JEU_H
 #define ECE_CITY_1_H_JEU_H
-//#define MAX_CONSTRUCTION 50
+
+#include "stdbool.h"
+#include "element.h"
+
 #define NIVEAU_BATIMENT 5
 #define ARGENT_INIT 500000
 #define NB_HABITANT_INIT 0
@@ -17,17 +20,13 @@
 #define MODE_CAPITALISTE 1
 #define MODE_NON_CHOISI -1
 #define IMPOT_PAR_HAB 10
-#include "element.h"
 #define MAX_PARCOURS 100
 #define LG_MAX_PARCOURS 50
 #define MAX_PARCOURS_CONSTRUCTION 50
 #define MAX_PARCOURS_CHATEAU 100
 #define MAX_PARCOURS_CENTRALE 100
-#include "stdbool.h"
-
 
 enum niveauConstruction {RUINE, TERRAIN_VAGUE ,CABANE, MAISON, IMMEUBLE, GRATTE_CIEL};
-
 
 typedef struct {
 
@@ -71,9 +70,46 @@ Jeu monJeu;
 
 
 void initialisationJeu();
+void initTabParcours();
+void initTabParcoursConstruction();
+void initTabParcoursCentrale();
+void initTabParcoursChateau();
+void afficheParcours(int indexParcours, int lgParcours);
+void afficheTabParcoursConstruction();
+void afficheTabParcoursChateau();
+void afficheTabParcoursCentrale();
+int ajouteParcours (int *ptrParcours, int lgParcours);
+int setParcoursCourantPlusCourt (int indexEltSource, int indexEltDest);
+void ajouterElement(int typeElement, int positionX, int positionY);
+int distanceEntre2Routes(int Element1, int Element2);
+void UpdateaffichageConsole();
+void regresserConstruction(int numeroElement);
+void ameliorerConstruction(int numeroElement);
+void initConstruction(int numeroElement, int ameliorer);//-1 si regresse, 0 si ameliore
+void ChangerNiveauConstruction(int numeroElement, int ameliorer);//0 On améliore pas, 1 oui, -1 l'élement regresse
+// En MODE_COMMUNISTE :
+// Si la CONSTRUCTION n'est pas viable, elle REGRESSE au lieu d'évoluer
+// En MODE_CAPITALISTE : on evolue quoi qu'il arrive
+void evolutionConstruction();
+void insererDansTableau(int racine, int branche);
+bool estDansZone (int k, int x, int y);
+void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY);
+void test();
+void afficherEltConnectes(int numeroElement);
+void afficheRoute(int *ptrRoute, int distance);
+void initRoute(int *ptrRoute);
+void initCheminParcouru (int *tabCheminParcouru);
+void calculeDistanceAvecLesInfraConnectees(int source, int routeCourante, int *ptrDistanceCouranteDepuisSource, int *ptrTabCheminParcouru, int *ptrRoute);
+void afficherTabDistanceInfraConnectees (int numeroElement);
+void detecteConstructionsViables();
+void detecteConstructionAlimenteesparChateau();//affecte la varibale isWatered et maj de la capacité restante
+void detecteConstructionsAlimenteesParCentrale();
+void classeParcoursConstruction();
+void classeParcoursCentrale();
+void classeParcoursChateau();
+void jeu();
 
-
-
+/// FIN
 
 
 

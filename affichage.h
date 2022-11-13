@@ -41,9 +41,9 @@ typedef struct {
     char txt;
 }Texte;
 
-void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris);
-void toto();
-void carteTest();
+//void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris);
+//void toto();
+//void carteTest();
 
 //#endif //UNTITLED3_TABLEAU_H
 
