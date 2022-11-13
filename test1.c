@@ -535,7 +535,7 @@ void ecrireFichierTextePOurSauvegarderPartie(char *nomFichier, int typeNouvelEle
     }
     fprintf(ifs, "%d %d %d", typeNouvelElement, positionX, positionY);
     fclose(ifs);
-
+    //pour ajouter un seul nouvel element à la fois dans le fichier texte
 }
 
 void test(){
