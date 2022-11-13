@@ -59,6 +59,7 @@ typedef struct {
     bool isPowered; // Est alimenté par une CENTRALE
     bool isWatered; // Est alimenté TOTALEMENT par un CHATEAU
     int waterLevel; // Niveau d'alimentation en eau
+    int tabFournitureRessources[MAX_CONSTRUCTION];
 }Element;
 
 

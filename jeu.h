@@ -18,11 +18,11 @@
 #define MODE_NON_CHOISI -1
 #define IMPOT_PAR_HAB 10
 #include "element.h"
-#define MAX_PARCOURS 50
+#define MAX_PARCOURS 100
 #define LG_MAX_PARCOURS 50
 #define MAX_PARCOURS_CONSTRUCTION 50
-#define MAX_PARCOURS_CHATEAU 50
-#define MAX_PARCOURS_CENTRALE 50
+#define MAX_PARCOURS_CHATEAU 100
+#define MAX_PARCOURS_CENTRALE 100
 #include "stdbool.h"
 
 
