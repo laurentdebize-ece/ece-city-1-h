@@ -509,9 +509,26 @@ void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
     }
 }
 
+void lireFichierTextePourAjouterElement(char *nomFichier) {
+    FILE *ifs = fopen(nomFichier, "r");
+    int typeElement, positionX, positionY , taille, numeroPartie;
+
+    if (!ifs) {
+        printf("Erreur de lecture fichier\n");
+        exit(-1);
+    }
+    fscanf(ifs, "%d", &numeroPartie);
+    fscanf(ifs, "%d", &taille);
+
+    // creer les aretes du graphe
+    for (int i = 0; i < taille; ++i) {
+        fscanf(ifs, "%d%d%d", &typeElement, &positionX, &positionY);
+        ajouterElement(typeElement, positionX, positionY);
+    }
+}
 
 void test(){
-
+    lireFichierTextePourAjouterElement("../fichierTexteTest1.txt");/*
     ajouterElement(CONSTRUCTION, 1, 1);
     ajouterElement(ROUTE, 2, 4);
     ajouterElement(ROUTE, 4,2);
@@ -578,7 +595,7 @@ void test(){
     ajouterElement(ROUTE, 20,15 );
     ajouterElement(ROUTE, 19,15 );
     ajouterElement(ROUTE, 18, 15);
-    ajouterElement(ROUTE, 17,15 );
+    ajouterElement(ROUTE, 17,15 );*/
 /*
     ajouterElement(ECOLE, 1, 1);
     ajouterElement(ROUTE, 4, 5);
