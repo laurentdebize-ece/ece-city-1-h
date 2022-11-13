@@ -525,6 +525,17 @@ void lireFichierTextePourAjouterElement(char *nomFichier) {
         fscanf(ifs, "%d%d%d", &typeElement, &positionX, &positionY);
         ajouterElement(typeElement, positionX, positionY);
     }
+    fclose(ifs);
+}
+void ecrireFichierTextePOurSauvegarderPartie(char *nomFichier, int typeNouvelElement, int positionX, int positionY){
+    FILE *ifs = fopen(nomFichier, "a");
+    if (!ifs) {
+        printf("Erreur de lecture fichier\n");
+        exit(-1);
+    }
+    fprintf(ifs, "%d %d %d", typeNouvelElement, positionX, positionY);
+    fclose(ifs);
+
 }
 
 void test(){
