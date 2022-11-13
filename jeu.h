@@ -19,7 +19,6 @@
 #define MODE_COMMUNISTE 0
 #define MODE_CAPITALISTE 1
 #define MODE_NON_CHOISI -1
-#define IMPOT_PAR_HAB 10
 #define MAX_PARCOURS 100
 #define LG_MAX_PARCOURS 50
 #define MAX_PARCOURS_CONSTRUCTION 50
@@ -61,6 +60,8 @@ typedef struct {
     int nbParcoursConstruction;
     int nbParcoursChateau;
     int nbParcoursCentrale;
+    int tabTXT[LIGNES_TAB][COLONNES_TAB + 1]; // Grille du jeu
+
 
 }Jeu;
 
@@ -90,7 +91,7 @@ void ChangerNiveauConstruction(int numeroElement, int ameliorer);//0 On amélior
 // En MODE_COMMUNISTE :
 // Si la CONSTRUCTION n'est pas viable, elle REGRESSE au lieu d'évoluer
 // En MODE_CAPITALISTE : on evolue quoi qu'il arrive
-void evolutionConstruction();
+int evolutionConstruction();
 void insererDansTableau(int racine, int branche);
 bool estDansZone (int k, int x, int y);
 void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY);
