@@ -2,8 +2,10 @@
 #include "stdlib.h"
 #include "jeu.h"
 
-#define LARGEUR 1400
-#define HAUTEUR 807
+#define LARGEUR 2880
+#define HAUTEUR 1694
+#define ECRAN_LONGUEUR 2880
+#define ECRAN_LARGEUR 1694
 #define OR2 al_map_rgb(255,235,20)
 #define BLANC al_map_rgb(255,255,255)
 #define NOIR al_map_rgb(0,0,0)
@@ -17,39 +19,36 @@ void dessinerFilledRectangle2(float x, float y, float largeur, float hauteur, AL
     al_draw_filled_rectangle(x, y, x+largeur, y+hauteur, color);
 }
 
+void affichageModeJeu(){
+    ALLEGRO_BITMAP *ecranChargement = al_load_bitmap("../images/modeJeu.jpg");
+    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    al_flip_display();
+    sleep(3);
+}
 
 void affichageChargement(){
     ALLEGRO_BITMAP *ecranChargement = al_load_bitmap("../images/FondEcran.jpeg");
-    ALLEGRO_FONT *chargement = al_load_font("../Polices/Achafont.ttf", 40, 0);
-    ALLEGRO_FONT *chargement1 = al_load_font("../Polices/Achafont.ttf", 45, 0);
-    ALLEGRO_FONT *chargement2 = al_load_font("../Polices/Achafont.ttf", 35, 0);
 
     al_draw_bitmap(ecranChargement, 0, 0, 0);
-    dessinerFilledRectangle2(30, HAUTEUR-80, 50, 40, OR2);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 50, 60, OR2);
     al_flip_display();
     sleep(1);
     al_draw_bitmap(ecranChargement, 0, 0, 0);
-    dessinerFilledRectangle2(30, HAUTEUR-80, 400, 40, OR2);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 400, 60, OR2);
     al_flip_display();
     sleep(1);
     al_draw_bitmap(ecranChargement, 0, 0, 0);
-    dessinerFilledRectangle2(30, HAUTEUR-80, 1000, 40, OR2);
-    //al_draw_text(chargement, NOIR,  655, 720, 0, "chargement des mondes...");
-    //al_draw_text(chargement2, NOIR,  810, 728, 0, "65%");
+    dessinerFilledRectangle2(70, HAUTEUR-150, 1000, 60, OR2);
     al_flip_display();
     sleep(1);
     al_draw_bitmap(ecranChargement, 0, 0, 0);
-    dessinerFilledRectangle2(30, HAUTEUR-80, LARGEUR-90, 40, OR2);
-   // al_draw_text(chargement, NOIR,  644, 720, 0, "chargement des packages...");
-    //al_draw_text(chargement2, NOIR,  810, 728, 0, "90%");
+    dessinerFilledRectangle2(70, HAUTEUR-150, 2300, 60, OR2);
     al_flip_display();
     sleep(1);
-    //al_draw_bitmap(ecranChargement, 0, 0, 0);
-    dessinerFilledRectangle2(30, HAUTEUR-80, LARGEUR-60, 40, OR2);
-    //al_draw_text(chargement1, NOIR,  696, 718, 0, "lancement...");
-    //al_draw_text(chargement2, NOIR,  770, 728, 0, "100%");
+    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, LARGEUR-160, 60, OR2);
     al_flip_display();
-    sleep(1.5);
+    sleep(1);
 }
 
 void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris) {
@@ -115,7 +114,8 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 }
 
 void carte() {
-    bool end = false;
+    bool end1 = false;
+    bool end2 = false;
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_DISPLAY *display = NULL;
     ALLEGRO_EVENT_QUEUE* queue = NULL;
@@ -180,6 +180,8 @@ void carte() {
 
     al_clear_to_color(al_map_rgb(255,255,255));
     al_flip_display();
+    
+    affichageChargement();
 
     al_start_timer(timer);
 
@@ -187,8 +189,14 @@ void carte() {
     int counter = 0;
     int rapportReduction = 60;
     double currentTime = 0;
-    affichageChargement();
-    while (!end) {
+
+
+    while (!end1){
+        affichageModeJeu();
+    }
+
+
+    while (!end2) {
         //Dans le cas ou l'utilisateur fait rien, il est inactif, spectateur du jeu
         if ((counter++)%rapportReduction == 0) {
             // Dans cette partie on va faire évoluer la ville
@@ -203,7 +211,7 @@ void carte() {
         al_wait_for_event(queue,&event);
         switch (event.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
-                end = true;
+                end2 = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
