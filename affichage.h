@@ -1,3 +1,4 @@
+#include "element.h"
 #define ECE_CITY_1_H_AFFICHAGE_H
 #define MAX_X 44
 #define MAX_Y 34
@@ -33,13 +34,13 @@ typedef struct {
 
 typedef struct {
     ALLEGRO_BITMAP *chateaudeau,*centraleelec,*caserne;
+    ALLEGRO_BITMAP *maison1,*maisonombre,*maison2,*maison2ombre,*maison3,*maison3ombre;
+    ALLEGRO_BITMAP *gc1,*gc1ombre,*gc2,*gc2ombre,*gc3,*gc3ombre;
     ALLEGRO_BITMAP *routehd,*routehg,*routebd,*routebg,*routegd,*routehb;
     ALLEGRO_BITMAP *fond;
 }Image;
 
-typedef struct {
-    char txt;
-}Texte;
+
 
 //void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris);
 //void toto();

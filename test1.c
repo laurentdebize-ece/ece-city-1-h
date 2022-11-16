@@ -13,7 +13,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
     al_clear_to_color(al_map_rgb(255,255,255));
 
     //FOND :
-    //al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
+    al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
 
     //TABLEAUX :
     for (int i = 0; i <= LIGNES_TAB; ++i) {
@@ -50,13 +50,28 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_scaled_bitmap(image.routebg,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 7) {
-                al_draw_scaled_bitmap(image.chateaudeau,0,0,512,512,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,2*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 8) {
-                al_draw_scaled_bitmap(image.centraleelec,0,0,512,512,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,2*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 9) {
-                al_draw_scaled_bitmap(image.caserne,0,0,512,512,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,2*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.maison1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 10) {
+                al_draw_scaled_bitmap(image.maison2,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 11) {
+                al_draw_scaled_bitmap(image.maison3,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 12) {
+                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 13) {
+                al_draw_scaled_bitmap(image.gc2,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 14) {
+                al_draw_scaled_bitmap(image.gc3,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
             }
         }
     }
@@ -65,6 +80,25 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
     al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
                              al_map_rgba(20,20,20,200));
+    /*for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 9) {
+                al_draw_scaled_bitmap(image.maisonombre,0,0,291,293,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 10) {
+                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 11) {
+                al_draw_scaled_bitmap(image.maison3ombre,0,0,172,200,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            else if (tabTXT[ligneSouris][colonneSouris] == 0)
+                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris][colonneSouris].x,tabCase[ligneSouris][colonneSouris].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
+                                     tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
+                                     al_map_rgba(20,20,20,200));
+        }
+    }*/
 
     al_flip_display();
 }
@@ -108,8 +142,8 @@ void carte() {
         yCase += TAILLE_CASE;
     }
 
-    image.chateaudeau = al_load_bitmap("../images/chateau d'eau.png");
-    image.centraleelec = al_load_bitmap("../images/centrale électrique.png");
+    image.chateaudeau = al_load_bitmap("../images/piscine.png");
+    image.centraleelec = al_load_bitmap("../images/centrale 3.png");
     image.caserne = al_load_bitmap("../images/caserne.png");
     image.routehb = al_load_bitmap("../images/route hb.png");
     image.routegd = al_load_bitmap("../images/route gd.png");
@@ -117,12 +151,27 @@ void carte() {
     image.routehg = al_load_bitmap("../images/route gh.png");
     image.routebd = al_load_bitmap("../images/route db.png");
     image.routebg = al_load_bitmap("../images/route gb.png");
-    image.fond = al_load_bitmap("../images/fond 3.png");
+    image.fond = al_load_bitmap("../images/fond.png");
+    image.maison1 = al_load_bitmap("../images/maison 1.png");
+    image.maisonombre = al_load_bitmap("../images/maison 1 ombre.png");
+    image.maison2 = al_load_bitmap("../images/maison 2.png");
+    image.maison2ombre = al_load_bitmap("../images/maison 2 ombre.png");
+    image.maison3 = al_load_bitmap("../images/maison 3.png");
+    image.maison3ombre = al_load_bitmap("../images/maison 3 ombre.png");
+    image.gc1 = al_load_bitmap("../images/g-c 1.png");
+    image.gc1ombre = al_load_bitmap("../images/g-c 1 ombre.png");
+    image.gc2 = al_load_bitmap("../images/g-c 2.png");
+    image.gc2ombre = al_load_bitmap("../images/g-c 2 ombre.png");
+    image.gc3 = al_load_bitmap("../images/g-c 3.png");
+    image.gc3ombre = al_load_bitmap("../images/g-c 3 ombre.png");
 
     file = fopen("../test.txt","r");
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
             tabTXT[i][j] = fgetc(file) - '0';
+            if (tabTXT[i][j] == 9) {
+                tabTXT[i][j] += rand()%3;
+            }
         }
     }
     fclose(file);
@@ -161,6 +210,11 @@ void carte() {
                 break;
 
             case ALLEGRO_EVENT_TIMER:
+                for (int i = 0; i < LIGNES_TAB; ++i) {
+                    for (int j = 0; j < COLONNES_TAB; ++j) {
+
+                    }
+                }
                 affichage(tabCase,tabTXT,image,ligneSouris,colonneSouris);
                 break;
         }
@@ -178,7 +232,7 @@ void carte() {
 #include "element.h"
 #include "jeu.h"
 #include "stdbool.h"
-*/
+
 
 void initTabParcours(){
     for (int i=0;i<MAX_PARCOURS;i++){
@@ -623,23 +677,6 @@ void ChangerNiveauConstruction(int numeroElement, int ameliorer){//0 On amélior
 }
 
 
-// En MODE_COMMUNISTE :
-// Si la CONSTRUCTION n'est pas viable, elle REGRESSE au lieu d'évoluer
-// En MODE_CAPITALISTE : on evolue quoi qu'il arrive
-
-void evolutionConstruction(){
-    // Pour chaque CONSTRUCTION, on evolue en fonction du MODE
-    if (MODE_NON_CHOISI== monJeu.modeJeu) {
-        printf("ERREUR : Mode JEU NON CHOISI\n");
-        return;
-    }
-    for (int i=0;i<monJeu.nbElements;i++){
-        if (monJeu.modeJeu == MODE_COMMUNISTE && !monJeu.element[i].viable) ChangerNiveauConstruction(i,-1);
-        else ChangerNiveauConstruction(i,1);
-    }
-}
-
-
 void insererDansTableau(int racine, int branche){
     //printf("insererDansTableau (%d;%d)\n", racine, branche);
     // Verifie que la branche n'est pas déjà renseignée dans le tab des elts connectés
@@ -774,12 +811,12 @@ void test(){
     ajouterElement(ROUTE, 15,15 );
     //ajouterElement(CHATEAU, 17,16 );//67
     ajouterElement(ROUTE, 9,9 );
-/*
+
     ajouterElement(ECOLE, 1, 1);
     ajouterElement(ROUTE, 4, 5);
     ajouterElement(MUSEE, 5, 6);
-*/
-}
+
+}*/
 
 void afficherEltConnectes(int numeroElement){
     printf("Element %d connecté à elements : ", numeroElement);
@@ -1123,6 +1160,8 @@ void jeu(){
 ///////////////////////// MAIN ////////////////////
 
 int main() {
+    carte();
+
     initialisationJeu();
     printf("DEBUT\n");
 
@@ -1230,7 +1269,6 @@ printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
 printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
 free (tabCheminParcouru);
 free (route);
-//carte();
 return 0;
 }
 

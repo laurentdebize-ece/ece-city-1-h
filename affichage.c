@@ -116,7 +116,7 @@ void toto() {
     image.routebg = al_load_bitmap("../images/route gb.png");
     image.fond = al_load_bitmap("../images/fond 3.png");
 
-    file = fopen("../test.txt","r");
+    file = fopen("../file1.txt","r");
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
             tabTXT[i][j] = fgetc(file) - '0';
