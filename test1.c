@@ -2,15 +2,65 @@
 #include "stdlib.h"
 #include "jeu.h"
 
+#define LARGEUR 2880
+#define HAUTEUR 1694
+#define ECRAN_LONGUEUR 2880
+#define ECRAN_LARGEUR 1694
+#define OR2 al_map_rgb(255,235,20)
+#define BLANC al_map_rgb(255,255,255)
+#define NOIR al_map_rgb(0,0,0)
+
 ///////////////////////// AFFICHAGE.C ////////////////////
 
 //#include "affichage.h"
 //#define ECE_CITY_1_H_AFFICHAGE_H
 
-void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris) {
+void dessinerFilledRectangle2(float x, float y, float largeur, float hauteur, ALLEGRO_COLOR color){
+    al_draw_filled_rectangle(x, y, x+largeur, y+hauteur, color);
+}
 
+void affichageModeJeu(){
+    ALLEGRO_BITMAP *ecranChargement = al_load_bitmap("../images/modeJeu.jpg");
+    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    al_flip_display();
+}
+
+void affichageInterfaceJeu(){
+    ALLEGRO_BITMAP *interfaceModeJeu = al_load_bitmap("../images/interfaceJeu.png");
+    al_draw_bitmap(interfaceModeJeu, 0, 0, 0);
+    al_flip_display();
+
+
+}
+
+void affichageChargement(){
+    ALLEGRO_BITMAP *ecranChargement = al_load_bitmap("../images/FondEcran.jpeg");
+
+    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 50, 60, OR2);
+    al_flip_display();
+    sleep(1);
+    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 400, 60, OR2);
+    al_flip_display();
+    sleep(1);
+    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 1000, 60, OR2);
+    al_flip_display();
+    sleep(1);
+    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 2300, 60, OR2);
+    al_flip_display();
+    sleep(1);
+    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, LARGEUR-160, 60, OR2);
+    al_flip_display();
+    sleep(1);
+}
+
+void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris) {
     //al_clear_to_color(al_map_rgb(159,232,85));
-    al_clear_to_color(al_map_rgb(255,255,255));
+    //al_clear_to_color(al_map_rgb(255,255,255));
 
     //FOND :
     al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
@@ -104,7 +154,9 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 }
 
 void carte() {
-    bool end = false;
+    bool end1 = false;
+    bool end2 = false;
+    bool end3 = false;
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_DISPLAY *display = NULL;
     ALLEGRO_EVENT_QUEUE* queue = NULL;
@@ -177,21 +229,48 @@ void carte() {
     fclose(file);
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
-            printf("%d ",tabTXT[i][j]);
+            //printf("%d ",tabTXT[i][j]);
         }
-        printf("\n");
+        //printf("\n");
     }
 
     al_clear_to_color(al_map_rgb(255,255,255));
     al_flip_display();
 
+    //affichageChargement();
+
     al_start_timer(timer);
 
-    while (!end) {
+    // Création d'un sous compteur pour cadencer l'évolution de la ville. Il s'active tous les 10 cycles de timer
+    int counter = 0;
+    int rapportReduction = 60;
+    double currentTime = 0;
+
+
+    while (!end1){
+        affichageModeJeu();
+        end1 = true;
+    }
+    while(!end2){
+        affichageInterfaceJeu();
+        end2 = true;
+    }
+    while (!end3) {
+        //Dans le cas ou l'utilisateur fait rien, il est inactif, spectateur du jeu
+        if ((counter++)%rapportReduction == 0) {
+            // Dans cette partie on va faire évoluer la ville
+            // Améliorer toutes les constructions actives
+            // payer les impots
+            // mettre a jour le flouzz
+            evolutionConstruction();
+            currentTime = al_get_time();
+            printf("%2f ", currentTime);
+
+        }
         al_wait_for_event(queue,&event);
         switch (event.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
-                end = true;
+                end3 = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
@@ -210,12 +289,8 @@ void carte() {
                 break;
 
             case ALLEGRO_EVENT_TIMER:
-                for (int i = 0; i < LIGNES_TAB; ++i) {
-                    for (int j = 0; j < COLONNES_TAB; ++j) {
-
-                    }
-                }
-                affichage(tabCase,tabTXT,image,ligneSouris,colonneSouris);
+                //affichage(tabCase,tabTXT,image,ligneSouris,colonneSouris);
+                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris);
                 break;
         }
     }
@@ -494,7 +569,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++; //On rajoute 1 élement au jeu global
-            //ajouterElement(CANALISATION, positionX, positionY);//si on ajoute une route, on ajoute automatiquement une ligne elec
+            monJeu.tabTXT[positionY][positionX]=1;
             break;
 
         case CHATEAU:
@@ -523,6 +598,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = CAPA_CENTRALE;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
+            monJeu.tabTXT[positionY][positionX]=8;
             break;
 
         case CONSTRUCTION:
@@ -658,7 +734,7 @@ void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si a
 
 
 void ChangerNiveauConstruction(int numeroElement, int ameliorer){//0 On améliore pas, 1 oui, -1 l'élement regresse
-    if(monJeu.element[numeroElement].type == CONSTRUCTION || ECOLE){//On vérifie que ce ne soit pas un chateau, centrale, école
+    if(monJeu.element[numeroElement].type == CONSTRUCTION || monJeu.element[numeroElement].type == ECOLE){//On vérifie que ce ne soit pas un chateau, centrale, école
         if(ameliorer == -1){
             regresserConstruction(numeroElement);
             initConstruction(numeroElement,-1);
@@ -674,6 +750,28 @@ void ChangerNiveauConstruction(int numeroElement, int ameliorer){//0 On amélior
     puts("Fonction changer niveau : ");
     printf("bâtiment position [%d][%d] est passé niveau : %d\n", monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].niveau);
     puts("");
+}
+
+
+// En MODE_COMMUNISTE :
+// Si la CONSTRUCTION n'est pas viable, elle REGRESSE au lieu d'évoluer
+// En MODE_CAPITALISTE : on evolue quoi qu'il arrive
+
+//renvoie le total des impots a percevoir après évolution
+int evolutionConstruction(){
+    int impots = 0;
+    // Pour chaque CONSTRUCTION, on evolue en fonction du MODE
+    if (MODE_NON_CHOISI== monJeu.modeJeu) {
+        printf("ERREUR : Mode JEU NON CHOISI\n");
+        return 0;
+    }
+    for (int i=0;i<monJeu.nbElements;i++){
+        if(monJeu.element[i].actif != ACTIF) continue;
+        if (monJeu.modeJeu == MODE_COMMUNISTE && !monJeu.element[i].viable) ChangerNiveauConstruction(i,-1);
+        else ChangerNiveauConstruction(i,1);
+        impots += monJeu.element[i].nbHabitantElement;
+    }
+    return impots;
 }
 
 
@@ -734,11 +832,39 @@ void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
         }
     }
 }
+void lireFichierTextePourAjouterElement(char *nomFichier) {
+    FILE *ifs = fopen(nomFichier, "r");
+    int typeElement, positionX, positionY , taille, numeroPartie;
 
+    if (!ifs) {
+        printf("Erreur de lecture fichier\n");
+        exit(-1);
+    }
+    fscanf(ifs, "%d", &numeroPartie);
+    fscanf(ifs, "%d", &taille);
+
+    // creer les aretes du graphe
+    for (int i = 0; i < taille; ++i) {
+        fscanf(ifs, "%d%d%d", &typeElement, &positionX, &positionY);
+        ajouterElement(typeElement, positionX, positionY);
+    }
+    fclose(ifs);
+}
+void ecrireFichierTextePOurSauvegarderPartie(char *nomFichier, int typeNouvelElement, int positionX, int positionY){
+    FILE *ifs = fopen(nomFichier, "a");
+    if (!ifs) {
+        printf("Erreur de lecture fichier\n");
+        exit(-1);
+    }
+    fprintf(ifs, "%d %d %d", typeNouvelElement, positionX, positionY);
+    fclose(ifs);
+    //pour ajouter un seul nouvel element à la fois dans le fichier texte
+}
 
 void test(){
+    lireFichierTextePourAjouterElement("../fichierTexteTest1.txt");/*
 
-    ajouterElement(CONSTRUCTION, 1, 1);
+    ajouterElement(CONSTRUCTION, 1, 1);//0
     ajouterElement(ROUTE, 2, 4);
     ajouterElement(ROUTE, 4,2);
     ajouterElement(ROUTE, 4, 4);
@@ -810,13 +936,14 @@ void test(){
     ajouterElement(ROUTE, 15,16 );
     ajouterElement(ROUTE, 15,15 );
     //ajouterElement(CHATEAU, 17,16 );//67
-    ajouterElement(ROUTE, 9,9 );
-
+    ajouterElement(ROUTE, 9,9 );*/
+/*
     ajouterElement(ECOLE, 1, 1);
     ajouterElement(ROUTE, 4, 5);
     ajouterElement(MUSEE, 5, 6);
+*/
 
-}*/
+}
 
 void afficherEltConnectes(int numeroElement){
     printf("Element %d connecté à elements : ", numeroElement);
@@ -1160,8 +1287,6 @@ void jeu(){
 ///////////////////////// MAIN ////////////////////
 
 int main() {
-    carte();
-
     initialisationJeu();
     printf("DEBUT\n");
 
@@ -1259,7 +1384,7 @@ ChangerNiveauConstruction(38, 1);
 detecteConstructionAlimenteesparChateau();
 //    ChangerNiveauConstruction(0, 1);
 printf ("detecte centrale\n");
-detecteConstructionsAlimenteesParCentrale();
+//detecteConstructionsAlimenteesParCentrale();
 // Détection des maisons VIABLES
 // Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
 detecteConstructionsViables();
@@ -1269,6 +1394,7 @@ printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
 printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
 free (tabCheminParcouru);
 free (route);
+carte();
 return 0;
 }
 

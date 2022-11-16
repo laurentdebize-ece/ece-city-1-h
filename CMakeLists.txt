@@ -3,8 +3,7 @@ project(ece_city_1_h C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(ece_city_1_h
-        test1.c affichage.h)
+add_executable(ece_city_1_h test1.c)
 
 set(CMAKE_CXX_STANDARD 14)
 

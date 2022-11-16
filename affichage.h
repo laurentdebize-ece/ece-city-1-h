@@ -1,8 +1,5 @@
 #include "element.h"
 #define ECE_CITY_1_H_AFFICHAGE_H
-#define MAX_X 44
-#define MAX_Y 34
-
 #include <time.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -14,10 +11,10 @@
 
 #define ECRAN_LONGUEUR 2880
 #define ECRAN_LARGEUR 1694
-#define COLONNES_TAB 40
-#define LIGNES_TAB 25
+#define COLONNES_TAB 45
+#define LIGNES_TAB 35
 #define TAILLE_CASE 67
-#define X_TAB 15
+#define X_TAB 30
 #define Y_TAB 10
 
 typedef struct {
@@ -42,9 +39,8 @@ typedef struct {
 
 
 
-//void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris);
-//void toto();
-//void carteTest();
+void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris);
+void carte();
 
 //#endif //UNTITLED3_TABLEAU_H
 

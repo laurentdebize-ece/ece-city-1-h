@@ -19,7 +19,6 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                      X_TAB+j*TAILLE_CASE,Y_TAB+TAILLE_CASE*LIGNES_TAB,
                      al_map_rgb(0,0,0),2);
     }
-
     //MAP :
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
@@ -53,7 +52,6 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
             }
         }
     }
-
     //SOURIS :
     al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
@@ -61,6 +59,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 
     al_flip_display();
 }
+
 
 void cartetest(){
 
