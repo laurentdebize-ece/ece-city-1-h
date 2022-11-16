@@ -23,7 +23,14 @@ void affichageModeJeu(){
     ALLEGRO_BITMAP *ecranChargement = al_load_bitmap("../images/modeJeu.jpg");
     al_draw_bitmap(ecranChargement, 0, 0, 0);
     al_flip_display();
-    sleep(3);
+}
+
+void affichageInterfaceJeu(){
+    ALLEGRO_BITMAP *interfaceModeJeu = al_load_bitmap("../images/interfaceJeu.png");
+    al_draw_bitmap(interfaceModeJeu, 0, 0, 0);
+    al_flip_display();
+
+
 }
 
 void affichageChargement(){
@@ -52,11 +59,11 @@ void affichageChargement(){
 }
 
 void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris) {
-
     //al_clear_to_color(al_map_rgb(159,232,85));
     //al_clear_to_color(al_map_rgb(255,255,255));
 
     //FOND :
+    //al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
     al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
 
     //TABLEAUX :
@@ -116,6 +123,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 void carte() {
     bool end1 = false;
     bool end2 = false;
+    bool end3 = false;
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_DISPLAY *display = NULL;
     ALLEGRO_EVENT_QUEUE* queue = NULL;
@@ -181,7 +189,7 @@ void carte() {
     al_clear_to_color(al_map_rgb(255,255,255));
     al_flip_display();
     
-    affichageChargement();
+    //affichageChargement();
 
     al_start_timer(timer);
 
@@ -193,10 +201,13 @@ void carte() {
 
     while (!end1){
         affichageModeJeu();
+        end1 = true;
     }
-
-
-    while (!end2) {
+    while(!end2){
+        affichageInterfaceJeu();
+        end2 = true;
+    }
+    while (!end3) {
         //Dans le cas ou l'utilisateur fait rien, il est inactif, spectateur du jeu
         if ((counter++)%rapportReduction == 0) {
             // Dans cette partie on va faire évoluer la ville
@@ -211,7 +222,7 @@ void carte() {
         al_wait_for_event(queue,&event);
         switch (event.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
-                end2 = true;
+                end3 = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
@@ -778,7 +789,7 @@ void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
 
 void test(){
 
-    ajouterElement(CONSTRUCTION, 1, 1);
+    ajouterElement(CONSTRUCTION, 1, 1);//0
     ajouterElement(ROUTE, 2, 4);
     ajouterElement(ROUTE, 4,2);
     ajouterElement(ROUTE, 4, 4);
@@ -1297,7 +1308,7 @@ ChangerNiveauConstruction(38, 1);
 detecteConstructionAlimenteesparChateau();
 //    ChangerNiveauConstruction(0, 1);
 printf ("detecte centrale\n");
-detecteConstructionsAlimenteesParCentrale();
+//detecteConstructionsAlimenteesParCentrale();
 // Détection des maisons VIABLES
 // Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
 detecteConstructionsViables();
