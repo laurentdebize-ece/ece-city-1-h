@@ -785,9 +785,37 @@ void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
         }
     }
 }
+void lireFichierTextePourAjouterElement(char *nomFichier) {
+    FILE *ifs = fopen(nomFichier, "r");
+    int typeElement, positionX, positionY , taille, numeroPartie;
 
+    if (!ifs) {
+        printf("Erreur de lecture fichier\n");
+        exit(-1);
+    }
+    fscanf(ifs, "%d", &numeroPartie);
+    fscanf(ifs, "%d", &taille);
+
+    // creer les aretes du graphe
+    for (int i = 0; i < taille; ++i) {
+        fscanf(ifs, "%d%d%d", &typeElement, &positionX, &positionY);
+        ajouterElement(typeElement, positionX, positionY);
+    }
+    fclose(ifs);
+}
+void ecrireFichierTextePOurSauvegarderPartie(char *nomFichier, int typeNouvelElement, int positionX, int positionY){
+    FILE *ifs = fopen(nomFichier, "a");
+    if (!ifs) {
+        printf("Erreur de lecture fichier\n");
+        exit(-1);
+    }
+    fprintf(ifs, "%d %d %d", typeNouvelElement, positionX, positionY);
+    fclose(ifs);
+    //pour ajouter un seul nouvel element à la fois dans le fichier texte
+}
 
 void test(){
+    lireFichierTextePourAjouterElement("../fichierTexteTest1.txt");/*
 
     ajouterElement(CONSTRUCTION, 1, 1);//0
     ajouterElement(ROUTE, 2, 4);
@@ -861,12 +889,13 @@ void test(){
     ajouterElement(ROUTE, 15,16 );
     ajouterElement(ROUTE, 15,15 );
     //ajouterElement(CHATEAU, 17,16 );//67
-    ajouterElement(ROUTE, 9,9 );
+    ajouterElement(ROUTE, 9,9 );*/
 /*
     ajouterElement(ECOLE, 1, 1);
     ajouterElement(ROUTE, 4, 5);
     ajouterElement(MUSEE, 5, 6);
 */
+    
 }
 
 void afficherEltConnectes(int numeroElement){
