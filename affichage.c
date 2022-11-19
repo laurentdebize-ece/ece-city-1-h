@@ -3,7 +3,7 @@
 void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris) {
 
     //al_clear_to_color(al_map_rgb(159,232,85));
-    al_clear_to_color(al_map_rgb(255,255,255));
+    //al_clear_to_color(al_map_rgb(255,255,255));
 
     //FOND :
     //al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);

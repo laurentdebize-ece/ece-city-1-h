@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "stdlib.h"
 #include "jeu.h"
-
+#define TRACE 0
 #define LARGEUR 2880
 #define HAUTEUR 1694
 #define ECRAN_LONGUEUR 2880
@@ -11,6 +11,43 @@
 #define NOIR al_map_rgb(0,0,0)
 
 ///////////////////////// AFFICHAGE.C ////////////////////
+
+void surpassageCase (int xSouris, int ySouris){
+    //centrale passage souris
+    int x1 = 2505;
+    int y1 = 276;
+    int x2 = x1+130;
+    int y2 = y1 + 135;
+    if(xSouris >= x1 && xSouris <= x2){
+        if(ySouris >= y1 && ySouris <= y2){
+            al_draw_filled_rectangle(x1, y1, x2, y2, al_map_rgba(20,20,20,200));
+        }
+
+    }
+}
+
+
+int clicDansCase (int xSouris, int ySouris){
+    //centrale passage souris
+    int x1 = 2505;
+    int y1 = 276;
+    int x2 = x1+130;
+    int y2 = y1 + 135;
+    if(xSouris >= x1 && xSouris <= x2){
+        if(ySouris >= y1 && ySouris <= y2){ //si souris dedans on return
+            return CENTRALE;
+            //printf("centrale");
+        }
+
+    }
+}
+
+//imaginons on return centrale avec clicDansCase
+//on lui passe clicDansCase (int clicDansCase, xSouris, y Souris), en ligneSouris, colonnes souris, calculées juste avant
+int ajouterElementGraphique(int typeconstruction, int xSouris, ySouris){
+    ajouterElement(typeconstruction, xSouris, ySouris);
+}
+
 
 //#include "affichage.h"
 //#define ECE_CITY_1_H_AFFICHAGE_H
@@ -58,12 +95,13 @@ void affichageChargement(){
     sleep(1);
 }
 
-void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris) {
+void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris) {
     //al_clear_to_color(al_map_rgb(159,232,85));
     //al_clear_to_color(al_map_rgb(255,255,255));
 
     //FOND :
-    al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
+    //al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
+    al_draw_bitmap(image.fond, 0, 0, 0);
 
     //TABLEAUX :
     for (int i = 0; i <= LIGNES_TAB; ++i) {
@@ -100,28 +138,43 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_scaled_bitmap(image.routebg,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 7) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                                         al_map_rgba(0,70,255,200));
                 al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
             }
             if (tabTXT[i][j] == 8) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                                         al_map_rgba(189,255,0,200));
                 al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 9) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
                 al_draw_scaled_bitmap(image.maison1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+
             }
-            if (tabTXT[i][j] == 10) {
-                al_draw_scaled_bitmap(image.maison2,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
-            }
-            if (tabTXT[i][j] == 11) {
-                al_draw_scaled_bitmap(image.maison3,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
-            }
+
             if (tabTXT[i][j] == 12) {
                 al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
             }
             if (tabTXT[i][j] == 13) {
                 al_draw_scaled_bitmap(image.gc2,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
             }
             if (tabTXT[i][j] == 14) {
                 al_draw_scaled_bitmap(image.gc3,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
             }
         }
     }
@@ -130,6 +183,16 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
     al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
                              al_map_rgba(20,20,20,200));
+
+
+
+
+
+
+
+
+
+
     /*for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (tabTXT[ligneSouris - i][colonneSouris - j] == 9) {
@@ -150,8 +213,13 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
         }
     }*/
 
+    surpassageCase(xSouris, ySouris);
+
     al_flip_display();
 }
+
+
+
 
 void carte() {
     bool end1 = false;
@@ -203,6 +271,7 @@ void carte() {
     image.routehg = al_load_bitmap("../images/route gh.png");
     image.routebd = al_load_bitmap("../images/route db.png");
     image.routebg = al_load_bitmap("../images/route gb.png");
+    //image.fond = al_load_bitmap("../images/fond.png");
     image.fond = al_load_bitmap("../images/fond.png");
     image.maison1 = al_load_bitmap("../images/maison 1.png");
     image.maisonombre = al_load_bitmap("../images/maison 1 ombre.png");
@@ -229,12 +298,12 @@ void carte() {
     fclose(file);
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
-            //printf("%d ",tabTXT[i][j]);
+            //if(TRACE)printf("%d ",tabTXT[i][j]);
         }
-        //printf("\n");
+        //if(TRACE)printf("\n");
     }
 
-    al_clear_to_color(al_map_rgb(255,255,255));
+    //al_clear_to_color(al_map_rgb(255,255,255));
     al_flip_display();
 
     //affichageChargement();
@@ -246,25 +315,26 @@ void carte() {
     int rapportReduction = 60;
     double currentTime = 0;
 
-
+    //Choisir mode de Jeu (capitaliste, communiste)
     while (!end1){
-        affichageModeJeu();
+        //affichageModeJeu();
         end1 = true;
     }
     while(!end2){
-        affichageInterfaceJeu();
+        //affichageInterfaceJeu();
         end2 = true;
     }
     while (!end3) {
         //Dans le cas ou l'utilisateur fait rien, il est inactif, spectateur du jeu
         if ((counter++)%rapportReduction == 0) {
+
             // Dans cette partie on va faire évoluer la ville
             // Améliorer toutes les constructions actives
             // payer les impots
             // mettre a jour le flouzz
             evolutionConstruction();
             currentTime = al_get_time();
-            printf("%2f ", currentTime);
+            if(TRACE)printf("%2f ", currentTime);
 
         }
         al_wait_for_event(queue,&event);
@@ -285,13 +355,19 @@ void carte() {
                         }
                     }
                 }
-                printf("%d,%d\n",ligneSouris,colonneSouris);
+                if(TRACE)printf("%d,%d\n",ligneSouris,colonneSouris);
                 break;
 
             case ALLEGRO_EVENT_TIMER:
                 //affichage(tabCase,tabTXT,image,ligneSouris,colonneSouris);
-                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris);
+                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris);
                 break;
+
+            case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+                    //centrale passage souris
+                clicDansCase(xSouris, ySouris);
+                            if(TRACE)printf("centrale\n");
+
         }
     }
     al_destroy_display(display);
@@ -305,9 +381,8 @@ void carte() {
 /*
 #include <stdio.h>
 #include "element.h"
-#include "jeu.h"
 #include "stdbool.h"
-
+*/
 
 void initTabParcours(){
     for (int i=0;i<MAX_PARCOURS;i++){
@@ -392,7 +467,7 @@ void initialisationJeu(){
 
 void afficheParcours(int indexParcours, int lgParcours){
     for(int i=0; i<lgParcours; i++){
-        printf("%d_",monJeu.tabParcours[indexParcours][i]);
+        if(TRACE)printf("%d_",monJeu.tabParcours[indexParcours][i]);
     }
     puts("");
 }
@@ -400,10 +475,10 @@ void afficheParcours(int indexParcours, int lgParcours){
 void afficheTabParcoursConstruction(){
     // Si aucun parcours on sort
     if (!monJeu.nbParcoursConstruction) return;
-    printf("%2d PARCOURS DEPUIS CONSTRUCTION\n", monJeu.nbParcoursConstruction);
+    if(TRACE)printf("%2d PARCOURS DEPUIS CONSTRUCTION\n", monJeu.nbParcoursConstruction);
     for (int i=0;i<monJeu.nbParcoursConstruction;i++){
         if (monJeu.tabParcoursConstruction[i].source == -1) continue;
-        printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
+        if(TRACE)printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
                 monJeu.tabParcoursConstruction[i].source,
                 monJeu.tabParcoursConstruction[i].destination,
                 monJeu.tabParcoursConstruction[i].lgParcours,
@@ -414,10 +489,10 @@ void afficheTabParcoursConstruction(){
 void afficheTabParcoursChateau(){
     // Si aucun parcours on sort
     if (!monJeu.nbParcoursChateau) return;
-    printf("%2d PARCOURS DEPUIS CHATEAU\n", monJeu.nbParcoursChateau);
+    if(TRACE)printf("%2d PARCOURS DEPUIS CHATEAU\n", monJeu.nbParcoursChateau);
     for (int i=0;i<monJeu.nbParcoursChateau;i++){
         if (monJeu.tabParcoursChateau[i].source == -1) continue;
-        printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
+        if(TRACE)printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
                 monJeu.tabParcoursChateau[i].source,
                 monJeu.tabParcoursChateau[i].destination,
                 monJeu.tabParcoursChateau[i].lgParcours,
@@ -428,10 +503,10 @@ void afficheTabParcoursChateau(){
 void afficheTabParcoursCentrale(){
     // Si aucun parcours on sort
     if (!monJeu.nbParcoursCentrale) return;
-    printf("%2d PARCOURS DEPUIS CENTRALE\n", monJeu.nbParcoursCentrale);
+    if(TRACE)printf("%2d PARCOURS DEPUIS CENTRALE\n", monJeu.nbParcoursCentrale);
     for (int i=0;i<monJeu.nbParcoursCentrale;i++){
         if (monJeu.tabParcoursCentrale[i].source == -1) continue;
-        printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
+        if(TRACE)printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
                 monJeu.tabParcoursCentrale[i].source,
                 monJeu.tabParcoursCentrale[i].destination,
                 monJeu.tabParcoursCentrale[i].lgParcours,
@@ -442,11 +517,11 @@ void afficheTabParcoursCentrale(){
 
 int ajouteParcours (int *ptrParcours, int lgParcours){
     if (monJeu.nbParcours == MAX_PARCOURS) {
-        printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS atteint\n");
+        if(TRACE)printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS atteint\n");
         return -1;
     }
     if (lgParcours > LG_MAX_PARCOURS) {
-        printf("ERREUR AJOUTPARCOURS : LG_MAX_PARCOURS atteint\n");
+        if(TRACE)printf("ERREUR AJOUTPARCOURS : LG_MAX_PARCOURS atteint\n");
         return -1;
     }
     // On cherche le type de PARCOURS
@@ -457,7 +532,7 @@ int ajouteParcours (int *ptrParcours, int lgParcours){
     switch(typeParcours){
         case CONSTRUCTION:
             if (monJeu.nbParcoursConstruction > MAX_PARCOURS_CONSTRUCTION) {
-                printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS_CONSTRUCTION atteint\n");
+                if(TRACE)printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS_CONSTRUCTION atteint\n");
                 return -1;
             }
             monJeu.tabParcoursConstruction[monJeu.nbParcoursConstruction].source = ptrParcours[0];
@@ -469,7 +544,7 @@ int ajouteParcours (int *ptrParcours, int lgParcours){
             break;
         case CHATEAU:
             if (monJeu.nbParcoursChateau > MAX_PARCOURS_CHATEAU) {
-                printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS_CHATEAU atteint\n");
+                if(TRACE)printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS_CHATEAU atteint\n");
                 return -1;
             }
             monJeu.tabParcoursChateau[monJeu.nbParcoursChateau].source = ptrParcours[0];
@@ -481,7 +556,7 @@ int ajouteParcours (int *ptrParcours, int lgParcours){
             break;
         case CENTRALE:
             if (monJeu.nbParcoursCentrale > MAX_PARCOURS_CENTRALE) {
-                printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS_CENTRALE atteint\n");
+                if(TRACE)printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS_CENTRALE atteint\n");
                 return -1;
             }
             monJeu.tabParcoursCentrale[monJeu.nbParcoursCentrale].source = ptrParcours[0];
@@ -507,7 +582,7 @@ int ajouteParcours (int *ptrParcours, int lgParcours){
 
 int setParcoursCourantPlusCourt (int indexEltSource, int indexEltDest){
     if (monJeu.nbParcours == 0) {
-        printf("ERREUR SETPARCOURSCOURANTPLUSCOURT : Pas de parcours\n");
+        if(TRACE)printf("ERREUR SETPARCOURSCOURANTPLUSCOURT : Pas de parcours\n");
         return -1;
     }
     // En fonction du TYPE, nous allons renseigner la table d'information concernée
@@ -584,6 +659,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = CAPA_CHATEAU;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
+            monJeu.tabTXT[positionY][positionX]=7;
             break;
 
         case CENTRALE:
@@ -612,6 +688,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].niveau = EVOLUTIF;
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
+            monJeu.tabTXT[positionY][positionX]=14;
             monJeu.nbElements++;
             break;
 
@@ -660,14 +737,14 @@ int distanceEntre2Routes(int Element1, int Element2){
     int y2 = monJeu.element[Element2].affichageElement.positionY;
     int distanceX = MAX(x1,x2)- MIN(x1,x2);
     int distanceY = MAX(y1,y2)- MIN(y1,y2);
-    printf("%d\n", distanceX+distanceY-1);//-1 car on ne prend pas en compte la route elle-même
+    if(TRACE)printf("%d\n", distanceX+distanceY-1);//-1 car on ne prend pas en compte la route elle-même
     return distanceX+distanceY-1;
 }
 
 void UpdateaffichageConsole(){
-    printf("argent courant : \n", monJeu.argent);
-    printf("nombre élements placés : %d", monJeu.nbElements);
-    printf("nombre habitants actuel (non fait)\n", monJeu.nbhabitants);
+    if(TRACE)printf("argent courant : \n", monJeu.argent);
+    if(TRACE)printf("nombre élements placés : %d", monJeu.nbElements);
+    if(TRACE)printf("nombre habitants actuel (non fait)\n", monJeu.nbhabitants);
 }
 
 
@@ -743,12 +820,12 @@ void ChangerNiveauConstruction(int numeroElement, int ameliorer){//0 On amélior
             ameliorerConstruction(numeroElement);
             initConstruction(numeroElement, 0);
         } else{
-            printf("Erreur amélioration niveau, mauvais chiffre renseigné\n");
+            if(TRACE)printf("Erreur amélioration niveau, mauvais chiffre renseigné\n");
             return;
         }
     }
     puts("Fonction changer niveau : ");
-    printf("bâtiment position [%d][%d] est passé niveau : %d\n", monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].niveau);
+    if(TRACE)printf("bâtiment position [%d][%d] est passé niveau : %d\n", monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].niveau);
     puts("");
 }
 
@@ -762,7 +839,7 @@ int evolutionConstruction(){
     int impots = 0;
     // Pour chaque CONSTRUCTION, on evolue en fonction du MODE
     if (MODE_NON_CHOISI== monJeu.modeJeu) {
-        printf("ERREUR : Mode JEU NON CHOISI\n");
+        if(TRACE)printf("ERREUR : Mode JEU NON CHOISI\n");
         return 0;
     }
     for (int i=0;i<monJeu.nbElements;i++){
@@ -776,22 +853,22 @@ int evolutionConstruction(){
 
 
 void insererDansTableau(int racine, int branche){
-    //printf("insererDansTableau (%d;%d)\n", racine, branche);
+    //if(TRACE)printf("insererDansTableau (%d;%d)\n", racine, branche);
     // Verifie que la branche n'est pas déjà renseignée dans le tab des elts connectés
     for (int i = 0; i < MAX_CONSTRUCTION ;i++) {
         if(monJeu.element[racine].listeIndexElementsConnectes[i] == branche){// pour pas le faire plusieurs fois
             // si l'elt est déjà présent on sort de la fonction insererDans Tableau
-            //printf("je sors car la branche est déjà présnte en %d", i);
+            //if(TRACE)printf("je sors car la branche est déjà présnte en %d", i);
             return;
         }
     }
-    //printf(".");
+    //if(TRACE)printf(".");
     for(int j = 0; j<MAX_CONSTRUCTION; j++){
         if(monJeu.element[racine].listeIndexElementsConnectes[j] == -1){
             monJeu.element[racine].listeIndexElementsConnectes[j]=branche;
             monJeu.element[racine].nbElementConnects = monJeu.element[racine].nbElementConnects+1;
             //puts("Fonction connexité : ");
-            //printf("element %d connecté à element %d\n",racine, branche);
+            //if(TRACE)printf("element %d connecté à element %d\n",racine, branche);
             break;//pour sortir car sinn ca remplit tt le tableau
         }
     }
@@ -812,7 +889,7 @@ void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
     int positioncurseurX = monJeu.element[numeroElement].affichageElement.positionX-1;
     int positioncurseurY = monJeu.element[numeroElement].affichageElement.positionY-1;
     //ON commence par X
-    //printf("detectionElement\n");
+    //if(TRACE)printf("detectionElement\n");
     for (int x = positioncurseurX; x < positioncurseurX+tailleX+2;x++) {
         for(int y = positioncurseurY; y<positioncurseurY+tailleY+2;y++){
             for(int k = 0; k<monJeu.nbElements; k++){
@@ -823,7 +900,7 @@ void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
                 if (x == positioncurseurX+tailleX+1 && y == positioncurseurY+tailleY+1) continue;
                 // Fin de la suppression des recherches dans les coins
                 if(numeroElement != k && monJeu.element[k].actif == ACTIF){
-                    //printf("Test interco : %d en (%d,%d) avec %d en %d,%d)\n", numeroElement,x,y,k,monJeu.element[k].affichageElement.positionX,monJeu.element[k].affichageElement.positionY);
+                    //if(TRACE)printf("Test interco : %d en (%d,%d) avec %d en %d,%d)\n", numeroElement,x,y,k,monJeu.element[k].affichageElement.positionX,monJeu.element[k].affichageElement.positionY);
                     if(estDansZone (k, x, y)){ // == monJeu.element[k].affichageElement.positionX && y == monJeu.element[k].affichageElement.positionY){
                         insererDansTableau(numeroElement, k);
                     }
@@ -837,7 +914,7 @@ void lireFichierTextePourAjouterElement(char *nomFichier) {
     int typeElement, positionX, positionY , taille, numeroPartie;
 
     if (!ifs) {
-        printf("Erreur de lecture fichier\n");
+        if(TRACE)printf("Erreur de lecture fichier\n");
         exit(-1);
     }
     fscanf(ifs, "%d", &numeroPartie);
@@ -853,7 +930,7 @@ void lireFichierTextePourAjouterElement(char *nomFichier) {
 void ecrireFichierTextePOurSauvegarderPartie(char *nomFichier, int typeNouvelElement, int positionX, int positionY){
     FILE *ifs = fopen(nomFichier, "a");
     if (!ifs) {
-        printf("Erreur de lecture fichier\n");
+        if(TRACE)printf("Erreur de lecture fichier\n");
         exit(-1);
     }
     fprintf(ifs, "%d %d %d", typeNouvelElement, positionX, positionY);
@@ -862,7 +939,7 @@ void ecrireFichierTextePOurSauvegarderPartie(char *nomFichier, int typeNouvelEle
 }
 
 void test(){
-    lireFichierTextePourAjouterElement("../fichierTexteTest1.txt");/*
+    lireFichierTextePourAjouterElement("../fichierTexteTest1.txt");
 
     ajouterElement(CONSTRUCTION, 1, 1);//0
     ajouterElement(ROUTE, 2, 4);
@@ -936,20 +1013,19 @@ void test(){
     ajouterElement(ROUTE, 15,16 );
     ajouterElement(ROUTE, 15,15 );
     //ajouterElement(CHATEAU, 17,16 );//67
-    ajouterElement(ROUTE, 9,9 );*/
-/*
-    ajouterElement(ECOLE, 1, 1);
-    ajouterElement(ROUTE, 4, 5);
-    ajouterElement(MUSEE, 5, 6);
-*/
+    ajouterElement(ROUTE, 9,9 );
 
+    //ajouterElement(ECOLE, 1, 1);
+    //ajouterElement(ROUTE, 4, 5);
+    //ajouterElement(MUSEE, 5, 6);
 }
 
+
 void afficherEltConnectes(int numeroElement){
-    printf("Element %d connecté à elements : ", numeroElement);
+    if(TRACE)printf("Element %d connecté à elements : ", numeroElement);
     for(int i = 0; i < MAX_CONSTRUCTION ; i++){
         if(monJeu.element[numeroElement].listeIndexElementsConnectes[i] != -1){
-            printf("%d, ", monJeu.element[numeroElement].listeIndexElementsConnectes[i]);
+            if(TRACE)printf("%d, ", monJeu.element[numeroElement].listeIndexElementsConnectes[i]);
         }
     }
     puts("");
@@ -960,7 +1036,7 @@ int cpt = 0;
 void afficheRoute(int *ptrRoute, int distance){
     //return;
     for(int i=0; i<distance+1; i++){
-        if (-1 != ptrRoute[i]) printf("%d_",ptrRoute[i]);
+        if (-1 != ptrRoute[i]) if(TRACE)printf("%d_",ptrRoute[i]);
     }
     puts("");
 }
@@ -981,8 +1057,8 @@ void calculeDistanceAvecLesInfraConnectees(int source, int routeCourante, int *p
 // Calcule la distance  couverte par des routes entre la Source et les INFRA connectées à partir de la route courante
 
     //afficheRoute(ptrRoute,*ptrDistanceCouranteDepuisSource);
-    //printf("calculeDistanceAvecLesInfraConnectees : Source = %d ; index Route courante = %d; distance Courante = %d\n", source, routeCourante, *ptrDistanceCouranteDepuisSource);
-    //printf("%d",ptrTabCheminParcouru[0]);
+    //if(TRACE)printf("calculeDistanceAvecLesInfraConnectees : Source = %d ; index Route courante = %d; distance Courante = %d\n", source, routeCourante, *ptrDistanceCouranteDepuisSource);
+    //if(TRACE)printf("%d",ptrTabCheminParcouru[0]);
     cpt++;
     //if (cpt ==10) abort();
 
@@ -1013,13 +1089,13 @@ void calculeDistanceAvecLesInfraConnectees(int source, int routeCourante, int *p
             ptrTabCheminParcouru[indexEltConnecte]=0;
             (*ptrDistanceCouranteDepuisSource) ++;
             ptrRoute[*ptrDistanceCouranteDepuisSource]=indexEltConnecte;
-            //printf("ROUTE trouvée %d\n", indexEltConnecte);
+            //if(TRACE)printf("ROUTE trouvée %d\n", indexEltConnecte);
             calculeDistanceAvecLesInfraConnectees(source, indexEltConnecte, ptrDistanceCouranteDepuisSource, ptrTabCheminParcouru, ptrRoute);
         }
             // Cas où on a une CONSTRUCTION ou un CHATEAU ou une CENTRALE
             // On vérifie si la distance avec cet elt a déjà été renseignée
         else {
-            //printf("******* INFRA TROUVEE\n");
+            //if(TRACE)printf("******* INFRA TROUVEE\n");
             (*ptrDistanceCouranteDepuisSource) ++;
             ptrRoute[*ptrDistanceCouranteDepuisSource]=indexEltConnecte;
             afficheRoute(ptrRoute,*ptrDistanceCouranteDepuisSource);
@@ -1027,8 +1103,8 @@ void calculeDistanceAvecLesInfraConnectees(int source, int routeCourante, int *p
             if (-1 == monJeu.element[source].tabDistanceAvecInfraConnectees[indexEltConnecte] ||
                 (*ptrDistanceCouranteDepuisSource-1) < monJeu.element[source].tabDistanceAvecInfraConnectees[indexEltConnecte]) {
                 monJeu.element[source].tabDistanceAvecInfraConnectees[indexEltConnecte] = *ptrDistanceCouranteDepuisSource-1;
-                //printf("INFRA trouvée %d via %d (ROUTE) à distance %d\n", indexEltConnecte, routeCourante, *ptrDistanceCouranteDepuisSource);
-                //printf("ROUTE GAGNANTE EN %d coups (SOURCE=%d DEST=%d): ", *ptrDistanceCouranteDepuisSource, source, indexEltConnecte);
+                //if(TRACE)printf("INFRA trouvée %d via %d (ROUTE) à distance %d\n", indexEltConnecte, routeCourante, *ptrDistanceCouranteDepuisSource);
+                //if(TRACE)printf("ROUTE GAGNANTE EN %d coups (SOURCE=%d DEST=%d): ", *ptrDistanceCouranteDepuisSource, source, indexEltConnecte);
                 //afficheRoute(ptrRoute,*ptrDistanceCouranteDepuisSource);
                 setParcoursCourantPlusCourt(source, indexEltConnecte);
                 puts("SET ROUTE PLUS COURTE");
@@ -1039,17 +1115,17 @@ void calculeDistanceAvecLesInfraConnectees(int source, int routeCourante, int *p
                 //ptrRoute[0]=source;
             }
             else {
-                //printf("INFRA DEJA trouvée %d via %d (ROUTE) à distance %d\n", indexEltConnecte, routeCourante, *ptrDistanceCouranteDepuisSource);
+                //if(TRACE)printf("INFRA DEJA trouvée %d via %d (ROUTE) à distance %d\n", indexEltConnecte, routeCourante, *ptrDistanceCouranteDepuisSource);
             }
         }
     }
 }
 
 void afficherTabDistanceInfraConnectees (int numeroElement){
-    printf("Distance des INFRA connectées à %d : ", numeroElement);
+    if(TRACE)printf("Distance des INFRA connectées à %d : ", numeroElement);
     for(int i = 0; i < MAX_CONSTRUCTION ; i++){
         if(monJeu.element[numeroElement].tabDistanceAvecInfraConnectees[i] != -1){
-            printf("INFRA %d à %d cases, ", i, monJeu.element[numeroElement].tabDistanceAvecInfraConnectees[i]);
+            if(TRACE)printf("INFRA %d à %d cases, ", i, monJeu.element[numeroElement].tabDistanceAvecInfraConnectees[i]);
         }
     }
     puts("");
@@ -1066,28 +1142,10 @@ void detecteConstructionsViables(){
         if (monJeu.element[i].type == CONSTRUCTION){
             if (monJeu.element[i].isWatered && monJeu.element[i].isPowered){
                 monJeu.element[i].viable = true;
-                printf("CONSTRUCTION n°%02d VIABLE\n",i);
+                if(TRACE)printf("CONSTRUCTION n°%02d VIABLE\n",i);
             }
         }
     }
-
-    /*
-    for (int i=0; i<monJeu.nbParcoursConstruction;i++){
-        if (indexSource != monJeu.tabParcoursConstruction[i].source){
-            hasDestCentrale = false;
-            hasDestChateau = false;
-            indexSource = monJeu.tabParcoursConstruction[i].source;
-        }
-        if (hasDestChateau && hasDestCentrale) continue;
-        indexDest = monJeu.tabParcoursConstruction[i].destination;
-        if (monJeu.element[indexDest].type == CHATEAU) hasDestChateau = true;
-        if (monJeu.element[indexDest].type == CENTRALE) hasDestCentrale = true;
-        if (true == hasDestCentrale && true == hasDestChateau) {
-            monJeu.element[indexSource].viable = true;
-            printf ("%2D VIABLE\n", indexSource);
-        }
-    }
-     */
 }
 
 
@@ -1104,7 +1162,7 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
             indexChateauCourant = monJeu.tabParcoursChateau[i].source;
         }
         // Si pour cette CHATEAU la capacite restante est NULLE on passe le tour
-        //printf ("monJeu.element[%d].capacite =%d\n",i,monJeu.element[i].capacite);
+        //if(TRACE)printf ("monJeu.element[%d].capacite =%d\n",i,monJeu.element[i].capacite);
         if (monJeu.element[indexChateauCourant].capacite == 0) continue;
 
         //Est ce que c'est une construction ?
@@ -1121,7 +1179,7 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
                     // On reneigne le tabFournitureRessources de la CONSTRUCTION en cours
                     monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant] = (monJeu.element[indexDestination].nbHabitantElement-monJeu.element[indexDestination].waterLevel);
                     monJeu.element[indexDestination].waterLevel = monJeu.element[indexDestination].nbHabitantElement;
-                    printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
+                    if(TRACE)printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
                             indexDestination, monJeu.element[indexDestination].nbHabitantElement,
                             monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
                             monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
@@ -1136,7 +1194,7 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
                     monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant] = monJeu.element[indexChateauCourant].capacite;
                     // Il va fournir tout le reste de son eau à cette CONSTRUCTION
                     monJeu.element[indexChateauCourant].capacite = 0;
-                    printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
+                    if(TRACE)printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
                             indexDestination, monJeu.element[indexDestination].nbHabitantElement,
                             monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
                             monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
@@ -1171,7 +1229,7 @@ void detecteConstructionsAlimenteesParCentrale(){
                 // On reneigne le tabFournitureRessources de la CONSTRUCTION en cours
                 monJeu.element[indexDestination].tabFournitureRessources[indexCentraleCourante] = monJeu.element[indexCentraleCourante].capacite;
                 monJeu.element[indexCentraleCourante].capacite -= monJeu.element[indexDestination].nbHabitantElement;
-                printf ("CONSTRUCTION n°%02d (%3d ha) alimentée électriquement (capa restante %3d sur Centrale %2d)\n",
+                if(TRACE)printf ("CONSTRUCTION n°%02d (%3d ha) alimentée électriquement (capa restante %3d sur Centrale %2d)\n",
                         indexDestination, monJeu.element[indexDestination].nbHabitantElement,
                         monJeu.element[indexCentraleCourante].capacite, indexCentraleCourante);
             }
@@ -1206,7 +1264,7 @@ void classeParcoursConstruction(){
         }
     }
     else {
-        printf ("CLASSEMENT : ERREUR\n");
+        if(TRACE)printf ("CLASSEMENT : ERREUR\n");
     }
 }
 
@@ -1237,7 +1295,7 @@ void classeParcoursCentrale(){
         }
     }
     else {
-        printf ("CLASSEMENT : ERREUR\n");
+        if(TRACE)printf ("CLASSEMENT : ERREUR\n");
     }
 }
 
@@ -1268,12 +1326,12 @@ void classeParcoursChateau(){
         }
     }
     else {
-        printf ("CLASSEMENT : ERREUR\n");
+        if(TRACE)printf ("CLASSEMENT : ERREUR\n");
     }
 }
 
 void jeu(){
-    printf("Mode jeu : 1 - communiste 2 - capitaliste\n");
+    if(TRACE)printf("Mode jeu : 1 - communiste 2 - capitaliste\n");
     scanf("%d", monJeu.modeJeu);
     //position premier élement
     //faire tourner tout le code à chaque fois qu'on rajoute un nouvel élement
@@ -1288,7 +1346,7 @@ void jeu(){
 
 int main() {
     initialisationJeu();
-    printf("DEBUT\n");
+    if(TRACE)printf("DEBUT\n");
 
     test();
 
@@ -1383,15 +1441,15 @@ ChangerNiveauConstruction(38, 1);
 //detecteConstructionsAlimenteesParCentrale();
 detecteConstructionAlimenteesparChateau();
 //    ChangerNiveauConstruction(0, 1);
-printf ("detecte centrale\n");
+if(TRACE)printf ("detecte centrale\n");
 //detecteConstructionsAlimenteesParCentrale();
 // Détection des maisons VIABLES
 // Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
 detecteConstructionsViables();
 // Libération
 //ChangerNiveauConstruction(0, 1);
-printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
-printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
+if(TRACE)printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
+if(TRACE)printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
 free (tabCheminParcouru);
 free (route);
 carte();

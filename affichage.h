@@ -13,9 +13,9 @@
 #define ECRAN_LARGEUR 1694
 #define COLONNES_TAB 45
 #define LIGNES_TAB 35
-#define TAILLE_CASE 67
+#define TAILLE_CASE 42
 #define X_TAB 30
-#define Y_TAB 10
+#define Y_TAB 211
 
 typedef struct {
     int positionX;
@@ -39,7 +39,7 @@ typedef struct {
 
 
 
-void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris);
+void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris);
 void carte();
 
 //#endif //UNTITLED3_TABLEAU_H
