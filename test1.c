@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "stdlib.h"
 #include "jeu.h"
+#include "time.h"
 #define TRACE 0
 #define LARGEUR 2880
 #define HAUTEUR 1694
@@ -12,40 +13,161 @@
 
 ///////////////////////// AFFICHAGE.C ////////////////////
 
+
 void surpassageCase (int xSouris, int ySouris){
     //centrale passage souris
     int x1 = 2505;
     int y1 = 276;
     int x2 = x1+130;
     int y2 = y1 + 135;
+    int x1Chateau = 2669;
+    int y1Chateau = 276;
+    int x2Chateau = x1Chateau+130;
+    int y2Chateau = y1Chateau + 135;
+    int x1Route = 2669;
+    int y1Route = 437;
+    int x2Route = x1Route+130;
+    int y2Route = y1Route + 135;
+
+    int x1Constru= 2508;
+    int y1Constru = 437;
+    int x2Constru = x1Constru+130;
+    int y2Constru= y1Constru + 135;
+
+
     if(xSouris >= x1 && xSouris <= x2){
         if(ySouris >= y1 && ySouris <= y2){
-            al_draw_filled_rectangle(x1, y1, x2, y2, al_map_rgba(20,20,20,200));
+            al_draw_filled_rectangle(x1, y1, x2, y2, al_map_rgba(20,20, 20,150));
+            al_draw_rectangle(x1, y1, x2, y2, al_map_rgb(247, 206, 23), 3);
+        }
+
+    }
+    if(xSouris >= x1 && xSouris <= x2){
+        if(ySouris >= y1Constru && ySouris <= y2Constru){
+            al_draw_filled_rectangle(x1Constru, y1Constru, x2Constru, y2Constru, al_map_rgba(20,20, 20,150));
+            al_draw_rectangle(x1Constru, y1Constru, x2Constru, y2Constru, al_map_rgb(247, 206, 23), 3);
+        }
+
+    }
+    if(xSouris >= x1Chateau && xSouris <= x2Chateau){
+        if(ySouris >= y1Chateau && ySouris <= y2Chateau){
+            al_draw_filled_rectangle(x1Chateau, y1Chateau, x2Chateau, y2Chateau, al_map_rgba(20,20,20,150));
+            al_draw_rectangle(x1Chateau, y1Chateau, x2Chateau, y2Chateau, al_map_rgb(247, 206, 23), 3);
+        }
+
+    }
+    if(xSouris >= x1Route && xSouris <= x2Route){
+        if(ySouris >= y1Route && ySouris <= y2Route){
+            al_draw_filled_rectangle(x1Route, y1Route, x2Route, y2Route, al_map_rgba(20,20,20,150));
+            al_draw_rectangle(x1Route, y1Route, x2Route, y2Route, al_map_rgb(247, 206, 23), 3);
         }
 
     }
 }
 
+void affichageMenuGraphique(Image image, int xSouris, int ySouris){
 
-int clicDansCase (int xSouris, int ySouris){
+
+    //al_draw_bitmap(image.fond, 0, 0, 0);
+     al_draw_filled_rectangle(0, 0, 100, 100, al_map_rgba(20, 20, 20, 130));
+     //al_clear_to_color(al_map_rgba(20, 20, 20, 200));
+     al_draw_bitmap(image.menu, 800, 300, 0);
+     //al_draw_filled_rectangle(0, 400, 0, 400, BLANC);
+     al_flip_display();
+}
+
+int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, ALLEGRO_TIMER *timer, ALLEGRO_EVENT_QUEUE* queue){//ça ça marche
     //centrale passage souris
     int x1 = 2505;
     int y1 = 276;
     int x2 = x1+130;
     int y2 = y1 + 135;
-    if(xSouris >= x1 && xSouris <= x2){
+    int x1Route = 2669;
+    int y1Route = 437;
+    int x2Route = x1Route+130;
+    int y2Route = y1Route + 135;
+    int x1Constru= 2508;
+    int y1Constru = 437;
+    int x2Constru = x1Constru+130;
+    int y2Constru= y1Constru + 135;
+    int x1Chateau = 2669;
+    int y1Chateau = 276;
+    int x2Chateau = x1Chateau+130;
+    int y2Chateau = y1Chateau + 135;
+    bool endMenu = false;
+
+    if(xSouris >= x1 && xSouris<= x2){
         if(ySouris >= y1 && ySouris <= y2){ //si souris dedans on return
             return CENTRALE;
             //printf("centrale");
         }
+    }
+    if(xSouris >= x1 && xSouris <= x2){
+        if(ySouris >= y1Constru && ySouris <= y2Constru){
+            return CONSTRUCTION;
+        }
+    }
+    if(xSouris >= x1Chateau && xSouris <= x2Chateau){
+        if(ySouris >= y1Chateau && ySouris <= y2Chateau){
+            return CHATEAU;
+
+        }
+    }
+    if(xSouris >= x1Route && xSouris <= x2Route){
+        if(ySouris >= y1Route && ySouris <= y2Route){
+            return ROUTE;
+        }
 
     }
+    else{
+        return false;
+    }
+
+
+    //si menu pause
+    if(xSouris >= x1Route-75 && xSouris <= x2Route-85){
+        if(ySouris >= y1Route+165 && ySouris <= y2Route+155){
+            return 999;
+            //al_draw_filled_rectangle(x1Route-75, y1Route+165, x2Route-85, y2Route+155, al_map_rgba(20,20,20,150));
+            while(!endMenu){
+                al_wait_for_event(queue,&event);
+                al_draw_bitmap(image.menu, 800, 300, 0);
+                switch (event.type) {
+                    case ALLEGRO_EVENT_DISPLAY_CLOSE:
+                        endMenu = true;
+                        break;
+
+                    case ALLEGRO_EVENT_MOUSE_AXES:
+                        xSouris = event.mouse.x;
+                        ySouris = event.mouse.y;
+                        break;
+
+                    case ALLEGRO_EVENT_TIMER:
+                        affichageMenuGraphique(image, xSouris, ySouris);
+                        break;
+
+                    case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+                        if(xSouris >= 300 && xSouris <= 400){
+                            if(ySouris >= 300 && ySouris <= 400){
+                                endMenu = true;
+                            }
+                        }
+                        //centrale passage souris
+                        if(TRACE)printf("centrale\n");
+                        break;
+                }
+                al_flip_display();
+            }
+
+        }
+    }
+
 }
 
 //imaginons on return centrale avec clicDansCase
 //on lui passe clicDansCase (int clicDansCase, xSouris, y Souris), en ligneSouris, colonnes souris, calculées juste avant
-int ajouterElementGraphique(int typeconstruction, int xSouris, ySouris){
-    ajouterElement(typeconstruction, xSouris, ySouris);
+int ajouterElementGraphique(int typeconstruction, int ligneSouris, coloneSouris){
+    ajouterElement(typeconstruction, ligneSouris, coloneSouris);
 }
 
 
@@ -56,11 +178,6 @@ void dessinerFilledRectangle2(float x, float y, float largeur, float hauteur, AL
     al_draw_filled_rectangle(x, y, x+largeur, y+hauteur, color);
 }
 
-void affichageModeJeu(){
-    ALLEGRO_BITMAP *ecranChargement = al_load_bitmap("../images/modeJeu.jpg");
-    al_draw_bitmap(ecranChargement, 0, 0, 0);
-    al_flip_display();
-}
 
 void affichageInterfaceJeu(){
     ALLEGRO_BITMAP *interfaceModeJeu = al_load_bitmap("../images/interfaceJeu.png");
@@ -70,35 +187,207 @@ void affichageInterfaceJeu(){
 
 }
 
-void affichageChargement(){
-    ALLEGRO_BITMAP *ecranChargement = al_load_bitmap("../images/FondEcran.jpeg");
+void affichageChargementCapitaliste(){
+    ALLEGRO_BITMAP *ecranChargementCapitaliste = al_load_bitmap("../images/modeCapitaliste.png");
 
-    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    al_draw_bitmap(ecranChargementCapitaliste, 0, 0, 0);
     dessinerFilledRectangle2(70, HAUTEUR-150, 50, 60, OR2);
     al_flip_display();
     sleep(1);
-    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    al_draw_bitmap(ecranChargementCapitaliste, 0, 0, 0);
     dessinerFilledRectangle2(70, HAUTEUR-150, 400, 60, OR2);
     al_flip_display();
     sleep(1);
-    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    al_draw_bitmap(ecranChargementCapitaliste, 0, 0, 0);
     dessinerFilledRectangle2(70, HAUTEUR-150, 1000, 60, OR2);
     al_flip_display();
     sleep(1);
-    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    al_draw_bitmap(ecranChargementCapitaliste, 0, 0, 0);
     dessinerFilledRectangle2(70, HAUTEUR-150, 2300, 60, OR2);
     al_flip_display();
     sleep(1);
-    al_draw_bitmap(ecranChargement, 0, 0, 0);
+    al_draw_bitmap(ecranChargementCapitaliste, 0, 0, 0);
     dessinerFilledRectangle2(70, HAUTEUR-150, LARGEUR-160, 60, OR2);
     al_flip_display();
     sleep(1);
 }
 
-void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris) {
+
+void affichageChargementCommuniste(){
+    ALLEGRO_BITMAP *ecranChargementCommuniste = al_load_bitmap("../images/modeCommuniste.png");
+
+    al_draw_bitmap(ecranChargementCommuniste, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 50, 60, OR2);
+    al_flip_display();
+    sleep(1);
+    al_draw_bitmap(ecranChargementCommuniste, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 400, 60, OR2);
+    al_flip_display();
+    sleep(1);
+    al_draw_bitmap(ecranChargementCommuniste, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 1000, 60, OR2);
+    al_flip_display();
+    sleep(1);
+    al_draw_bitmap(ecranChargementCommuniste, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, 2300, 60, OR2);
+    al_flip_display();
+    sleep(1);
+    al_draw_bitmap(ecranChargementCommuniste, 0, 0, 0);
+    dessinerFilledRectangle2(70, HAUTEUR-150, LARGEUR-160, 60, OR2);
+    al_flip_display();
+    sleep(1);
+}
+
+int displaycount = 0;
+
+void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris, ALLEGRO_FONT* argent, int construction, int centrale, int route, int chateau) {
     //al_clear_to_color(al_map_rgb(159,232,85));
     //al_clear_to_color(al_map_rgb(255,255,255));
 
+    //FOND :
+    //al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
+    al_draw_bitmap(image.fond, 0, 0, 0);
+
+
+
+    //TABLEAUX :
+    for (int i = 0; i <= LIGNES_TAB; ++i) {
+        al_draw_line(X_TAB,Y_TAB+i*TAILLE_CASE,
+                     X_TAB+TAILLE_CASE*COLONNES_TAB,Y_TAB+i*TAILLE_CASE,
+                     al_map_rgb(0,0,0),2);
+    }
+    for (int j = 0; j <= COLONNES_TAB; ++j) {
+        al_draw_line(X_TAB+j*TAILLE_CASE,Y_TAB,
+                     X_TAB+j*TAILLE_CASE,Y_TAB+TAILLE_CASE*LIGNES_TAB,
+                     al_map_rgb(0,0,0),2);
+    }
+
+    //MAP :
+    for (int i = 0; i < LIGNES_TAB; ++i) {
+        for (int j = 0; j < COLONNES_TAB + 1; ++j) {
+            if (tabTXT[i][j] == 0 || j == 40) {}
+            if (tabTXT[i][j] == 1) {
+                al_draw_scaled_bitmap(image.routegd,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 2) {
+                al_draw_scaled_bitmap(image.routehb,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 3) {
+                al_draw_scaled_bitmap(image.routehd,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 4) {
+                al_draw_scaled_bitmap(image.routehg,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 5) {
+                al_draw_scaled_bitmap(image.routebd,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 6) {
+                al_draw_scaled_bitmap(image.routebg,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 7) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                                         al_map_rgba(0,70,255,200));
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            if (tabTXT[i][j] == 8) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                                         al_map_rgba(189,255,0,200));
+                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[i][j] == 9) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.maison1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+
+            }
+
+            if (tabTXT[i][j] == 12) {
+                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+            }
+            if (tabTXT[i][j] == 13) {
+                al_draw_scaled_bitmap(image.gc2,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+            }
+            if (tabTXT[i][j] == 14) {
+                al_draw_scaled_bitmap(image.gc3,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+            }
+        }
+    }
+
+    //SOURIS :
+    al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
+                             tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
+                             al_map_rgba(20,20,20,200));
+
+    /*for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 9) {
+                al_draw_scaled_bitmap(image.maisonombre,0,0,291,293,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 10) {
+                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 11) {
+                al_draw_scaled_bitmap(image.maison3ombre,0,0,172,200,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            else if (tabTXT[ligneSouris][colonneSouris] == 0)
+                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris][colonneSouris].x,tabCase[ligneSouris][colonneSouris].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
+                                     tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
+                                     al_map_rgba(20,20,20,200));
+        }
+    }*/
+
+    surpassageCase(xSouris, ySouris);
+
+    //mode affichage secondaire
+    if(monJeu.modeJeu == MODE_CAPITALISTE){
+        al_draw_bitmap(image.cap, 370, 154, 0);
+        //al_draw_text(argent, al_map_rgb(239, 194, 0), 400, 150, 0, "mode capitaliste");
+    }
+    if(monJeu.modeJeu == MODE_COMMUNISTE){
+        al_draw_bitmap(image.commu, 370, 155, 0);
+        //al_draw_text(argent, al_map_rgb(239, 194, 0), 400, 150, 0, "mode capitaliste");
+    }
+
+    //argent
+    monJeu.argent = 500000;
+    char monTxt[50];
+    sprintf(monTxt, "%d", monJeu.argent);
+
+    al_draw_text(argent, BLANC, 2600, 75, 0, monTxt);
+    if(construction == true && centrale == false && route == false && chateau ==false){
+        al_draw_bitmap(image.maison1, xSouris, ySouris, 0);
+    }
+    if(route == true && construction == false && chateau == false && centrale == false){
+        al_draw_bitmap(image.routebd, xSouris, ySouris, 0);
+    }
+    if(chateau == true && construction == false && centrale == false && route == false){
+        al_draw_bitmap(image.chateaudeau, xSouris, ySouris, 0);
+    }
+
+    if(centrale == true && route == false && chateau == false && construction == false){
+        al_draw_bitmap(image.centraleelec, xSouris, ySouris, 0);
+    }
+
+    al_flip_display();
+}
+void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris, ALLEGRO_FONT* argent) {
+    //al_clear_to_color(al_map_rgb(159,232,85));
+    //al_clear_to_color(al_map_rgb(255,255,255));
     //FOND :
     //al_draw_scaled_bitmap(image.fond,0,0,356,304,0,0,ECRAN_LONGUEUR,ECRAN_LARGEUR,0);
     al_draw_bitmap(image.fond, 0, 0, 0);
@@ -184,15 +473,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
                              al_map_rgba(20,20,20,200));
 
-
-
-
-
-
-
-
-
-
+    //affichageMenuGraphique(image, xSouris, ySouris);
     /*for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (tabTXT[ligneSouris - i][colonneSouris - j] == 9) {
@@ -213,15 +494,144 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
         }
     }*/
 
-    surpassageCase(xSouris, ySouris);
+    //surpassageCase(xSouris, ySouris);
+
+    //mode affichage secondaire
+    if(monJeu.modeJeu == MODE_CAPITALISTE){
+        al_draw_bitmap(image.cap, 370, 154, 0);
+        //al_draw_text(argent, al_map_rgb(239, 194, 0), 400, 150, 0, "mode capitaliste");
+    }
+    if(monJeu.modeJeu == MODE_COMMUNISTE){
+        al_draw_bitmap(image.commu, 370, 155, 0);
+        //al_draw_text(argent, al_map_rgb(239, 194, 0), 400, 150, 0, "mode capitaliste");
+    }
+
+    //argent
+    monJeu.argent = 500000;
+    char monTxt[50];
+    sprintf(monTxt, "%d", monJeu.argent);
+
+    al_draw_text(argent, BLANC, 2600, 75, 0, monTxt);
+
+
+// COMPLEMENT POUR LE MENU
+
+    //al_draw_bitmap(image.fond, 0, 0, 0);
+    //al_clear_to_color(al_map_rgba(20, 20, 20, 130));
+    al_draw_filled_rectangle(0, 0, 2880, 1694, al_map_rgba(20, 20, 20, 190));
+    //al_clear_to_color(al_map_rgba(20, 20, 20, 200));
+    al_draw_bitmap(image.menu, 800, 300, 0);
+
+    //sauvegarder
+    if(xSouris >= 1210 && xSouris <= 1720){
+        if(ySouris >= 525 && ySouris <= 625){
+            al_draw_rectangle(1210, 525, 1720, 625, BLANC, 6);
+        }
+    }
+    if(xSouris >= 1210 && xSouris <= 1720){
+        if(ySouris >= 643 && ySouris <= 743){
+            al_draw_rectangle(1210, 643, 1720, 743, BLANC, 6);        }
+    }
+    if(xSouris >= 1210 && xSouris <= 1720){
+        if(ySouris >= 762 && ySouris <= 862){
+            al_draw_rectangle(1210, 762, 1720, 862, BLANC, 6);
+        }
+    }
+
 
     al_flip_display();
 }
 
+//ALLEGRO_BITMAP *ecranChargement = al_load_bitmap("../images/modeJeu.jpg");
+
+
+bool clicDansCase2(int xSouris, int ySouris){
+    //mode capitaliste
+    if(xSouris >= 1210 && xSouris <=1683){
+        if(ySouris >= 416 && ySouris <= 500){
+            monJeu.modeJeu = MODE_CAPITALISTE;
+            return true;
+        }
+    }
+    if(xSouris >= 1210 && xSouris <= 1683){
+        if(ySouris >= 513 && ySouris <= 597){
+            monJeu.modeJeu = MODE_COMMUNISTE;
+            return true;
+
+        }
+    }
+    if(xSouris >= 1210 && xSouris <= 1683){
+        if(ySouris >= 613 && ySouris <= 697){
+            return true;
+        }
+    }
+
+}
+
+void affichageModeJeu2(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris) {
+    //FOND :
+    al_draw_bitmap(image.fond, 0, 0, 0);
+
+    //al_draw_bitmap(ecranChargement, 0, 0, 0);
+    //al_draw_rectangle(1210, 416, 1683, 500, BLANC, 3);
+    //al_draw_rectangle(1210, 513, 1683, 597, BLANC, 3);
+    //al_draw_rectangle(1210, 613, 1683, 697, BLANC, 3);
+    //al_draw_filled_rectangle(1200, 400, 1300, 500, al_map_rgba(20, 20, 20, 200));
+
+    //capitaliste
+    if(xSouris >= 1210 && xSouris <= 1683){
+        if(ySouris >= 416 && ySouris <= 500){
+            al_draw_rectangle(1210, 416, 1683, 500, BLANC, 3);
+        }
+    }
+    //communiste
+    if(xSouris >= 1210 && xSouris <= 1683){
+        if(ySouris >= 513 && ySouris <= 597){
+            al_draw_rectangle(1210, 513, 1683, 597, BLANC, 3);
+        }
+    }
+    //quitter
+    if(xSouris >= 1210 && xSouris <= 1683){
+        if(ySouris >= 613 && ySouris <= 697){
+            al_draw_rectangle(1210, 613, 1683, 697, BLANC, 3);
+        }
+    }
+
+    surpassageCase(xSouris, ySouris);
+    al_flip_display();
+}
+
+bool issueMenuPause(int xSouris, int ySouris, int entreeMenuPause, Image image){
+    if(xSouris >= 1210 && xSouris <= 1720){
+        if(ySouris >= 525 && ySouris <= 625){
+            //sauvegarder();
+            al_draw_bitmap(image.sauvegarde, 190, 0, 0);
+            al_flip_display();
+            sleep(1);
+        }
+    }
+    if(xSouris >= 1210 && xSouris <= 1720){
+        if(ySouris >= 643 && ySouris <= 743){
+            //charger  ();
+            }
+    }
+    if(xSouris >= 1210 && xSouris <= 1720){
+        if(ySouris >= 762 && ySouris <= 862){
+            abort();
+            return true;
+        }
+    }
+    //bouton pause
+    if(xSouris >= 1210 && xSouris <= 1720){
+        if(ySouris >= 525 && ySouris <= 625){
+            //sauvegarder();
+        }
+    }
+}
 
 
 
-void carte() {
+int carte() {
     bool end1 = false;
     bool end2 = false;
     bool end3 = false;
@@ -261,7 +671,9 @@ void carte() {
         }
         yCase += TAILLE_CASE;
     }
-
+    ALLEGRO_FONT *argent = al_load_font("../Polices/madetommy.ttf", 40, 0);
+    image.cap = al_load_bitmap("../images/cap.png");
+    image.commu = al_load_bitmap("../images/commu.png");
     image.chateaudeau = al_load_bitmap("../images/piscine.png");
     image.centraleelec = al_load_bitmap("../images/centrale 3.png");
     image.caserne = al_load_bitmap("../images/caserne.png");
@@ -271,6 +683,8 @@ void carte() {
     image.routehg = al_load_bitmap("../images/route gh.png");
     image.routebd = al_load_bitmap("../images/route db.png");
     image.routebg = al_load_bitmap("../images/route gb.png");
+    image.menu = al_load_bitmap("../images/menu.png");
+    image.sauvegarde = al_load_bitmap("../images/sauvegarde.png");
     //image.fond = al_load_bitmap("../images/fond.png");
     image.fond = al_load_bitmap("../images/fond.png");
     image.maison1 = al_load_bitmap("../images/maison 1.png");
@@ -315,15 +729,14 @@ void carte() {
     int rapportReduction = 60;
     double currentTime = 0;
 
-    //Choisir mode de Jeu (capitaliste, communiste)
-    while (!end1){
-        //affichageModeJeu();
-        end1 = true;
-    }
     while(!end2){
         //affichageInterfaceJeu();
         end2 = true;
     }
+    int returnClic = -10;
+    int entrerMenuPause = 0;
+    int conteur = 0;
+    bool route, centrale, chateau, construction = false;
     while (!end3) {
         //Dans le cas ou l'utilisateur fait rien, il est inactif, spectateur du jeu
         if ((counter++)%rapportReduction == 0) {
@@ -340,12 +753,14 @@ void carte() {
         al_wait_for_event(queue,&event);
         switch (event.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
+                if (entrerMenuPause) break;
                 end3 = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
                 xSouris = event.mouse.x;
                 ySouris = event.mouse.y;
+                if (entrerMenuPause) break;
                 for (int i = 0; i < LIGNES_TAB; ++i) {
                     for (int j = 0; j < COLONNES_TAB; ++j) {
                         if ((float)tabCase[i][j].y < (float)ySouris && (float)ySouris < (float)tabCase[i][j].y+TAILLE_CASE &&
@@ -359,16 +774,134 @@ void carte() {
                 break;
 
             case ALLEGRO_EVENT_TIMER:
-                //affichage(tabCase,tabTXT,image,ligneSouris,colonneSouris);
-                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris);
+                if (entrerMenuPause) {
+                    affichageMenu(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent);
+                    break;
+                }
+
+                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent, construction, centrale, route, chateau);
+
+                /*
+                if(construction){
+                    al_draw_bitmap(image.maison1, xSouris, ySouris, 0);
+                    //al_flip_display();ça marche avec le al flip display
+                    printf("(%d,%d)", xSouris, ySouris);
+                    al_flip_display();
+                    //abort();
+                    break;
+                }
+                 */
+                break;
+
+
+            case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+                if (entrerMenuPause){
+                    if (!issueMenuPause(xSouris, ySouris,entrerMenuPause, image)){
+                        entrerMenuPause = false;
+                    }
+                    break;
+                }
+                //centrale passage souris
+                returnClic = clicDansCase(xSouris, ySouris, image, event, timer, queue);
+                printf("returnClic %d\n", returnClic);
+                if (999 == returnClic) {
+                    // Nous sommes dans le menu PAUSE
+                    entrerMenuPause = 1;
+                    break;
+                }
+                if(CENTRALE == returnClic){
+                    centrale = true;
+                }
+                if(ROUTE == returnClic){
+                    route = true;
+                }
+                if(CHATEAU == returnClic){
+                    chateau = true;
+                }
+                if(CONSTRUCTION == returnClic){
+                    construction = true;
+                }
+                if(TRACE)printf("centrale\n");
+                break;
+        }
+
+    }
+    al_destroy_display(display);
+    al_destroy_event_queue(queue);
+    al_destroy_timer(timer);
+    //abort();
+    return returnClic;
+}
+
+void carteDepart() {
+    bool end1 = false;
+    bool end2 = false;
+    bool end3 = false;
+    ALLEGRO_TIMER *timer = NULL;
+    ALLEGRO_DISPLAY *display = NULL;
+    ALLEGRO_EVENT_QUEUE* queue = NULL;
+    ALLEGRO_EVENT event;
+    FILE *file;
+
+    Case tabCase[LIGNES_TAB][COLONNES_TAB] = {0};
+    int tabTXT[LIGNES_TAB][COLONNES_TAB + 1] = {0};
+    Image image;
+    int xCase,yCase = Y_TAB;
+    int ligneSouris = 0,colonneSouris = 0;
+    int xSouris,ySouris;
+
+    al_init();
+    al_init_primitives_addon();
+    al_init_image_addon();
+    al_install_mouse();
+    al_init_font_addon();
+    al_init_ttf_addon();
+
+    display = al_create_display(ECRAN_LONGUEUR,ECRAN_LARGEUR);
+    timer = al_create_timer(1.0/60.0);
+    queue = al_create_event_queue();
+    al_register_event_source(queue,al_get_display_event_source(display));
+    al_register_event_source(queue,al_get_mouse_event_source());
+    al_register_event_source(queue,al_get_timer_event_source(timer));
+
+
+    //déclaration bitmap
+    image.fond = al_load_bitmap("../images/modeJeu.jpg");
+
+    al_flip_display();
+
+    al_start_timer(timer);
+
+    while (!end3) {
+        al_wait_for_event(queue,&event);
+        switch (event.type) {
+            case ALLEGRO_EVENT_DISPLAY_CLOSE:
+                end3 = true;
+                break;
+
+            case ALLEGRO_EVENT_MOUSE_AXES:
+                xSouris = event.mouse.x;
+                ySouris = event.mouse.y;
+                break;
+
+            case ALLEGRO_EVENT_TIMER:
+
+                affichageModeJeu2(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris);
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-                    //centrale passage souris
-                clicDansCase(xSouris, ySouris);
-                            if(TRACE)printf("centrale\n");
+                //centrale passage souris
+                //clicDansCase(xSouris, ySouris);
+                end3 = clicDansCase2(xSouris, ySouris);
+                break;
 
         }
+    }
+    if(monJeu.modeJeu == MODE_COMMUNISTE){
+        affichageChargementCommuniste();
+    }
+    if(monJeu.modeJeu == MODE_CAPITALISTE){
+        affichageChargementCapitaliste();
     }
     al_destroy_display(display);
     al_destroy_event_queue(queue);
@@ -479,10 +1012,10 @@ void afficheTabParcoursConstruction(){
     for (int i=0;i<monJeu.nbParcoursConstruction;i++){
         if (monJeu.tabParcoursConstruction[i].source == -1) continue;
         if(TRACE)printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
-                monJeu.tabParcoursConstruction[i].source,
-                monJeu.tabParcoursConstruction[i].destination,
-                monJeu.tabParcoursConstruction[i].lgParcours,
-                monJeu.tabParcoursConstruction[i].estPlusCourt);
+                         monJeu.tabParcoursConstruction[i].source,
+                         monJeu.tabParcoursConstruction[i].destination,
+                         monJeu.tabParcoursConstruction[i].lgParcours,
+                         monJeu.tabParcoursConstruction[i].estPlusCourt);
         afficheParcours(monJeu.tabParcoursConstruction[i].indexParcours, monJeu.tabParcoursConstruction[i].lgParcours);
     }
 }
@@ -493,10 +1026,10 @@ void afficheTabParcoursChateau(){
     for (int i=0;i<monJeu.nbParcoursChateau;i++){
         if (monJeu.tabParcoursChateau[i].source == -1) continue;
         if(TRACE)printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
-                monJeu.tabParcoursChateau[i].source,
-                monJeu.tabParcoursChateau[i].destination,
-                monJeu.tabParcoursChateau[i].lgParcours,
-                monJeu.tabParcoursChateau[i].estPlusCourt);
+                         monJeu.tabParcoursChateau[i].source,
+                         monJeu.tabParcoursChateau[i].destination,
+                         monJeu.tabParcoursChateau[i].lgParcours,
+                         monJeu.tabParcoursChateau[i].estPlusCourt);
         afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
     }
 }
@@ -507,10 +1040,10 @@ void afficheTabParcoursCentrale(){
     for (int i=0;i<monJeu.nbParcoursCentrale;i++){
         if (monJeu.tabParcoursCentrale[i].source == -1) continue;
         if(TRACE)printf ("SOURCE:%d / DEST:%d / LG:%d / +COURT:%d / ",
-                monJeu.tabParcoursCentrale[i].source,
-                monJeu.tabParcoursCentrale[i].destination,
-                monJeu.tabParcoursCentrale[i].lgParcours,
-                monJeu.tabParcoursCentrale[i].estPlusCourt);
+                         monJeu.tabParcoursCentrale[i].source,
+                         monJeu.tabParcoursCentrale[i].destination,
+                         monJeu.tabParcoursCentrale[i].lgParcours,
+                         monJeu.tabParcoursCentrale[i].estPlusCourt);
         afficheParcours(monJeu.tabParcoursCentrale[i].indexParcours, monJeu.tabParcoursCentrale[i].lgParcours);
     }
 }
@@ -941,7 +1474,11 @@ void ecrireFichierTextePOurSauvegarderPartie(char *nomFichier, int typeNouvelEle
 void test(){
     lireFichierTextePourAjouterElement("../fichierTexteTest1.txt");
 
+
+    printf("%d", monJeu.argent);
     ajouterElement(CONSTRUCTION, 1, 1);//0
+    printf("%d", monJeu.argent);
+    /*
     ajouterElement(ROUTE, 2, 4);
     ajouterElement(ROUTE, 4,2);
     ajouterElement(ROUTE, 4, 4);
@@ -1018,6 +1555,7 @@ void test(){
     //ajouterElement(ECOLE, 1, 1);
     //ajouterElement(ROUTE, 4, 5);
     //ajouterElement(MUSEE, 5, 6);
+     */
 }
 
 
@@ -1180,10 +1718,10 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
                     monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant] = (monJeu.element[indexDestination].nbHabitantElement-monJeu.element[indexDestination].waterLevel);
                     monJeu.element[indexDestination].waterLevel = monJeu.element[indexDestination].nbHabitantElement;
                     if(TRACE)printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
-                            indexDestination, monJeu.element[indexDestination].nbHabitantElement,
-                            monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
-                            monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
-                            monJeu.element[indexChateauCourant].capacite, indexChateauCourant);
+                                     indexDestination, monJeu.element[indexDestination].nbHabitantElement,
+                                     monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
+                                     monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
+                                     monJeu.element[indexChateauCourant].capacite, indexChateauCourant);
                 }
                 else {
                     // Dans ce cas, la capacité restante n'est pas suffisante pour alimenter complètement la CONSTRUCTION
@@ -1195,10 +1733,10 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
                     // Il va fournir tout le reste de son eau à cette CONSTRUCTION
                     monJeu.element[indexChateauCourant].capacite = 0;
                     if(TRACE)printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
-                            indexDestination, monJeu.element[indexDestination].nbHabitantElement,
-                            monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
-                            monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
-                            monJeu.element[indexChateauCourant].capacite, indexChateauCourant);
+                                     indexDestination, monJeu.element[indexDestination].nbHabitantElement,
+                                     monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
+                                     monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
+                                     monJeu.element[indexChateauCourant].capacite, indexChateauCourant);
                 }
             }
         }
@@ -1230,8 +1768,8 @@ void detecteConstructionsAlimenteesParCentrale(){
                 monJeu.element[indexDestination].tabFournitureRessources[indexCentraleCourante] = monJeu.element[indexCentraleCourante].capacite;
                 monJeu.element[indexCentraleCourante].capacite -= monJeu.element[indexDestination].nbHabitantElement;
                 if(TRACE)printf ("CONSTRUCTION n°%02d (%3d ha) alimentée électriquement (capa restante %3d sur Centrale %2d)\n",
-                        indexDestination, monJeu.element[indexDestination].nbHabitantElement,
-                        monJeu.element[indexCentraleCourante].capacite, indexCentraleCourante);
+                                 indexDestination, monJeu.element[indexDestination].nbHabitantElement,
+                                 monJeu.element[indexCentraleCourante].capacite, indexCentraleCourante);
             }
         }
     }
@@ -1439,21 +1977,24 @@ ChangerNiveauConstruction(38, 1);
 
 //detecte toutes les constructions alimentees par toutes les centrales et indique les capacités restantes des centrales
 //detecteConstructionsAlimenteesParCentrale();
-detecteConstructionAlimenteesparChateau();
+    detecteConstructionAlimenteesparChateau();
 //    ChangerNiveauConstruction(0, 1);
-if(TRACE)printf ("detecte centrale\n");
+    if(TRACE)printf ("detecte centrale\n");
 //detecteConstructionsAlimenteesParCentrale();
 // Détection des maisons VIABLES
 // Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
-detecteConstructionsViables();
+    detecteConstructionsViables();
 // Libération
 //ChangerNiveauConstruction(0, 1);
-if(TRACE)printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
-if(TRACE)printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
-free (tabCheminParcouru);
-free (route);
-carte();
-return 0;
+    if(TRACE)printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
+    if(TRACE)printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
+    free (tabCheminParcouru);
+    free (route);
+    //carteDepart();
+    carte();
+    return 0;
 }
 
 ///////////////////////// FIN MAIN ////////////////////
+
+
