@@ -1990,7 +1990,7 @@ ChangerNiveauConstruction(38, 1);
     if(TRACE)printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
     free (tabCheminParcouru);
     free (route);
-    //carteDepart();
+    carteDepart();
     carte();
     return 0;
 }
