@@ -8,6 +8,8 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_acodec.h>
+#include <allegro5/allegro_windows.h>
 
 #define ECRAN_LONGUEUR 2880
 #define ECRAN_LARGEUR 1694
