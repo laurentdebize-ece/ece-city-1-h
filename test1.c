@@ -186,6 +186,15 @@ void affichageInterfaceJeu(){
 
 
 }
+void musiqueFond(){
+    al_install_audio();
+
+    al_init_acodec_addon();
+    al_reserve_samples(1);
+    ALLEGRO_SAMPLE *son1 = al_load_sample("../son1.ogg");
+
+    al_play_sample(son1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+}
 
 void affichageChargementCapitaliste(){
     ALLEGRO_BITMAP *ecranChargementCapitaliste = al_load_bitmap("../images/modeCapitaliste.png");
@@ -1887,7 +1896,7 @@ int main() {
     if(TRACE)printf("DEBUT\n");
 
     test();
-
+    musiqueFond();
     //ChangerNiveauConstruction(0, 1);
     for(int i = 0; i<monJeu.nbElements;i++){
         if(monJeu.element[i].actif == ACTIF){
