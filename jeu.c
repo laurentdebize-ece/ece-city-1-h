@@ -497,7 +497,7 @@ bool estDansZone (int k, int x, int y){
 }
 
 
-void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY){
+void detectionElementsConnectes(int numeroElement){
     int positioncurseurX = monJeu.element[numeroElement].affichageElement.positionX-1;
     int positioncurseurY = monJeu.element[numeroElement].affichageElement.positionY-1;
     //ON commence par X
@@ -750,8 +750,6 @@ void detecteConstructionsViables(){
      */
 }
 
-
-
 void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered et maj de la capacité restante
     //voir ttes les constructions alimentées par des châteaux d'eaux
     int indexChateauCourant = -1;
@@ -781,11 +779,11 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
                     // On reneigne le tabFournitureRessources de la CONSTRUCTION en cours
                     monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant] = (monJeu.element[indexDestination].nbHabitantElement-monJeu.element[indexDestination].waterLevel);
                     monJeu.element[indexDestination].waterLevel = monJeu.element[indexDestination].nbHabitantElement;
-                    printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
-                            indexDestination, monJeu.element[indexDestination].nbHabitantElement,
-                            monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
-                            monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
-                            monJeu.element[indexChateauCourant].capacite, indexChateauCourant);
+                    if (TRACE)  ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
+                                indexDestination, monJeu.element[indexDestination].nbHabitantElement,
+                                monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
+                                monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
+                                monJeu.element[indexChateauCourant].capacite, indexChateauCourant);
                 }
                 else {
                     // Dans ce cas, la capacité restante n'est pas suffisante pour alimenter complètement la CONSTRUCTION
@@ -796,11 +794,11 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
                     monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant] = monJeu.element[indexChateauCourant].capacite;
                     // Il va fournir tout le reste de son eau à cette CONSTRUCTION
                     monJeu.element[indexChateauCourant].capacite = 0;
-                    printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
-                            indexDestination, monJeu.element[indexDestination].nbHabitantElement,
-                            monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
-                            monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
-                            monJeu.element[indexChateauCourant].capacite, indexChateauCourant);
+                    if (TRACE) printf ("CONSTRUCTION n°%02d (%3d ha) alimentée en eau à %3d/%3d par Chateau n°%2d (capa restante %3d sur château %2d)\n",
+                                       indexDestination, monJeu.element[indexDestination].nbHabitantElement,
+                                       monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant],
+                                       monJeu.element[indexDestination].nbHabitantElement, indexChateauCourant,
+                                       monJeu.element[indexChateauCourant].capacite, indexChateauCourant);
                 }
             }
         }
@@ -829,11 +827,11 @@ void detecteConstructionsAlimenteesParCentrale(){
             if (monJeu.element[indexCentraleCourante].capacite >= monJeu.element[indexDestination].nbHabitantElement){
                 monJeu.element[indexDestination].isPowered = true;
                 // On reneigne le tabFournitureRessources de la CONSTRUCTION en cours
-                monJeu.element[indexDestination].tabFournitureRessources[indexCentraleCourante] = monJeu.element[indexCentraleCourante].capacite;
+                monJeu.element[indexDestination].tabFournitureRessources[indexCentraleCourante] = monJeu.element[indexDestination].nbHabitantElement;
                 monJeu.element[indexCentraleCourante].capacite -= monJeu.element[indexDestination].nbHabitantElement;
-                printf ("CONSTRUCTION n°%02d (%3d ha) alimentée électriquement (capa restante %3d sur Centrale %2d)\n",
-                        indexDestination, monJeu.element[indexDestination].nbHabitantElement,
-                        monJeu.element[indexCentraleCourante].capacite, indexCentraleCourante);
+                if (TRACE) printf ("CONSTRUCTION n°%02d (%3d ha) alimentée électriquement (capa restante %3d sur Centrale %2d)\n",
+                                   indexDestination, monJeu.element[indexDestination].nbHabitantElement,
+                                   monJeu.element[indexCentraleCourante].capacite, indexCentraleCourante);
             }
         }
     }
@@ -938,4 +936,220 @@ void jeu(){
     //position premier élement
     //faire tourner tout le code à chaque fois qu'on rajoute un nouvel élement
 
+}
+
+void reinitEtatRessourcesDesConstructions(){
+    // On parcours toutes les CONSTRUCTIONS et on réinitialise tous les éléments liés à l'alimentation en eau ou électrique
+    for (int j = 0; j < MAX_CONSTRUCTION; j++) {
+        monJeu.element[j].viable = false;
+        monJeu.element[j].isPowered = false;
+        monJeu.element[j].isWatered = false;
+        monJeu.element[j].waterLevel = 0;
+        for (int i = 0; i < MAX_CONSTRUCTION ; i++) {
+            monJeu.element[j].tabFournitureRessources[i] = -1;
+        }
+    }
+}
+void majApresEvolutionNiveauConstruction() {
+// Apres avoir modifié le niveau d'une construction, la connexion des CONSTRUCTIONS aux CHATEAUX et aux CENTRALES ne changent pas
+// Il faut juste :
+// Scanner tous les réseaux electriques pour vérifier qui est toujours alimenté par les centrales
+// Scanner tous les réseaux d'eau pour vérifier qui est alimenté par quel réseau d'eau et à quelle hauteur
+
+    // Dans un premier temps on réinitialise le statut de l'alimentation en eau et électricité
+    reinitEtatRessourcesDesConstructions();
+    // Puis on rescanne le réseau electrique
+    detecteConstructionsAlimenteesParCentrale();
+    // Puis on rescanne le réseau d'eau
+    detecteConstructionAlimenteesparChateau();
+    // Puis on vérifie la viabilité
+    detecteConstructionsViables();
+    // DEBUG
+    //afficheStatutDesRessourcesParConstruction();
+}
+
+void recenseParcours(){
+
+    int distance = 0;
+    int *tabCheminParcouru = calloc (MAX_CONSTRUCTION, sizeof(int));
+    int *route = calloc(MAX_CONSTRUCTION, sizeof(int));
+
+    // BOUCLE PRINCIPALE : ON PARCOURT TOUS LES ELT DU JEU, SI CE NE SONT PAS DES ROUTES, ON REGARDE TOUS LES PARCOURS VERS LES AUTRES ELTS
+    for(int i = 0; i<monJeu.nbElements;i++){
+        if(monJeu.element[i].actif == ACTIF && monJeu.element[i].type != ROUTE){
+            // On initialise le tabCheminParcouru pour éviter de boucler et route pour mémoriser les routes empruntées
+            for (int j=0; j<MAX_CONSTRUCTION;j++){
+                tabCheminParcouru[j]=-1; // on le met à zéro quand on passe dessus
+                route[j]=-1;
+            }
+            tabCheminParcouru[i]=0;
+
+            // On initialise les tabCheminDeConnexionsAuxInfra
+            for (int p=0; p<MAX_CONSTRUCTION; p++){
+                for (int q=0; q<MAX_CONSTRUCTION;q++){
+                    //monJeu.element[i].tabCheminDeConnexionsAuxInfra[p][q]=-1;
+                }
+            }
+
+            // Lors du premier appel, la route courante est la source
+            //route[distance]=i;
+            calculeDistanceAvecLesInfraConnectees(i, i, &distance, tabCheminParcouru, route);
+        }
+        //afficherTabDistanceInfraConnectees(i);
+    }
+    free (tabCheminParcouru);
+    free(route);
+}
+
+void afficheStatutDesRessourcesParConstruction(){
+    // Affiche le statut des alimentations electriques et en eau pour chaque CONSTRUCTION
+    for(int i = 0; i<monJeu.nbElements;i++) {
+        if (monJeu.element[i].type == CONSTRUCTION) {
+            printf("ELT %02d : WaterLevel %03d/%03d / Powered %s (", i, monJeu.element[i].waterLevel,
+                   monJeu.element[i].nbHabitantElement, monJeu.element[i].isPowered?"Yes":"No");
+            for (int j = 0; j < monJeu.nbElements; j++) {
+                if (monJeu.element[i].tabFournitureRessources[j] != -1) {
+                    if (monJeu.element[j].type == CENTRALE) printf(" CENTRALE#%02d %03d", j, monJeu.element[i].tabFournitureRessources[j]);
+                    if (monJeu.element[j].type == CHATEAU) printf(" CHATEAU #%02d %03d", j, monJeu.element[i].tabFournitureRessources[j]);
+                }
+            }
+            printf (" )\n");
+        }
+    }
+}
+
+void majApresAjoutConstruction(int numElt){
+    // Après avoir ajouter la construction d'index numElt dans le tabElement du jeu
+    // Si cette construction n'est pas reliée à une route alors on ne met rien à jour
+/*
+    detectionElementsConnectes(numElt);
+    int hasRouteConnected = 0;
+    int index = -1;
+    for(int i=0;i<monJeu.element[numElt].nbElementConnects;i++){
+        index = monJeu.element[numElt].listeIndexElementsConnectes[i];
+        if (ROUTE == monJeu.element[index]) hasRouteConnected = 1;
+    }
+    if (!hasRouteConnected) return;
+
+    // Si la construction est reliée à une route, il faut mett :
+    recenseParcours();
+    classeParcoursCentrale();
+    classeParcoursChateau();
+    detecteConstructionsAlimenteesParCentrale();
+    detecteConstructionAlimenteesparChateau();
+    detecteConstructionsViables();
+    */
+}
+
+void initCapaciteChateauxEtCentrales(){
+    for(int i=0;i<monJeu.nbElements;i++){
+        if (monJeu.element[i].type == CHATEAU) monJeu.element[i].capacite = CAPA_CHATEAU;
+        else if (monJeu.element[i].type == CENTRALE) monJeu.element[i].capacite = CAPA_CENTRALE;
+    }
+}
+void majApresAjoutElement(int numElt) {
+    // Après avoir ajouter l'ELT d'index numElt dans le tabElement du jeu
+    // Si cet ELT n'est reliée à RIEN alors on sort
+    detectionElementsConnectes(numElt);
+    if (!monJeu.element[numElt].nbElementConnects) return;
+
+    // Sinon on met à jour les listeIndexElementsConnected des ELT auquels il est relié
+    // Puis on recenseParcours
+    // Puis on refait les statutRessources
+    int index = -1;
+    for (int i = 0; i < monJeu.element[numElt].nbElementConnects; i++) {
+        index = monJeu.element[numElt].listeIndexElementsConnectes[i];
+        detectionElementsConnectes(index);
+    }
+    // Initialisation des PARCOURS
+    monJeu.nbParcours = 0;
+    monJeu.nbParcoursCentrale = 0;
+    monJeu.nbParcoursChateau = 0;
+    monJeu.nbParcoursConstruction = 0;
+    initTabParcours();
+    initTabParcoursCentrale();
+    initTabParcoursChateau();
+    recenseParcours();
+    classeParcoursCentrale();
+    classeParcoursChateau();
+    reinitEtatRessourcesDesConstructions();
+
+    initCapaciteChateauxEtCentrales();
+    detecteConstructionsAlimenteesParCentrale();
+    detecteConstructionAlimenteesparChateau();
+
+    // DEBUG
+    int debug = 1;
+    if (debug) {
+        printf ("AJOUT DE L'ELT %02d\n", numElt);
+        afficheTabParcoursChateau();
+        afficheTabParcoursCentrale();
+        afficheStatutDesRessourcesParConstruction();
+        afficheReseauxEaux();
+        // FIN DEBUG
+    }
+}
+
+// Renvoie l'index du tabParcours utilisé par l'eau pour cet ELT s'il s'agit d'une CONSTRUCTION
+// Et écrit dans ptr l'origine des approvisionnement en eau
+// Renvoie -1 s'il ne s'agit pas d'une CONSTRUCTION
+int rechercheReseauxEaux(int indexElt, char *ptr){
+    if (monJeu.element[indexElt].type != CONSTRUCTION) return -1;
+    if (!ptr) return -1;
+    int lg = 0;
+    sprintf(ptr, "ELT %02d : WaterLevel %03d/%03d ", indexElt, monJeu.element[indexElt].waterLevel, monJeu.element[indexElt].nbHabitantElement);
+    for (int j = 0; j < monJeu.nbElements; j++) {
+        if (monJeu.element[indexElt].tabFournitureRessources[j] > 0) {
+            lg = strlen (ptr);
+            if (monJeu.element[j].type == CHATEAU) sprintf(&(ptr[lg]), " CHATEAU #%02d %03d", j, monJeu.element[indexElt].tabFournitureRessources[j]);
+        }
+    }
+    return 0;
+}
+
+void afficheReseauxEaux(){
+    // Affiche le statut des alimentations en eau pour chaque CONSTRUCTION
+    // Renseigne les tabParcoursChateauActif avec 1 si ACTIF et 0 sinon
+    char ptr[256];
+    for (int i=0;i<256;i++) ptr[i]=0;
+    int retour = -1;
+    for(int i = 0; i<monJeu.nbElements;i++) {
+        retour = rechercheReseauxEaux(i, ptr);
+        if (-1 != retour) printf("*********** %s\n", ptr);
+        // Maintenant on recherche l'index du chemin le plus court entre le
+    }
+    // Maintenant on met à jour les PARCOURS d'eaux qui sont ACTIFS en renseignant tabParcoursChateauActif[numParcours] = 1 si ACTIF
+    int source, destination, dejaVu;
+    for(int i = 0; i<MAX_PARCOURS_CHATEAU;i++) {
+        // On vérifie si la CONSTRUCTION est bien ALIMENTEE par ce reseau d'eau
+        // Pour cela on recupere l'index de la destination du tabParcoursChateau et on regarde si son tabRessource est > 0
+        source = monJeu.tabParcoursChateau[i].source;
+        destination = monJeu.tabParcoursChateau[i].destination;
+        if ((-1 == source) || (-1 == destination)) continue;
+        dejaVu = 0;
+        // On initialise tabParcoursChateauActif[i] = 0;
+        monJeu.tabParcoursChateauActif[i] = 0;
+        if (monJeu.element[destination].tabFournitureRessources[source] > 0) {
+            // On vérifie si un Parcours n'est pas déjà actif pour cette même SOURCE et même DESTINATION
+            for(int j = 0; j<i;j++) {
+                if (source == monJeu.tabParcoursChateau[j].source && destination == monJeu.tabParcoursChateau[j].destination) {
+                    // Dans ce cas on a déjà trouvé un PARCOURS pour cette source et destination
+                    dejaVu = 1;
+                    break;
+                }
+            }
+            if (dejaVu) continue;
+            monJeu.tabParcoursChateauActif[i] = 1;
+        }
+    }
+    // DEBUG
+    int debug = 1;
+    if (debug) {
+        for (int i = 0; i < MAX_PARCOURS_CHATEAU; i++) {
+            if (monJeu.tabParcoursChateauActif[i]) {
+                printf("Parcours %d ACTIF : ", i);
+                afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
+            }
+        }
+    }
 }
