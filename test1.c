@@ -188,7 +188,7 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
 
 //imaginons on return centrale avec clicDansCase
 //on lui passe clicDansCase (int clicDansCase, xSouris, y Souris), en ligneSouris, colonnes souris, calculées juste avant
-int ajouterElementGraphique(int typeconstruction, int ligneSouris, coloneSouris){
+int ajouterElementGraphique(int typeconstruction, int ligneSouris, int coloneSouris){
     ajouterElement(typeconstruction, ligneSouris, coloneSouris);
 }
 
@@ -207,6 +207,15 @@ void affichageInterfaceJeu(){
     al_flip_display();
 
 
+}
+void musiqueFond(){
+    al_install_audio();
+
+    al_init_acodec_addon();
+    al_reserve_samples(1);
+    ALLEGRO_SAMPLE *son1 = al_load_sample("../son1.ogg");
+
+    al_play_sample(son1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 
 void affichageChargementCapitaliste(){
@@ -310,14 +319,14 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(0,70,255,200));
-                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
 
             }
             if (tabTXT[i][j] == 8) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(189,255,0,200));
-                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.centraleelec,0,0,354,237,tabCase[i][j].x,tabCase[i][j].y,6*TAILLE_CASE,4*TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 9) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
@@ -462,14 +471,14 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(0,70,255,200));
-                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
 
             }
             if (tabTXT[i][j] == 8) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(189,255,0,200));
-                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.centraleelec,0,0,354,237,tabCase[i][j].x,tabCase[i][j].y,6*TAILLE_CASE,4*TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 9) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
@@ -2310,7 +2319,7 @@ int main() {
     if(TRACE)printf("DEBUT\n");
 
     test();
-
+    musiqueFond();
     //ChangerNiveauConstruction(0, 1);
     for(int i = 0; i<monJeu.nbElements;i++){
         if(monJeu.element[i].actif == ACTIF){
