@@ -61,7 +61,8 @@ typedef struct {
     int nbParcoursChateau;
     int nbParcoursCentrale;
     int tabTXT[LIGNES_TAB][COLONNES_TAB + 1]; // Grille du jeu
-
+    int tabParcoursChateauActif[MAX_PARCOURS_CHATEAU]; // Contient 0 si ce PARCOURS n'est pas utilisé pour fournir de l'eau et 1 sinon
+    int tabParcoursCentraleActif[MAX_PARCOURS_CENTRALE]; // Contient 0 si ce PARCOURS n'est pas utilisé pour fournir de l'éléectricité et 1 sinon
 
 }Jeu;
 
@@ -94,7 +95,7 @@ void ChangerNiveauConstruction(int numeroElement, int ameliorer);//0 On amélior
 int evolutionConstruction();
 void insererDansTableau(int racine, int branche);
 bool estDansZone (int k, int x, int y);
-void detectionElementsConnectes(int numeroElement, int tailleX, int tailleY);
+void detectionElementsConnectes(int numeroElement);
 void test();
 void afficherEltConnectes(int numeroElement);
 void afficheRoute(int *ptrRoute, int distance);
@@ -105,10 +106,21 @@ void afficherTabDistanceInfraConnectees (int numeroElement);
 void detecteConstructionsViables();
 void detecteConstructionAlimenteesparChateau();//affecte la varibale isWatered et maj de la capacité restante
 void detecteConstructionsAlimenteesParCentrale();
-void classeParcoursConstruction();
+void classePacoursConstruction();
 void classeParcoursCentrale();
 void classeParcoursChateau();
 void jeu();
+// Fonctions nécessaires pour mettre à jour le jeu avec un TIC_TIMER
+void majApresEvolutionNiveauConstruction(); // A appeler après un EVENT_TIMER d'1 sec
+void recenseParcours();
+void afficheStatutDesRessourcesParConstruction();
+// Fonction nécessaires après l'ajout d'une CONSTRUCTION
+void majApresAjoutConstruction(int i); // A appeler lorsque l'on ajoute une construction dont l'index est i
+void majApresAjoutElement(int numElt);
+void initCapaciteChateauxEtCentrales();
+int rechercheReseauxEaux(int indexElt, char *ptr);
+void afficheReseauxEaux();
+
 
 /// FIN
 

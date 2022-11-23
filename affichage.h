@@ -1,6 +1,5 @@
 #include "element.h"
 #define ECE_CITY_1_H_AFFICHAGE_H
-
 #include <time.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -9,16 +8,14 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
-#include <allegro5/allegro_acodec.h>
-//#include <allegro5/allegro_windows.h>
 
 #define ECRAN_LONGUEUR 2880
 #define ECRAN_LARGEUR 1694
 #define COLONNES_TAB 45
 #define LIGNES_TAB 35
-#define TAILLE_CASE 47
-#define X_TAB 10
-#define Y_TAB 10
+#define TAILLE_CASE 42
+#define X_TAB 30
+#define Y_TAB 211
 
 typedef struct {
     int positionX;
@@ -34,7 +31,7 @@ typedef struct {
 
 typedef struct {
     ALLEGRO_BITMAP *chateaudeau,*centraleelec,*caserne;
-    ALLEGRO_BITMAP *maison1,*maisonombre,*maison2,*maison2ombre,*maison3,*maison3ombre;
+    ALLEGRO_BITMAP *terrainVague,*cabane,*maison1,*maisonombre,*maison2,*maison2ombre,*maison3,*maison3ombre;
     ALLEGRO_BITMAP *gc1,*gc1ombre,*gc2,*gc2ombre,*gc3,*gc3ombre;
     ALLEGRO_BITMAP *routehd,*routehg,*routebd,*routebg,*routegd,*routehb;
     ALLEGRO_BITMAP *fond;
@@ -47,14 +44,8 @@ typedef struct {
 
 
 
-void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris, ALLEGRO_FONT* text, int construction, int centrale, int route, int chateau);
+void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris, ALLEGRO_FONT* text, int construction, int centrale, int route, int chateau, int returnClic);
 int carte();
 
 //#endif //UNTITLED3_TABLEAU_H
-
-
-
-
-
-
 
