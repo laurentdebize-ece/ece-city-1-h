@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "stdlib.h"
 #include "jeu.h"
+#include <allegro5/allegro_acodec.h>
 #include "time.h"
 #define TRACE 0
 #define LARGEUR 2880
@@ -12,7 +13,14 @@
 #define NOIR al_map_rgb(0,0,0)
 
 ///////////////////////// AFFICHAGE.C ////////////////////
+void musiqueFond(){
+    al_install_audio();
 
+    al_init_acodec_addon();
+    al_reserve_samples(1);
+    ALLEGRO_SAMPLE *son1 = al_load_sample("../son1.ogg");
+    al_play_sample(son1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+}
 
 void surpassageCase (int xSouris, int ySouris){
     //centrale passage souris
@@ -63,6 +71,7 @@ void surpassageCase (int xSouris, int ySouris){
         }
 
     }
+
 }
 
 void affichageMenuGraphique(Image image, int xSouris, int ySouris){
@@ -120,14 +129,13 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
         }
 
     }
-    else{
-        //return (-10);
-    }
+
+
 
 
     // On vérifie si on est sur le MENU PAUSE
-    if(xSouris >= x1Route-75 && xSouris <= x2Route-85){
-        if(ySouris >= y1Route+165 && ySouris <= y2Route+155){
+    if((xSouris >= x1Route-75 && xSouris <= x2Route-85) || (xSouris >= 42 && xSouris <= 168) ){
+        if((ySouris >= y1Route+165 && ySouris <= y2Route+155) || (ySouris >= 32 && ySouris <= 172)){
             return 999;
             //al_draw_filled_rectangle(x1Route-75, y1Route+165, x2Route-85, y2Route+155, al_map_rgba(20,20,20,150));
             while(!endMenu){
@@ -183,19 +191,12 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
     }
 
 
-    return (-10);
+        return (-10);
 }
-void musiqueFond(){
-    al_install_audio();
 
-    al_init_acodec_addon();
-    al_reserve_samples(1);
-    ALLEGRO_SAMPLE *son1 = al_load_sample("../son1.ogg");
-    al_play_sample(son1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
-}
 //imaginons on return centrale avec clicDansCase
 //on lui passe clicDansCase (int clicDansCase, xSouris, y Souris), en ligneSouris, colonnes souris, calculées juste avant
-int ajouterElementGraphique(int typeconstruction, int ligneSouris, int coloneSouris){
+int ajouterElementGraphique(int typeconstruction, int ligneSouris, coloneSouris){
     ajouterElement(typeconstruction, ligneSouris, coloneSouris);
 }
 
@@ -214,15 +215,6 @@ void affichageInterfaceJeu(){
     al_flip_display();
 
 
-}
-void musiqueFond(){
-    al_install_audio();
-
-    al_init_acodec_addon();
-    al_reserve_samples(1);
-    ALLEGRO_SAMPLE *son1 = al_load_sample("../son1.ogg");
-
-    al_play_sample(son1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 
 void affichageChargementCapitaliste(){
@@ -326,14 +318,14 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(0,70,255,200));
-                al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
             if (tabTXT[i][j] == 8) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(189,255,0,200));
-                al_draw_scaled_bitmap(image.centraleelec,0,0,354,237,tabCase[i][j].x,tabCase[i][j].y,6*TAILLE_CASE,4*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 9) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
@@ -400,8 +392,9 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
         al_draw_bitmap(image.commu, 370, 155, 0);
         //al_draw_text(argent, al_map_rgb(239, 194, 0), 400, 150, 0, "mode capitaliste");
     }
+
     //argent
-    //monJeu.argent = 500000;
+   // monJeu.argent = 500000;
     char monTxt[50];
     sprintf(monTxt, "%d", monJeu.argent);
 
@@ -428,6 +421,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
             construction = false;
             returnClic = -10;
             //printf("%d", returnClic);
+            //printf("(%d, %d)", xSouris, ySouris);
         }
     }
 
@@ -478,14 +472,14 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(0,70,255,200));
-                al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
             if (tabTXT[i][j] == 8) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(189,255,0,200));
-                al_draw_scaled_bitmap(image.centraleelec,0,0,354,237,tabCase[i][j].x,tabCase[i][j].y,6*TAILLE_CASE,4*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 9) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
@@ -681,6 +675,7 @@ bool issueMenuPause(int xSouris, int ySouris, int entreeMenuPause, Image image, 
 
 
 int carte() {
+    musiqueFond();
     bool end1 = false;
     bool end2 = false;
     bool end3 = false;
@@ -1004,7 +999,8 @@ void initTabParcoursChateau(){
     }
 }
 
-void initialisationJeu(){
+void
+initialisationJeu(){
 
     monJeu.argent = ARGENT_INIT;
     monJeu.niveauEducation = 0;//niveau edu global = moyenne entre toutes les zones, édu et non édu
@@ -1222,6 +1218,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
     if (TRACE) printf("AJOUTER ELT : %d à %d,%d\n", typeElement, positionX, positionY);
     switch (typeElement) {
         case ROUTE :
+            if(monJeu.argent - PRIX_ROUTE < 0){
+                printf("plus assez d'argent\n");
+               abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_ROUTE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1237,6 +1238,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
 
         case CHATEAU:
+            if(monJeu.argent -PRIX_CHATEAU < 0){
+                printf("plus assez d'argent pour\n");
+                abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_CHATEAU;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1252,6 +1258,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
 
         case CENTRALE:
+            if(monJeu.argent - PRIX_CENTRALE< 0){
+                 printf("plus assez d'argent\n");
+                abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_CENTRALE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1267,6 +1278,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
 
         case CONSTRUCTION:
+            if(monJeu.argent - PRIX_CONSTRUCTION < 0){
+                printf("plus assez d'argent\n");
+                abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_CONSTRUCTION;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1281,7 +1297,12 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.nbElements++;
             break;
 
-        case ECOLE: // On fera spawn une bibliothèque qui pourra s'améliorer en école d'ingé (3x3 cases)
+        case ECOLE:// On fera spawn une bibliothèque qui pourra s'améliorer en école d'ingé (3x3 cases)
+            if(monJeu.argent - PRIX_ECOLE < 0){
+                // printf("plus assez d'argent pour ro\n");
+                abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_ECOLE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1299,6 +1320,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
 
         case MUSEE: // On fera spawn un musée, qui rapportera 2 points d'éducation + de l'argent à chaque cycle
+            if(monJeu.argent - PRIX_MUSEE < 0){
+                 printf("plus assez d'argent pour ro\n");
+                abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_MUSEE;
             //toute les cycles ça rapporte de l'argent, mais y'a que quand on le pose que ça rapporte de l'éducation
@@ -2267,7 +2293,6 @@ void afficheReseauxEaux(){
             if (monJeu.tabParcoursChateauActif[i]) {
                 printf("Parcours %d ACTIF : ", i);
                 //graphique
-                //afficheReseauxEaux();
                 //al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX+monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
                 afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
             }
@@ -2326,7 +2351,7 @@ int main() {
     if(TRACE)printf("DEBUT\n");
 
     test();
-    musiqueFond();
+
     //ChangerNiveauConstruction(0, 1);
     for(int i = 0; i<monJeu.nbElements;i++){
         if(monJeu.element[i].actif == ACTIF){
