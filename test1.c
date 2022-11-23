@@ -185,7 +185,14 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
 
     return (-10);
 }
+void musiqueFond(){
+    al_install_audio();
 
+    al_init_acodec_addon();
+    al_reserve_samples(1);
+    ALLEGRO_SAMPLE *son1 = al_load_sample("../son1.ogg");
+    al_play_sample(son1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+}
 //imaginons on return centrale avec clicDansCase
 //on lui passe clicDansCase (int clicDansCase, xSouris, y Souris), en ligneSouris, colonnes souris, calculées juste avant
 int ajouterElementGraphique(int typeconstruction, int ligneSouris, int coloneSouris){
