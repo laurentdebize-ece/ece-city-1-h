@@ -31,8 +31,11 @@ typedef struct {
 
 typedef struct {
     ALLEGRO_BITMAP *chateaudeau,*centraleelec,*caserne;
-    ALLEGRO_BITMAP *terrainVague,*cabane,*maison1,*maisonombre,*maison2,*maison2ombre,*maison3,*maison3ombre;
-    ALLEGRO_BITMAP *gc1,*gc1ombre,*gc2,*gc2ombre,*gc3,*gc3ombre;
+    ALLEGRO_BITMAP *terrainVague;
+    ALLEGRO_BITMAP *cabane;
+    ALLEGRO_BITMAP *maison1,*maison2,*maison3;
+    ALLEGRO_BITMAP *immeuble;
+    ALLEGRO_BITMAP *gc1,*gc2,*gc3;
     ALLEGRO_BITMAP *routehd,*routehg,*routebd,*routebg,*routegd,*routehb;
     ALLEGRO_BITMAP *fond;
     ALLEGRO_BITMAP* cap;

@@ -310,36 +310,60 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(0,70,255,200));
-                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
 
             }
             if (tabTXT[i][j] == 8) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
                                          al_map_rgba(189,255,0,200));
-                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.centraleelec,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
             }
+            //CABANE :
             if (tabTXT[i][j] == 9) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.maison1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.cabane,0,0,168,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            //MAISON :
+            if (tabTXT[i][j] == 10) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.maison1,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            if (tabTXT[i][j] == 11) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.maison2,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            if (tabTXT[i][j] == 12) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.maison3,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
-            if (tabTXT[i][j] == 12) {
+            //GRATTE-CIEL :
+            if (tabTXT[i][j] == 13) {
                 al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
             }
-            if (tabTXT[i][j] == 13) {
+            if (tabTXT[i][j] == 14) {
                 al_draw_scaled_bitmap(image.gc2,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
             }
-            if (tabTXT[i][j] == 14) {
+            if (tabTXT[i][j] == 15) {
                 al_draw_scaled_bitmap(image.gc3,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
@@ -352,26 +376,6 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
     al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
                              al_map_rgba(20,20,20,200));
-
-    /*for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            if (tabTXT[ligneSouris - i][colonneSouris - j] == 9) {
-                al_draw_scaled_bitmap(image.maisonombre,0,0,291,293,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-            }
-            if (tabTXT[ligneSouris - i][colonneSouris - j] == 10) {
-                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-            }
-            if (tabTXT[ligneSouris - i][colonneSouris - j] == 11) {
-                al_draw_scaled_bitmap(image.maison3ombre,0,0,172,200,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-
-            }
-            else if (tabTXT[ligneSouris][colonneSouris] == 0)
-                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris][colonneSouris].x,tabCase[ligneSouris][colonneSouris].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-            al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
-                                     tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
-                                     al_map_rgba(20,20,20,200));
-        }
-    }*/
 
     surpassageCase(xSouris, ySouris);
 
@@ -472,14 +476,38 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
                                          al_map_rgba(189,255,0,200));
                 al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
             }
+            //CABANE :
             if (tabTXT[i][j] == 9) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.maison1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.cabane,0,0,168,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            //MAISON :
+            if (tabTXT[i][j] == 9) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.maison1,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            if (tabTXT[i][j] == 10) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.maison2,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            if (tabTXT[i][j] == 11) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.maison3,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
+            //GRATTE_CIEL :
             if (tabTXT[i][j] == 12) {
                 al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
@@ -505,27 +533,6 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
     al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
                              al_map_rgba(20,20,20,200));
-
-    //affichageMenuGraphique(image, xSouris, ySouris);
-    /*for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            if (tabTXT[ligneSouris - i][colonneSouris - j] == 9) {
-                al_draw_scaled_bitmap(image.maisonombre,0,0,291,293,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-            }
-            if (tabTXT[ligneSouris - i][colonneSouris - j] == 10) {
-                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-            }
-            if (tabTXT[ligneSouris - i][colonneSouris - j] == 11) {
-                al_draw_scaled_bitmap(image.maison3ombre,0,0,172,200,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-
-            }
-            else if (tabTXT[ligneSouris][colonneSouris] == 0)
-                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris][colonneSouris].x,tabCase[ligneSouris][colonneSouris].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-            al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
-                                     tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
-                                     al_map_rgba(20,20,20,200));
-        }
-    }*/
 
     //surpassageCase(xSouris, ySouris);
 
@@ -723,26 +730,18 @@ int carte() {
     image.fond = al_load_bitmap("../images/fond.png");
     image.terrainVague = al_load_bitmap("../images/t-v 2.png");
     image.cabane = al_load_bitmap("../images/cabane.png");
+    image.immeuble = al_load_bitmap("../images/immeuble.png");
     image.maison1 = al_load_bitmap("../images/maison 1.png");
-    image.maisonombre = al_load_bitmap("../images/maison 1 ombre.png");
     image.maison2 = al_load_bitmap("../images/maison 2.png");
-    image.maison2ombre = al_load_bitmap("../images/maison 2 ombre.png");
     image.maison3 = al_load_bitmap("../images/maison 3.png");
-    image.maison3ombre = al_load_bitmap("../images/maison 3 ombre.png");
     image.gc1 = al_load_bitmap("../images/g-c 1.png");
-    image.gc1ombre = al_load_bitmap("../images/g-c 1 ombre.png");
     image.gc2 = al_load_bitmap("../images/g-c 2.png");
-    image.gc2ombre = al_load_bitmap("../images/g-c 2 ombre.png");
     image.gc3 = al_load_bitmap("../images/g-c 3.png");
-    image.gc3ombre = al_load_bitmap("../images/g-c 3 ombre.png");
 
     file = fopen("../test.txt","r");
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
             tabTXT[i][j] = fgetc(file) - '0';
-            if (tabTXT[i][j] == 9) {
-                tabTXT[i][j] += rand()%3;
-            }
         }
     }
     fclose(file);
@@ -1335,6 +1334,7 @@ void ameliorerConstruction(int numeroElement){
 
 void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si ameliore
     int niveau = monJeu.element[numeroElement].niveau;
+    Image image;
     if (monJeu.element[numeroElement].type == CONSTRUCTION){
         switch (niveau) {
             case RUINE :
@@ -1342,18 +1342,33 @@ void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si a
                 break;
             case TERRAIN_VAGUE:
                 monJeu.element[numeroElement].nbHabitantElement = 0;
+                //al_draw_scaled_bitmap(image.terrainVague,0,0,177,177,
+                  //                    monJeu.element[numeroElement].affichageElement.positionX,monJeu.element[numeroElement].affichageElement.positionY,
+                    //                  3*TAILLE_CASE,3*TAILLE_CASE,0);
                 break;
             case CABANE:
                 monJeu.element[numeroElement].nbHabitantElement = 10;
+                //al_draw_scaled_bitmap(image.cabane,0,0,168,177,
+                  //                    monJeu.element[numeroElement].affichageElement.positionX,monJeu.element[numeroElement].affichageElement.positionY,
+                    //                  3*TAILLE_CASE,3*TAILLE_CASE,0);
                 break;
             case MAISON:
                 monJeu.element[numeroElement].nbHabitantElement = 50;
+                //al_draw_scaled_bitmap(image.maison1,0,0,177,181,
+                  //                    monJeu.element[numeroElement].affichageElement.positionX,monJeu.element[numeroElement].affichageElement.positionY,
+                    //                  3*TAILLE_CASE,3*TAILLE_CASE,0);
                 break;
             case IMMEUBLE:
                 monJeu.element[numeroElement].nbHabitantElement = 100;
+                //al_draw_scaled_bitmap(image.immeuble,0,0,133,195,
+                  //                    monJeu.element[numeroElement].affichageElement.positionX,monJeu.element[numeroElement].affichageElement.positionY - 2 * TAILLE_CASE,
+                    //                  3*TAILLE_CASE,5*TAILLE_CASE,0);
                 break;
             case GRATTE_CIEL:
                 monJeu.element[numeroElement].nbHabitantElement = 1000;
+                //al_draw_scaled_bitmap(image.gc1,0,0,118,237,
+                  //                    monJeu.element[numeroElement].affichageElement.positionX,monJeu.element[numeroElement].affichageElement.positionY,
+                    //                  3*TAILLE_CASE,6*TAILLE_CASE,0);
                 break;
         }
         if(ameliorer == 0){
@@ -1395,7 +1410,7 @@ void ChangerNiveauConstruction(int numeroElement, int ameliorer){//0 On amélior
         }
         if(ameliorer == 1){
             ameliorerConstruction(numeroElement);
-            initConstruction(numeroElement, 0);
+            initConstruction(numeroElement,0);
         } else{
             if(TRACE)printf("Erreur amélioration niveau, mauvais chiffre renseigné\n");
             return;
