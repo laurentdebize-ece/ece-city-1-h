@@ -308,6 +308,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_scaled_bitmap(image.routebg,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
             }
 
+            //CHATEAU D'EAU :
             if (tabTXT[i][j] == 7) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
@@ -315,6 +316,8 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
 
             }
+
+            //CENTRALE ELECTRIQUE :
             if (tabTXT[i][j] == 8) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
@@ -354,7 +357,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x - TAILLE_CASE,tabCase[i][j].y,3*TAILLE_CASE,4*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x,tabCase[i][j].y - TAILLE_CASE,3*TAILLE_CASE,4*TAILLE_CASE,0);
 
             }
 
@@ -363,7 +366,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x - 3 * TAILLE_CASE,tabCase[i][j].y,3*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.gc1,0,0,118,237,tabCase[i][j].x,tabCase[i][j].y - 3 * TAILLE_CASE,3*TAILLE_CASE,6*TAILLE_CASE,0);
             }
         }
     }
@@ -505,7 +508,7 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x - TAILLE_CASE,tabCase[i][j].y,3*TAILLE_CASE,4*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x,tabCase[i][j].y - TAILLE_CASE,3*TAILLE_CASE,4*TAILLE_CASE,0);
 
             }
 
@@ -514,7 +517,7 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x - 3 * TAILLE_CASE,tabCase[i][j].y,3*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y - 3 * TAILLE_CASE,3*TAILLE_CASE,6*TAILLE_CASE,0);
             }
         }
     }
@@ -722,11 +725,7 @@ int carte() {
     image.cabane = al_load_bitmap("../images/cabane.png");
     image.immeuble = al_load_bitmap("../images/immeuble.png");
     image.maison1 = al_load_bitmap("../images/maison 1.png");
-    image.maison2 = al_load_bitmap("../images/maison 2.png");
-    image.maison3 = al_load_bitmap("../images/maison 3.png");
     image.gc1 = al_load_bitmap("../images/g-c 1.png");
-    image.gc2 = al_load_bitmap("../images/g-c 2.png");
-    image.gc3 = al_load_bitmap("../images/g-c 3.png");
 
     file = fopen("../test.txt","r");
     for (int i = 0; i < LIGNES_TAB; ++i) {
@@ -1209,7 +1208,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++; //On rajoute 1 élement au jeu global
-            monJeu.tabTXT[positionY][positionX]=1;
+            monJeu.tabTXT[positionY][positionX] = 1;
             break;
 
         case CHATEAU:
@@ -1224,7 +1223,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = CAPA_CHATEAU;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
-            monJeu.tabTXT[positionY][positionX]=7;
+            monJeu.tabTXT[positionY][positionX] = 7;
             break;
 
         case CENTRALE:
@@ -1239,7 +1238,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = CAPA_CENTRALE;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
-            monJeu.tabTXT[positionY][positionX]=8;
+            monJeu.tabTXT[positionY][positionX] = 8;
             break;
 
         case CONSTRUCTION:
@@ -1253,7 +1252,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].niveau = EVOLUTIF;
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
-            monJeu.tabTXT[positionY][positionX]=14;
+            monJeu.tabTXT[positionY][positionX] = 10;
             monJeu.nbElements++;
             break;
 
@@ -1365,7 +1364,7 @@ void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si a
             monJeu.nbhabitants = monJeu.nbhabitants + monJeu.element[numeroElement].nbHabitantElement; //on met à jour les habitants totaux
         }
         if(ameliorer == -1){//Cas de régression. On regarde cb d'habitant on enlève au total
-            if(monJeu.element[numeroElement].niveau == RUINE || TERRAIN_VAGUE){
+            if(monJeu.element[numeroElement].niveau == RUINE || monJeu.element[numeroElement].niveau == TERRAIN_VAGUE){
                 monJeu.nbhabitants = monJeu.nbhabitants - NB_HAB_CABANE;
             }
             if(monJeu.element[numeroElement].niveau == CABANE){
@@ -1587,16 +1586,16 @@ void test(){
     ajouterElement(ROUTE, 11,9 );
     ajouterElement(ROUTE, 12,9 );
 
-    ajouterElement(CONSTRUCTION,13 ,7 );//38
-    ChangerNiveauConstruction(38, 1);
+    ajouterElement(CONSTRUCTION,13,7);//38
+    ChangerNiveauConstruction(38,1);
     majApresEvolutionNiveauConstruction ();
-    ChangerNiveauConstruction(38, 1);
+    ChangerNiveauConstruction(38,1);
     majApresEvolutionNiveauConstruction ();
-    ChangerNiveauConstruction(38, 1);
+    ChangerNiveauConstruction(38,1);
     majApresEvolutionNiveauConstruction ();
-    ChangerNiveauConstruction(38, 1);
+    ChangerNiveauConstruction(38,1);
     majApresEvolutionNiveauConstruction ();
-    ChangerNiveauConstruction(38, 1);
+    ChangerNiveauConstruction(38,1);
     majApresEvolutionNiveauConstruction ();
 
     ajouterElement(ROUTE, 16,11 );
