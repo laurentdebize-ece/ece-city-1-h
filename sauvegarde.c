@@ -1,3 +1,4 @@
+
 void ecrireFichierTextePourSauvegarderFichierTexte(char *nomFichier){
     FILE *ifs = fopen(nomFichier, "w+");
     int tailleFichier = 0;
@@ -6,7 +7,10 @@ void ecrireFichierTextePourSauvegarderFichierTexte(char *nomFichier){
     }
     for(int i = 0; i< 45 ; i++){
         for(int j = 0; j< 45;j++){
-            if(monJeu.tabTXT[i][j] == ROUTE ){
+            if(monJeu.tabTXT[i][j] != 0){
+                fprintf(ifs, "%d",monJeu.tabTXT[i][j]);
+            }
+            /*if(monJeu.tabTXT[i][j] == ROUTE ){
                 fprintf(ifs, "%d",ROUTE);
             }
             else if(monJeu.tabTXT[i][j] == CONSTRUCTION ){
@@ -23,7 +27,7 @@ void ecrireFichierTextePourSauvegarderFichierTexte(char *nomFichier){
             }
             else if(monJeu.tabTXT[i][j] == CHATEAU ){
                 fprintf(ifs, "%d",CHATEAU);
-            }
+            }*/
             else{
                 fprintf(ifs, "%d",0);
             }
@@ -35,3 +39,4 @@ void ecrireFichierTextePourSauvegarderFichierTexte(char *nomFichier){
     fclose(ifs);
     //pour ajouter un seul nouvel element à la fois dans le fichier texte
 }
+
