@@ -349,12 +349,21 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 
             }
 
-            //GRATTE-CIEL :
+            //IMMEUBLE :
             if (tabTXT[i][j] == 12) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.gc1,0,0,118,237,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x - TAILLE_CASE,tabCase[i][j].y,3*TAILLE_CASE,4*TAILLE_CASE,0);
+
+            }
+
+            //GRATTE_CIEL :
+            if (tabTXT[i][j] == 13) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x - 3 * TAILLE_CASE,tabCase[i][j].y,3*TAILLE_CASE,6*TAILLE_CASE,0);
             }
         }
     }
@@ -482,7 +491,7 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
 
             }
 
-            //CABANE :
+            //MAISON :
             if (tabTXT[i][j] == 11) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
@@ -491,12 +500,21 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
 
             }
 
-            //GRATTE_CIEL :
+            //IMMEUBLE :
             if (tabTXT[i][j] == 12) {
                 al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
                                          tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
                                          al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x - TAILLE_CASE,tabCase[i][j].y,3*TAILLE_CASE,4*TAILLE_CASE,0);
+
+            }
+
+            //GRATTE_CIEL :
+            if (tabTXT[i][j] == 13) {
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x - 3 * TAILLE_CASE,tabCase[i][j].y,3*TAILLE_CASE,6*TAILLE_CASE,0);
             }
         }
     }
