@@ -634,10 +634,49 @@ void affichageModeJeu2(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_
     al_flip_display();
 }
 
+void ecrireFichierTextePourSauvegarderFichierTexte(char *nomFichier){
+    FILE *ifs = fopen(nomFichier, "w+");
+    int tailleFichier = 0;
+    if (!ifs) {
+        printf("Erreur de lecture fichier\n");
+    }
+    for(int i = 0; i< 45 ; i++){
+        for(int j = 0; j< 45;i++){
+            if(monJeu.tabTXT[i][j] == ROUTE ){
+                fseek(ifs, 0, SEEK_END);
+                fprintf(ifs, "%d %d %d\n",ROUTE, i, j);
+            }
+            else if(monJeu.tabTXT[i][j] == CONSTRUCTION ){
+                fseek(ifs, 0, SEEK_END);
+                fprintf(ifs, "%d %d %d\n",CONSTRUCTION, i, j);
+            }
+            else if(monJeu.tabTXT[i][j] == CENTRALE ){
+                fseek(ifs, 0, SEEK_END);
+                fprintf(ifs, "%d %d %d\n",CENTRALE, i, j);
+            }
+            else if(monJeu.tabTXT[i][j] == ECOLE ){
+                fseek(ifs, 0, SEEK_END);
+                fprintf(ifs, "%d %d %d\n",ECOLE, i, j);
+            }
+            else if(monJeu.tabTXT[i][j] == MUSEE ){
+                fseek(ifs, 0, SEEK_END);
+                fprintf(ifs, "%d %d %d\n",MUSEE, i, j);
+            }
+            else if(monJeu.tabTXT[i][j] == CHATEAU ){
+                fseek(ifs, 0, SEEK_END);
+                fprintf(ifs, "%d %d %d\n",CHATEAU, i, j);
+            }
+        }
+    }
+    fclose(ifs);
+    //pour ajouter un seul nouvel element à la fois dans le fichier texte
+}
+
 bool issueMenuPause(int xSouris, int ySouris, int entreeMenuPause, Image image, ALLEGRO_EVENT_QUEUE* queue){
     if(xSouris >= 1210 && xSouris <= 1720){
         if(ySouris >= 525 && ySouris <= 625){
             //sauvegarder();
+            ecrireFichierTextePourSauvegarderFichierTexte("../fichierTexteTest1.txt");
             al_draw_bitmap(image.sauvegarde, 190, 0, 0);
             //al_pause_event_queue(queue, true);
             al_flip_display();
