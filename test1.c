@@ -237,7 +237,7 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
 
 //imaginons on return centrale avec clicDansCase
 //on lui passe clicDansCase (int clicDansCase, xSouris, y Souris), en ligneSouris, colonnes souris, calculées juste avant
-int ajouterElementGraphique(int typeconstruction, int ligneSouris, coloneSouris){
+int ajouterElementGraphique(int typeconstruction, int ligneSouris, int coloneSouris){
     ajouterElement(typeconstruction, ligneSouris, coloneSouris);
 }
 
