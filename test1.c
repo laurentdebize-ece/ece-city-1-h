@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "stdlib.h"
 #include "jeu.h"
+#include <allegro5/allegro_acodec.h>
 #include "time.h"
 #define TRACE 0
 #define LARGEUR 2880
@@ -13,6 +14,55 @@
 
 ///////////////////////// AFFICHAGE.C ////////////////////
 
+void ecrireFichierTextePourSauvegarderFichierTexte(char *nomFichier){
+    FILE *ifs = fopen(nomFichier, "w+");
+    int tailleFichier = 0;
+    if (!ifs) {
+        printf("Erreur de lecture fichier\n");
+    }
+    for(int i = 0; i< 45 ; i++){
+        for(int j = 0; j< 45;j++){
+            if(monJeu.tabTXT[i][j] != 0){
+                fprintf(ifs, "%d",monJeu.tabTXT[i][j]);
+            }
+                /*if(monJeu.tabTXT[i][j] == ROUTE ){
+                    fprintf(ifs, "%d",ROUTE);
+                }
+                else if(monJeu.tabTXT[i][j] == CONSTRUCTION ){
+                    fprintf(ifs, "%d",CONSTRUCTION);
+                }
+                else if(monJeu.tabTXT[i][j] == CENTRALE ){
+                    fprintf(ifs, "%d",CENTRALE);
+                }
+                else if(monJeu.tabTXT[i][j] == ECOLE ){
+                    fprintf(ifs, "%d",ECOLE);
+                }
+                else if(monJeu.tabTXT[i][j] == MUSEE ){
+                    fprintf(ifs, "%d",MUSEE);
+                }
+                else if(monJeu.tabTXT[i][j] == CHATEAU ){
+                    fprintf(ifs, "%d",CHATEAU);
+                }*/
+            else{
+                fprintf(ifs, "%d",0);
+            }
+            if(j == 44){
+                fprintf(ifs, "\n");
+            }
+        }
+    }
+    fclose(ifs);
+    //pour ajouter un seul nouvel element à la fois dans le fichier texte
+}
+
+void musiqueFond(){
+    al_install_audio();
+
+    al_init_acodec_addon();
+    al_reserve_samples(1);
+    ALLEGRO_SAMPLE *son1 = al_load_sample("../son1.ogg");
+    al_play_sample(son1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+}
 
 void surpassageCase (int xSouris, int ySouris){
     //centrale passage souris
@@ -120,14 +170,13 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
         }
 
     }
-    else{
-        //return (-10);
-    }
+
+
 
 
     // On vérifie si on est sur le MENU PAUSE
-    if(xSouris >= x1Route-75 && xSouris <= x2Route-85){
-        if(ySouris >= y1Route+165 && ySouris <= y2Route+155){
+    if((xSouris >= x1Route-75 && xSouris <= x2Route-85) || (xSouris >= 42 && xSouris <= 168) ){
+        if((ySouris >= y1Route+165 && ySouris <= y2Route+155) || (ySouris >= 32 && ySouris <= 172)){
             return 999;
             //al_draw_filled_rectangle(x1Route-75, y1Route+165, x2Route-85, y2Route+155, al_map_rgba(20,20,20,150));
             while(!endMenu){
@@ -183,12 +232,12 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
     }
 
 
-    return (-10);
+        return (-10);
 }
 
 //imaginons on return centrale avec clicDansCase
 //on lui passe clicDansCase (int clicDansCase, xSouris, y Souris), en ligneSouris, colonnes souris, calculées juste avant
-int ajouterElementGraphique(int typeconstruction, int ligneSouris, int coloneSouris){
+int ajouterElementGraphique(int typeconstruction, int ligneSouris, coloneSouris){
     ajouterElement(typeconstruction, ligneSouris, coloneSouris);
 }
 
@@ -395,17 +444,20 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
     }
 
     //argent
-    monJeu.argent = 500000;
-    char monTxt[50];
-    sprintf(monTxt, "%d", monJeu.argent);
+   // monJeu.argent = 500000;
+    char argentTxt[50];
+    sprintf(argentTxt, "%d", monJeu.argent);
+    char nbHabTxt[50];;
+    sprintf(nbHabTxt, "%d", monJeu.nbhabitants);
 
-    al_draw_text(argent, BLANC, 2600, 75, 0, monTxt);
+    al_draw_text(argent, BLANC, 2600, 75, 0, argentTxt);
+    al_draw_text(argent, BLANC, 2210, 81, 0, nbHabTxt);
     if(construction == true && centrale == false && route == false && chateau == false){
         al_draw_bitmap(image.maison1, xSouris, ySouris, 0);
 
     }
     if(route == true && construction == false && chateau == false && centrale == false){
-        al_draw_bitmap(image.routehd, xSouris, ySouris, 0);
+        al_draw_bitmap(image.routehb, xSouris, ySouris, 0);
     }
     if(chateau == true && construction == false && centrale == false && route == false){
         al_draw_bitmap(image.chateaudeau, xSouris, ySouris, 0);
@@ -422,6 +474,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
             construction = false;
             returnClic = -10;
             //printf("%d", returnClic);
+            //printf("(%d, %d)", xSouris, ySouris);
         }
     }
 
@@ -575,6 +628,7 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
     if(xSouris >= 1210 && xSouris <= 1720){
         if(ySouris >= 525 && ySouris <= 625){
             al_draw_rectangle(1210, 525, 1720, 625, BLANC, 6);
+            ecrireFichierTextePourSauvegarderFichierTexte("../file1.txt");
         }
     }
     if(xSouris >= 1210 && xSouris <= 1720){
@@ -682,6 +736,7 @@ bool issueMenuPause(int xSouris, int ySouris, int entreeMenuPause, Image image, 
 
 
 int carte() {
+    musiqueFond();
     bool end1 = false;
     bool end2 = false;
     bool end3 = false;
@@ -771,27 +826,15 @@ int carte() {
     int rapportReduction = 60;
     double currentTime = 0;
 
-    while(!end2){
-        //affichageInterfaceJeu();
-        end2 = true;
-    }
     int returnClic = -10;
     int entrerMenuPause = 0;
     int conteur = 0;
     bool route, centrale, chateau, construction = false;
+    int impots = 0;
     while (!end3) {
         //Dans le cas ou l'utilisateur fait rien, il est inactif, spectateur du jeu
-        if ((counter++)%rapportReduction == 0) {
+        //va permettre de payer les impots
 
-            // Dans cette partie on va faire évoluer la ville
-            // Améliorer toutes les constructions actives
-            // payer les impots
-            // mettre a jour le flouzz
-            evolutionConstruction();
-            currentTime = al_get_time();
-            if(TRACE)printf("%2f ", currentTime);
-
-        }
         al_wait_for_event(queue,&event);
         switch (event.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -820,6 +863,21 @@ int carte() {
                 break;
 
             case ALLEGRO_EVENT_TIMER:
+                if ((counter++)%rapportReduction == 0) {
+                    conteur++;
+                    //toutes les 15 secondes
+                    if(conteur%3 == 0){
+                        impots = evolutionConstruction();
+                        monJeu.argent += impots;
+                    }
+                    //printf("compteur : %d ", conteur);
+                    // Dans cette partie on va faire évoluer la ville
+                    // Améliorer toutes les constructions actives
+                    // payer les impots
+                    // mettre a jour le flouzz
+                    currentTime = al_get_time();
+                    if(TRACE) printf("%2f ", currentTime);
+                }
                 if (entrerMenuPause) {
                     affichageMenu(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent);
                     break;
@@ -869,6 +927,7 @@ int carte() {
                 if(TRACE)printf("centrale\n");
                 break;
         }
+        //printf("nombre hab : %d\n", monJeu.nbhabitants);
 
     }
     al_destroy_display(display);
@@ -916,7 +975,6 @@ void carteDepart() {
     al_flip_display();
 
     al_start_timer(timer);
-
     while (!end3) {
         al_wait_for_event(queue,&event);
         switch (event.type) {
@@ -940,7 +998,6 @@ void carteDepart() {
                 //clicDansCase(xSouris, ySouris);
                 end3 = clicDansCase2(xSouris, ySouris);
                 break;
-
         }
     }
     if(monJeu.modeJeu == MODE_COMMUNISTE){
@@ -997,7 +1054,8 @@ void initTabParcoursChateau(){
     }
 }
 
-void initialisationJeu(){
+void
+initialisationJeu(){
 
     monJeu.argent = ARGENT_INIT;
     monJeu.niveauEducation = 0;//niveau edu global = moyenne entre toutes les zones, édu et non édu
@@ -1212,9 +1270,16 @@ void ajouterElement(int typeElement, int positionX, int positionY){
         printf("Erreur position dans AJOUTERELEMENT (%d/%d,%d/%d)\n", positionX, MAX_COLONNES, positionY, MAX_LIGNES);
         return;
     }
+    //Faire qu'on ne peut pas placer un element sur un autre
+
     if (TRACE) printf("AJOUTER ELT : %d à %d,%d\n", typeElement, positionX, positionY);
     switch (typeElement) {
         case ROUTE :
+            if(monJeu.argent - PRIX_ROUTE < 0){
+                printf("plus assez d'argent\n");
+               //abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_ROUTE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1230,6 +1295,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
 
         case CHATEAU:
+            if(monJeu.argent -PRIX_CHATEAU < 0){
+                printf("plus assez d'argent pour\n");
+                //abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_CHATEAU;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1245,6 +1315,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
 
         case CENTRALE:
+            if(monJeu.argent - PRIX_CENTRALE< 0){
+                 printf("plus assez d'argent\n");
+                //abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_CENTRALE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1260,6 +1335,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
 
         case CONSTRUCTION:
+            if(monJeu.argent - PRIX_CONSTRUCTION < 0){
+                printf("plus assez d'argent\n");
+                //abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_CONSTRUCTION;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1270,11 +1350,16 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].niveau = EVOLUTIF;
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
-            monJeu.tabTXT[positionY][positionX] = 13;
+            monJeu.tabTXT[positionY][positionX] = 10;
             monJeu.nbElements++;
             break;
 
-        case ECOLE: // On fera spawn une bibliothèque qui pourra s'améliorer en école d'ingé (3x3 cases)
+        case ECOLE:// On fera spawn une bibliothèque qui pourra s'améliorer en école d'ingé (3x3 cases)
+            if(monJeu.argent - PRIX_ECOLE < 0){
+                // printf("plus assez d'argent pour ro\n");
+                //abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_ECOLE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1292,6 +1377,11 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
 
         case MUSEE: // On fera spawn un musée, qui rapportera 2 points d'éducation + de l'argent à chaque cycle
+            if(monJeu.argent - PRIX_MUSEE < 0){
+                 printf("plus assez d'argent pour ro\n");
+                //abort();
+
+            }
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_MUSEE;
             //toute les cycles ça rapporte de l'argent, mais y'a que quand on le pose que ça rapporte de l'éducation
@@ -1339,9 +1429,9 @@ void ameliorerConstruction(int numeroElement){
     monJeu.element[numeroElement].niveau = monJeu.element[numeroElement].niveau+1;
 }
 
+
 void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si ameliore
     int niveau = monJeu.element[numeroElement].niveau;
-    Image image;
     if (monJeu.element[numeroElement].type == CONSTRUCTION){
         switch (niveau) {
             case RUINE :
@@ -1349,40 +1439,38 @@ void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si a
                 break;
             case TERRAIN_VAGUE:
                 monJeu.element[numeroElement].nbHabitantElement = 0;
-                //al_draw_scaled_bitmap(image.terrainVague,0,0,177,177,
-                  //                    (float)monJeu.element[numeroElement].affichageElement.positionX,(float)monJeu.element[numeroElement].affichageElement.positionY,
-                    //                  3*TAILLE_CASE,3*TAILLE_CASE,0);
+                monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=9;
+                printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
                 break;
             case CABANE:
                 monJeu.element[numeroElement].nbHabitantElement = 10;
-                //al_draw_scaled_bitmap(image.cabane,0,0,168,177,
-                  //                    (float)monJeu.element[numeroElement].affichageElement.positionX,(float)monJeu.element[numeroElement].affichageElement.positionY,
-                    //                  3*TAILLE_CASE,3*TAILLE_CASE,0);
+                monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=10;
+                printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
+
                 break;
             case MAISON:
                 monJeu.element[numeroElement].nbHabitantElement = 50;
-                //al_draw_scaled_bitmap(image.maison1,0,0,177,181,
-                  //                    (float)monJeu.element[numeroElement].affichageElement.positionX,(float)monJeu.element[numeroElement].affichageElement.positionY,
-                    //                  3*TAILLE_CASE,3*TAILLE_CASE,0);
+                monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=11;
+                printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
                 break;
             case IMMEUBLE:
                 monJeu.element[numeroElement].nbHabitantElement = 100;
-                //al_draw_scaled_bitmap(image.immeuble,0,0,133,195,
-                  //                    (float)monJeu.element[numeroElement].affichageElement.positionX,(float)monJeu.element[numeroElement].affichageElement.positionY - 2 * TAILLE_CASE,
-                    //                  3*TAILLE_CASE,5*TAILLE_CASE,0);
+                monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=12;
                 break;
             case GRATTE_CIEL:
                 monJeu.element[numeroElement].nbHabitantElement = 1000;
-                //al_draw_scaled_bitmap(image.gc1,0,0,118,237,
-                  //                    (float)monJeu.element[numeroElement].affichageElement.positionX,(float)monJeu.element[numeroElement].affichageElement.positionY,
-                    //                  3*TAILLE_CASE,6*TAILLE_CASE,0);
+                monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=13;
+
                 break;
+        }
+        if(monJeu.element[numeroElement].niveau > 5){
+            return;
         }
         if(ameliorer == 0){
             monJeu.nbhabitants = monJeu.nbhabitants + monJeu.element[numeroElement].nbHabitantElement; //on met à jour les habitants totaux
         }
         if(ameliorer == -1){//Cas de régression. On regarde cb d'habitant on enlève au total
-            if(monJeu.element[numeroElement].niveau == RUINE || monJeu.element[numeroElement].niveau == TERRAIN_VAGUE){
+            if(monJeu.element[numeroElement].niveau == RUINE || TERRAIN_VAGUE){
                 monJeu.nbhabitants = monJeu.nbhabitants - NB_HAB_CABANE;
             }
             if(monJeu.element[numeroElement].niveau == CABANE){
@@ -1435,6 +1523,7 @@ void ChangerNiveauConstruction(int numeroElement, int ameliorer){//0 On amélior
 
 //renvoie le total des impots a percevoir après évolution
 int evolutionConstruction(){
+    detecteConstructionsViables();
     int impots = 0;
     // Pour chaque CONSTRUCTION, on evolue en fonction du MODE
     if (MODE_NON_CHOISI== monJeu.modeJeu) {
@@ -1444,7 +1533,9 @@ int evolutionConstruction(){
     for (int i=0;i<monJeu.nbElements;i++){
         if(monJeu.element[i].actif != ACTIF) continue;
         if (monJeu.modeJeu == MODE_COMMUNISTE && !monJeu.element[i].viable) ChangerNiveauConstruction(i,-1);
-        else ChangerNiveauConstruction(i,1);
+        else if(monJeu.element[i].viable){//ça veut dire qu'on est en mode capitaliste
+            ChangerNiveauConstruction(i,1);
+        }
         impots += monJeu.element[i].nbHabitantElement;
     }
     return impots;
@@ -1528,16 +1619,7 @@ void lireFichierTextePourAjouterElement(char *nomFichier) {
     }
     fclose(ifs);
 }
-void ecrireFichierTextePOurSauvegarderPartie(char *nomFichier, int typeNouvelElement, int positionX, int positionY){
-    FILE *ifs = fopen(nomFichier, "a");
-    if (!ifs) {
-        if(TRACE)printf("Erreur de lecture fichier\n");
-        exit(-1);
-    }
-    fprintf(ifs, "%d %d %d", typeNouvelElement, positionX, positionY);
-    fclose(ifs);
-    //pour ajouter un seul nouvel element à la fois dans le fichier texte
-}
+
 
 void test(){
 
@@ -2276,7 +2358,7 @@ void afficheReseauxEaux(){
             if (monJeu.tabParcoursChateauActif[i]) {
                 printf("Parcours %d ACTIF : ", i);
                 //graphique
-                //al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX+monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
+                al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX+monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
                 afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
             }
         }
@@ -2294,7 +2376,7 @@ int main() {
     initialisationJeu();
     if (TRACE) printf("DEBUT\n");
 
-    test();
+    //test();
     if (TRACE) printf("APS TEST\n");
 
     for(int i = 0; i<monJeu.nbElements;i++){
@@ -2304,7 +2386,6 @@ int main() {
         //afficherEltConnectes(i);
     }
     recenseParcours();
-    // DEBUG PURPOSE
     for(int i = 0; i<monJeu.nbElements;i++){
         //afficherTabDistanceInfraConnectees(i);
     }
@@ -2321,7 +2402,7 @@ int main() {
     //detecteConstructionsViables();
     if (TRACE) printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
     if (TRACE) printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
-    afficheReseauxEaux();
+    //afficheReseauxEaux();
     carteDepart();
     carte();
     return 0;
@@ -2443,4 +2524,5 @@ ChangerNiveauConstruction(38, 1);
 }
 
 ///////////////////////// FIN MAIN ////////////////////
+
 
