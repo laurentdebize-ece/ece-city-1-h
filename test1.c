@@ -10,6 +10,8 @@
 #define ECRAN_LARGEUR 1694
 #define OR2 al_map_rgb(255,235,20)
 #define BLANC al_map_rgb(255,255,255)
+#define BLEU al_map_rgb(0, 123, 255)
+
 #define NOIR al_map_rgb(0,0,0)
 
 ///////////////////////// AFFICHAGE.C ////////////////////
@@ -113,6 +115,34 @@ void surpassageCase (int xSouris, int ySouris){
         }
 
     }
+    if(xSouris >= 2510 && xSouris <= 2632){
+        if(ySouris >= 961 && ySouris <= 1083){
+            al_draw_filled_rectangle(2508, 956, 2633, 1081, al_map_rgba(20,20,20,150));
+            al_draw_rectangle(2508, 956, 2633, 1081, al_map_rgb(247, 206, 23), 3);
+        }
+
+    }
+    /*
+    if(xSouris >= 2510 && xSouris <= 2632){
+        if(ySouris >= 961 && ySouris <= 1083){
+            return ECOLE;
+        }
+
+    }
+    if(xSouris >= 2673 && xSouris <= 2795){
+        if(ySouris >= 957 && ySouris <= 1084){
+            return MUSEE;
+        }
+
+    }
+    if(xSouris >= 2510 && xSouris <= 2633){
+        if(ySouris >= 1118 && ySouris <= 1240){
+            return CASERNE;
+        }
+
+    }
+     */
+
 }
 
 void affichageMenuGraphique(Image image, int xSouris, int ySouris){
@@ -126,6 +156,7 @@ void affichageMenuGraphique(Image image, int xSouris, int ySouris){
     al_flip_display();
 }
 
+// Renvoie le type de CASE dans lequel on a cliqué (CENTRALE, CHATEAU, ... PAUSE)
 int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, ALLEGRO_TIMER *timer, ALLEGRO_EVENT_QUEUE* queue){//ça ça marche
     //centrale passage souris
     int x1 = 2505;
@@ -170,10 +201,24 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
         }
 
     }
+    if(xSouris >= 2510 && xSouris <= 2632){
+        if(ySouris >= 961 && ySouris <= 1083){
+            return ECOLE;
+        }
 
+    }
+    if(xSouris >= 2673 && xSouris <= 2795){
+        if(ySouris >= 957 && ySouris <= 1084){
+            return MUSEE;
+        }
 
+    }
+    if(xSouris >= 2510 && xSouris <= 2633){
+        if(ySouris >= 1118 && ySouris <= 1240){
+            return CASERNE;
+        }
 
-
+    }
     // On vérifie si on est sur le MENU PAUSE
     if((xSouris >= x1Route-75 && xSouris <= x2Route-85) || (xSouris >= 42 && xSouris <= 168) ){
         if((ySouris >= y1Route+165 && ySouris <= y2Route+155) || (ySouris >= 32 && ySouris <= 172)){
@@ -215,13 +260,20 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
     // On verifie si on est sur la fonction AFFICHAGE RESEAU EAU
     if(xSouris >= 2495 && xSouris <= 2817) {
         if (ySouris >= 780 && ySouris <= 825) {
-            //abort();
-            afficheReseauxEaux();
+            if (AFFICHAGE_RESEAU_EAU == monJeu.modeBoucle) {
+                monJeu.modeBoucle = STANDARD;
+                return -1;
+            }
+            monJeu.modeBoucle = AFFICHAGE_RESEAU_EAU;
+            majApresEvolutionNiveauConstruction();
+            actualiseReseauxEaux();
+            afficheStatutDesRessourcesParConstruction ();
+            /*
             for(int i = 0; i<monJeu.nbElements ; i++){
                 if(monJeu.element[i].type == ROUTE){
                     al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX + monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
                 }
-            }
+            }*/
         }
     }
     // On verifie si on est sur la fonction AFFICHAGE RESEAU ELEC
@@ -230,9 +282,7 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
             //abort();
         }
     }
-
-
-        return (-10);
+    return (-1);
 }
 
 //imaginons on return centrale avec clicDansCase
@@ -311,7 +361,7 @@ void affichageChargementCommuniste(){
 
 int displaycount = 0;
 
-void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris, ALLEGRO_FONT* argent, int construction, int centrale, int route, int chateau, int returnClic) {
+void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris, ALLEGRO_FONT* argent, int construction, int centrale, int route, int chateau, int returnClic, ALLEGRO_FONT* reseauEau, int conteur) {
     //al_clear_to_color(al_map_rgb(159,232,85));
     //al_clear_to_color(al_map_rgb(255,255,255));
 
@@ -337,7 +387,6 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
             if (tabTXT[i][j] == 0 || j == 40) {}
-            //ROUTE :
             if (tabTXT[i][j] == 1) {
                 al_draw_scaled_bitmap(image.routegd,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
             }
@@ -359,77 +408,148 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 
             //CHATEAU D'EAU :
             if (tabTXT[i][j] == 7) {
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
-                //                     al_map_rgba(0,70,255,200));
+                /*
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+
+                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                                         al_map_rgba(0,70,255,200));*/
                 al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
 
             }
 
             //CENTRALE ELECTRIQUE :
             if (tabTXT[i][j] == 8) {
-                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y + 3*TAILLE_CASE,4*TAILLE_CASE,3*TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
-                //                     al_map_rgba(189,255,0,200));
+                /*
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                                         al_map_rgba(189,255,0,200));*/
                 al_draw_scaled_bitmap(image.centraleelec,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
             }
-
             //TERRAIN VAGUE :
             if (tabTXT[i][j] == 9) {
-                //al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.cabane,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.terrainVague,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //CABANE :
             if (tabTXT[i][j] == 10) {
-                al_draw_scaled_bitmap(image.pave2,0,0,177,89,tabCase[i][j].x,tabCase[i][j].y + 2*TAILLE_CASE,3* TAILLE_CASE,TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
+                /*
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));*/
                 al_draw_scaled_bitmap(image.cabane,0,0,168,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //MAISON :
             if (tabTXT[i][j] == 11) {
-                al_draw_scaled_bitmap(image.pave2,0,0,177,89,tabCase[i][j].x,tabCase[i][j].y + 2*TAILLE_CASE,3* TAILLE_CASE,TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.cabane,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                /*
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));*/
+                al_draw_scaled_bitmap(image.maison1,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //IMMEUBLE :
             if (tabTXT[i][j] == 12) {
-                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
+                /*
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));*/
                 al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x,tabCase[i][j].y - TAILLE_CASE,3*TAILLE_CASE,4*TAILLE_CASE,0);
 
             }
 
             //GRATTE_CIEL :
             if (tabTXT[i][j] == 13) {
-                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.gc1,0,0,118,237,tabCase[i][j].x,tabCase[i][j].y - 3 * TAILLE_CASE,3*TAILLE_CASE,6*TAILLE_CASE,0);
+                /*
+                    al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));*/
+                    al_draw_scaled_bitmap(image.gc1,0,0,118,237,tabCase[i][j].x,tabCase[i][j].y - 3 * TAILLE_CASE,3*TAILLE_CASE,6*TAILLE_CASE,0);
+            }
+
+        }
+    }
+    // Maintenant que l'on a parcouru toute la grille pour refaire l'affichage graphique
+    // Nous allons parcourir les ELEMENTS pour afficher le LABEL correspondant au mode d'affichage en cours
+    if (AFFICHAGE_RESEAU_EAU == monJeu.modeBoucle) {
+        int i,j;
+        char ptr[LG_LABEL];
+        for (int k=0; k<monJeu.nbElements; k++) {
+            i = monJeu.element[k].affichageElement.positionY;
+            j = monJeu.element[k].affichageElement.positionX;
+            if (monJeu.element[k].type == CONSTRUCTION){
+                // On est dans la BOUCLE ALLEGRO
+                // On est dans le MODEBOUCLE = AFFICHAGE_RESEAU_EAU
+                // On ne veut pas afficher le bitmpa mais le label d'état d'alimentation de la CONSTRUCTION en eau
+                if (monJeu.element[k].labelAlimentationEau) al_draw_text(reseauEau, BLEU, tabCase[i][j].x, tabCase[i][j].y, 0, monJeu.element[k].labelAlimentationEau);
+             }
+            else if (monJeu.element[k].type == CHATEAU){
+                sprintf(ptr, "CHATEAU %02d", k);
+                al_draw_text(reseauEau, BLEU, tabCase[i][j].x, tabCase[i][j].y, 0, ptr);
             }
         }
+        // Maintenant on va parcourir tous les PARCOURS ACTIFS issus des CHATEAUX d'EAU pour les afficher en bleu
+        for (int i = 0; i < MAX_PARCOURS_CHATEAU; i++) {
+            if (monJeu.tabParcoursChateau[i].actif) {
+                if (TRACE) printf("Parcours %d ACTIF : ", i);
+                //al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX+monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
+                //afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
+                int lg = monJeu.tabParcoursChateau[i].lgParcours;
+                int indexParcours = monJeu.tabParcoursChateau[i].indexParcours;
+                int indexEltJeu;
+                int ligneSouris, colonneSouris;
+                for(int j=1; j<lg-1; j++){
+                    indexEltJeu = monJeu.tabParcours[indexParcours][j];
+                    if (ROUTE != monJeu.element[indexEltJeu].type) {
+                        printf ("ERREUR dans affichage\n");
+                        return;
+                    }/*
+                    printf("affichage case bleu %d , %d , %d , %d", monJeu.element[indexEltJeu].affichageElement.positionX, monJeu.element[indexEltJeu].affichageElement.positionY,
+                         monJeu.element[indexEltJeu].affichageElement.positionX+monJeu.element[indexEltJeu].affichageElement.largeurX*TAILLE_CASE,
+                         monJeu.element[indexEltJeu].affichageElement.positionY+monJeu.element[indexEltJeu].affichageElement.largeurY*TAILLE_CASE);
+                    */
+                    ligneSouris = monJeu.element[indexEltJeu].affichageElement.positionY;
+                    colonneSouris = monJeu.element[indexEltJeu].affichageElement.positionX;
+                    al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x, tabCase[ligneSouris][colonneSouris].y,
+                                             tabCase[ligneSouris][colonneSouris].x + monJeu.element[indexEltJeu].affichageElement.largeurX*TAILLE_CASE,
+                                             tabCase[ligneSouris][colonneSouris].y + monJeu.element[indexEltJeu].affichageElement.largeurY*TAILLE_CASE, BLEU);
+                }
+
+            }
+        }
+
     }
 
     //SOURIS :
     al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
                              al_map_rgba(20,20,20,200));
+
+    /*for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 9) {
+                al_draw_scaled_bitmap(image.maisonombre,0,0,291,293,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 10) {
+                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 11) {
+                al_draw_scaled_bitmap(image.maison3ombre,0,0,172,200,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            else if (tabTXT[ligneSouris][colonneSouris] == 0)
+                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris][colonneSouris].x,tabCase[ligneSouris][colonneSouris].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
+                                     tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
+                                     al_map_rgba(20,20,20,200));
+        }
+    }*/
 
     surpassageCase(xSouris, ySouris);
 
@@ -447,22 +567,32 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
    // monJeu.argent = 500000;
     char argentTxt[50];
     sprintf(argentTxt, "%d", monJeu.argent);
-    char nbHabTxt[50];;
+    char nbHabTxt[50];
     sprintf(nbHabTxt, "%d", monJeu.nbhabitants);
+    char compteurTxt[50];
+    sprintf(compteurTxt, "%d", conteur);
 
     al_draw_text(argent, BLANC, 2600, 75, 0, argentTxt);
     al_draw_text(argent, BLANC, 2210, 81, 0, nbHabTxt);
-    if(construction == true && centrale == false && route == false && chateau == false){
-        al_draw_bitmap(image.maison1, xSouris, ySouris, 0);
+    al_draw_text(argent, BLANC, 1809, 81, 0, compteurTxt);
 
+    if(construction == true && centrale == false && route == false && chateau == false){
+        bool result =  detecteSiOnPeutPoserConstruction(2, LARGEUR_CONSTRUCTION, LONGUEUR_CONSTRUCTION, ligneSouris, colonneSouris);
+        if(result == false){
+            al_draw_bitmap(image.maison1, xSouris, ySouris, 0);
+            printf("ligne souris : %d", ligneSouris);
+            printf("colone souris : %d", colonneSouris);
+            //abort();
+        }
+        al_draw_bitmap(image.terrainVague, xSouris, ySouris, 0);
     }
+
     if(route == true && construction == false && chateau == false && centrale == false){
         al_draw_bitmap(image.routehb, xSouris, ySouris, 0);
     }
     if(chateau == true && construction == false && centrale == false && route == false){
         al_draw_bitmap(image.chateaudeau, xSouris, ySouris, 0);
     }
-
     if(centrale == true && route == false && chateau == false && construction == false){
         al_draw_bitmap(image.centraleelec, xSouris, ySouris, 0);
     }
@@ -477,6 +607,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
             //printf("(%d, %d)", xSouris, ySouris);
         }
     }
+   // printf("(%d, %d)", xSouris, ySouris);
 
     al_flip_display();
 }
@@ -521,72 +652,44 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
             if (tabTXT[i][j] == 6) {
                 al_draw_scaled_bitmap(image.routebg,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
             }
-
-            //CHATEAU D'EAU :
             if (tabTXT[i][j] == 7) {
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
-                //                     al_map_rgba(0,70,255,200));
-                al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                                         al_map_rgba(0,70,255,200));
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
-
-            //CENTRALE ELECTRIQUE :
             if (tabTXT[i][j] == 8) {
-                al_draw_scaled_bitmap(image.pave2,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y + 3*TAILLE_CASE,4*TAILLE_CASE,4*TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
-                //                     al_map_rgba(189,255,0,200));
-                al_draw_scaled_bitmap(image.centraleelec,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                                         al_map_rgba(189,255,0,200));
+                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
             }
-
-            //TERRAIN VAGUE :
             if (tabTXT[i][j] == 9) {
-                //al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.cabane,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.maison1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
 
             }
 
-            //CABANE :
-            if (tabTXT[i][j] == 10) {
-                al_draw_scaled_bitmap(image.pave2,0,0,177,89,tabCase[i][j].x,tabCase[i][j].y + 2*TAILLE_CASE,3* TAILLE_CASE,TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.cabane,0,0,168,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-
-            }
-
-            //MAISON :
-            if (tabTXT[i][j] == 11) {
-                al_draw_scaled_bitmap(image.pave2,0,0,177,89,tabCase[i][j].x,tabCase[i][j].y + 2*TAILLE_CASE,3* TAILLE_CASE,TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.cabane,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
-
-            }
-
-            //IMMEUBLE :
             if (tabTXT[i][j] == 12) {
-                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x,tabCase[i][j].y - TAILLE_CASE,3*TAILLE_CASE,4*TAILLE_CASE,0);
-
+                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
             }
-
-            //GRATTE_CIEL :
             if (tabTXT[i][j] == 13) {
-                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
-                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                //                     al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.gc1,0,0,118,237,tabCase[i][j].x,tabCase[i][j].y - 3 * TAILLE_CASE,3*TAILLE_CASE,6*TAILLE_CASE,0);
+               // al_draw_scaled_bitmap(image.gc2,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
+            }
+            if (tabTXT[i][j] == 14) {
+                //al_draw_scaled_bitmap(image.gc3,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y,2*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                                         al_map_rgba(20,20,0,200));
             }
         }
     }
@@ -595,6 +698,27 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
     al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
                              al_map_rgba(20,20,20,200));
+
+    //affichageMenuGraphique(image, xSouris, ySouris);
+    /*for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 9) {
+                al_draw_scaled_bitmap(image.maisonombre,0,0,291,293,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 10) {
+                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            }
+            if (tabTXT[ligneSouris - i][colonneSouris - j] == 11) {
+                al_draw_scaled_bitmap(image.maison3ombre,0,0,172,200,tabCase[ligneSouris - i][colonneSouris - j].x,tabCase[ligneSouris - i][colonneSouris - j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+
+            }
+            else if (tabTXT[ligneSouris][colonneSouris] == 0)
+                al_draw_scaled_bitmap(image.maison2ombre,0,0,175,202,tabCase[ligneSouris][colonneSouris].x,tabCase[ligneSouris][colonneSouris].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+            al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
+                                     tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
+                                     al_map_rgba(20,20,20,200));
+        }
+    }*/
 
     //surpassageCase(xSouris, ySouris);
 
@@ -777,10 +901,11 @@ int carte() {
         yCase += TAILLE_CASE;
     }
     ALLEGRO_FONT *argent = al_load_font("../Polices/madetommy.ttf", 40, 0);
+    ALLEGRO_FONT *reseauEau = al_load_font ("../Polices/madetommy.ttf", 25, 0);
     image.cap = al_load_bitmap("../images/cap.png");
     image.commu = al_load_bitmap("../images/commu.png");
     image.chateaudeau = al_load_bitmap("../images/piscine.png");
-    image.centraleelec = al_load_bitmap("../images/centrale 5.png");
+    image.centraleelec = al_load_bitmap("../images/centrale 3.png");
     image.caserne = al_load_bitmap("../images/caserne.png");
     image.routehb = al_load_bitmap("../images/route hb.png");
     image.routegd = al_load_bitmap("../images/route gd.png");
@@ -792,8 +917,6 @@ int carte() {
     image.sauvegarde = al_load_bitmap("../images/sauvegarde.png");
     //image.fond = al_load_bitmap("../images/fond.png");
     image.fond = al_load_bitmap("../images/fond.png");
-    image.pave = al_load_bitmap("../images/pavé.png");
-    image.pave2 = al_load_bitmap("../images/pavé2.png");
     image.terrainVague = al_load_bitmap("../images/t-v 2.png");
     image.cabane = al_load_bitmap("../images/cabane.png");
     image.immeuble = al_load_bitmap("../images/immeuble.png");
@@ -804,6 +927,9 @@ int carte() {
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
             tabTXT[i][j] = fgetc(file) - '0';
+            if (tabTXT[i][j] == 9) {
+                tabTXT[i][j] += rand()%3;
+            }
         }
     }
     fclose(file);
@@ -882,11 +1008,12 @@ int carte() {
                     affichageMenu(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent);
                     break;
                 }
-                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent, construction, centrale, route, chateau, returnClic);
+                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent, construction, centrale, route, chateau, returnClic, reseauEau, conteur);
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 //abort();
+                //fonction poser element
                 if (construction || centrale || route || chateau) {
                     // Dans ce cas, l'un des 4 ELT est en train d'être ajouté, il faut vérifier si on peut l'ajouter à notre grille
                     if (construction) ajouterElement(CONSTRUCTION,colonneSouris,ligneSouris);
@@ -894,9 +1021,10 @@ int carte() {
                     else if (route) ajouterElement(ROUTE,colonneSouris,ligneSouris);
                     else if (chateau) ajouterElement(CHATEAU,colonneSouris,ligneSouris);
                 }
+
                 construction = false;
                 centrale = false;
-                route = false;
+                //route = false;
                 chateau = false;
                 if (entrerMenuPause){
                     if (!issueMenuPause(xSouris, ySouris,entrerMenuPause, image, queue)){
@@ -907,24 +1035,27 @@ int carte() {
                 //centrale passage souris
                 returnClic = clicDansCase(xSouris, ySouris, image, event, timer, queue);
                 //printf("returnClic %d\n", returnClic);
+                if (-1 == returnClic) break;
                 if (999 == returnClic) {
                     // Nous sommes dans le menu PAUSE
                     entrerMenuPause = 1;
                     break;
                 }
                 if(CENTRALE == returnClic){
+                    if(route)route=false;
                     centrale = true;
                 }
                 if(ROUTE == returnClic){
-                    route = true;
+                    route = !route;
                 }
                 if(CHATEAU == returnClic){
+                    if(route)route=false;
                     chateau = true;
                 }
                 if(CONSTRUCTION == returnClic){
+                    if(route)route=false;
                     construction = true;
                 }
-                if(TRACE)printf("centrale\n");
                 break;
         }
         //printf("nombre hab : %d\n", monJeu.nbhabitants);
@@ -1000,6 +1131,8 @@ void carteDepart() {
                 break;
         }
     }
+
+    /*
     if(monJeu.modeJeu == MODE_COMMUNISTE){
         affichageChargementCommuniste();
     }
@@ -1009,8 +1142,8 @@ void carteDepart() {
     al_destroy_display(display);
     al_destroy_event_queue(queue);
     al_destroy_timer(timer);
+     */
 }
-
 ///////////////////////// FIN AFFICHAGE.C ////////////////////
 
 ///////////////////////// JEU.C ////////////////////
@@ -1074,6 +1207,7 @@ initialisationJeu(){
     monJeu.coutConstruction[CHATEAU] = PRIX_CHATEAU;
     monJeu.coutConstruction[ROUTE] = PRIX_ROUTE;
     monJeu.nbElements = 0;
+    monJeu.modeBoucle = STANDARD;
 
 
     for (int j = 0; j < MAX_CONSTRUCTION; j++) {
@@ -1263,13 +1397,30 @@ int setParcoursCourantPlusCourt (int indexEltSource, int indexEltDest){
     return 0;
 }
 
+int renvoietailleX(int typeElement){
+    if(typeElement == ROUTE) return LARGEUR_ROUTE;
+    if(typeElement == CENTRALE) return LARGEUR_CENTRALE;
+    if(typeElement == CHATEAU) return LARGEUR_CHATEAU;
+    if(typeElement == CONSTRUCTION) return LARGEUR_CONSTRUCTION;
+}
+int renvoietailleY(int typeElement){
+    if(typeElement == ROUTE) return LONGUEUR_ROUTE;
+    if(typeElement == CENTRALE) return LONGUEUR_CENTRALE;
+    if(typeElement == CHATEAU) return LONGUEUR_CHATEAU;
+    if(typeElement == CONSTRUCTION) return LONGUEUR_CONSTRUCTION;
+}
+
 void ajouterElement(int typeElement, int positionX, int positionY){
     // Vérification de l'intégrité des variables X, Y
-    if (positionX >= MAX_COLONNES || positionY >= MAX_LIGNES) {
+    int tailleX = renvoietailleX(typeElement);
+    int tailleY = renvoietailleY(typeElement);
+    if(!detecteSiOnPeutPoserConstruction(typeElement, tailleX, tailleY, positionX, positionY)) return;
+    if (positionX+tailleX >= MAX_COLONNES || positionY+tailleY >= MAX_LIGNES) {
         // IL FAUDRA PRENDRE EN COMPTE LA LARGEUR ET LA HAUTEUR DE L'ELT !!!!!!!!!!
         printf("Erreur position dans AJOUTERELEMENT (%d/%d,%d/%d)\n", positionX, MAX_COLONNES, positionY, MAX_LIGNES);
         return;
     }
+
     //Faire qu'on ne peut pas placer un element sur un autre
 
     if (TRACE) printf("AJOUTER ELT : %d à %d,%d\n", typeElement, positionX, positionY);
@@ -1291,7 +1442,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++; //On rajoute 1 élement au jeu global
-            monJeu.tabTXT[positionY][positionX] = 1;
+            monJeu.tabTXT[positionY][positionX]=1;
             break;
 
         case CHATEAU:
@@ -1311,7 +1462,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = CAPA_CHATEAU;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
-            monJeu.tabTXT[positionY][positionX] = 7;
+            monJeu.tabTXT[positionY][positionX]=7;
             break;
 
         case CENTRALE:
@@ -1331,7 +1482,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = CAPA_CENTRALE;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++;
-            monJeu.tabTXT[positionY][positionX] = 8;
+            monJeu.tabTXT[positionY][positionX]=8;
             break;
 
         case CONSTRUCTION:
@@ -1350,7 +1501,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].niveau = EVOLUTIF;
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
-            monJeu.tabTXT[positionY][positionX] = 10;
+            monJeu.tabTXT[positionY][positionX]=9;
             monJeu.nbElements++;
             break;
 
@@ -1440,18 +1591,18 @@ void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si a
             case TERRAIN_VAGUE:
                 monJeu.element[numeroElement].nbHabitantElement = 0;
                 monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=9;
-                printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
+                //printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
                 break;
             case CABANE:
                 monJeu.element[numeroElement].nbHabitantElement = 10;
                 monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=10;
-                printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
+               // printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
 
                 break;
             case MAISON:
                 monJeu.element[numeroElement].nbHabitantElement = 50;
                 monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=11;
-                printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
+                //printf("position element %d : (%d, %d) \n", numeroElement,monJeu.element[numeroElement].affichageElement.positionX, monJeu.element[numeroElement].affichageElement.positionY);
                 break;
             case IMMEUBLE:
                 monJeu.element[numeroElement].nbHabitantElement = 100;
@@ -1505,7 +1656,7 @@ void ChangerNiveauConstruction(int numeroElement, int ameliorer){//0 On amélior
         }
         if(ameliorer == 1){
             ameliorerConstruction(numeroElement);
-            initConstruction(numeroElement,0);
+            initConstruction(numeroElement, 0);
         } else{
             if(TRACE)printf("Erreur amélioration niveau, mauvais chiffre renseigné\n");
             return;
@@ -1538,6 +1689,7 @@ int evolutionConstruction(){
         }
         impots += monJeu.element[i].nbHabitantElement;
     }
+    majApresEvolutionNiveauConstruction();
     return impots;
 }
 
@@ -1563,15 +1715,32 @@ void insererDansTableau(int racine, int branche){
         }
     }
 }
-
+// Vérifie si les coordonnées x, y sont comprises dans la zone occupée par l'element K
 bool estDansZone (int k, int x, int y){
-    // Vérifie si les coordonnées x, y sont comprises dans la zone occupée par l'element K
     if (x >= monJeu.element[k].affichageElement.positionX && x < monJeu.element[k].affichageElement.positionX + monJeu.element[k].affichageElement.largeurX){
         if(y >= monJeu.element[k].affichageElement.positionY && y < monJeu.element[k].affichageElement.positionY + monJeu.element[k].affichageElement.largeurY){
             return true;
         }
     }
     return false;
+}
+
+// Rnevoie true si on peut poser, false sinon
+bool detecteSiOnPeutPoserConstruction(int numeroElement, int tailleX, int tailleY, int positioncurseurX, int positioncurseurY){
+    for (int x = positioncurseurX; x < positioncurseurX+tailleX;x++) {
+        for(int y = positioncurseurY; y<positioncurseurY+tailleY;y++){
+            for(int k = 0; k<monJeu.nbElements; k++){
+                //if(numeroElement != k && monJeu.element[k].actif == ACTIF){//if(1)printf("Test interco : %d en (%d,%d) avec %d en %d,%d)\n", numeroElement,x,y,k,monJeu.element[k].affichageElement.positionX,monJeu.element[k].affichageElement.positionY);
+                    if(estDansZone (k, x, y)){// == monJeu.element[k].affichageElement.positionX && y == monJeu.element[k].affichageElement.positionY){
+                        printf("position X : %d", positioncurseurX);
+                        printf("position Y = %d", positioncurseurY);
+                        return false;
+                    }
+                //}
+            }
+        }
+    }
+    return true;
 }
 
 
@@ -1619,6 +1788,26 @@ void lireFichierTextePourAjouterElement(char *nomFichier) {
     }
     fclose(ifs);
 }
+/*
+void ecrireFichierTexte(char *nomFichier) {
+    FILE *ifs = fopen(nomFichier, "w");
+    int typeElement, positionX, positionY , taille, numeroPartie;
+
+    if (!ifs) {
+        if(TRACE)printf("Erreur d'ouverture de fichier\n");
+        exit(-1);
+    }
+    fprintf(ifs, "%d", &numeroPartie);
+    fprintf(ifs, "%d", &taille);
+
+    // creer les aretes du graphe
+    for (int i = 0; i < taille; ++i) {
+        fscanf(ifs, "%d%d%d", &typeElement, &positionX, &positionY);
+        ajouterElement(typeElement, positionX, positionY);
+    }
+    fclose(ifs);
+}
+ */
 
 
 void test(){
@@ -1686,16 +1875,16 @@ void test(){
     ajouterElement(ROUTE, 11,9 );
     ajouterElement(ROUTE, 12,9 );
 
-    ajouterElement(CONSTRUCTION,13,7);//38
-    ChangerNiveauConstruction(38,1);
+    ajouterElement(CONSTRUCTION,13 ,7 );//38
+    ChangerNiveauConstruction(38, 1);
     majApresEvolutionNiveauConstruction ();
-    ChangerNiveauConstruction(38,1);
+    ChangerNiveauConstruction(38, 1);
     majApresEvolutionNiveauConstruction ();
-    ChangerNiveauConstruction(38,1);
+    ChangerNiveauConstruction(38, 1);
     majApresEvolutionNiveauConstruction ();
-    ChangerNiveauConstruction(38,1);
+    ChangerNiveauConstruction(38, 1);
     majApresEvolutionNiveauConstruction ();
-    ChangerNiveauConstruction(38,1);
+    ChangerNiveauConstruction(38, 1);
     majApresEvolutionNiveauConstruction ();
 
     ajouterElement(ROUTE, 16,11 );
@@ -2175,6 +2364,7 @@ void majApresEvolutionNiveauConstruction() {
     detecteConstructionsViables();
     // DEBUG
     //afficheStatutDesRessourcesParConstruction();
+    //actualiseReseauxEaux();
 }
 
 void recenseParcours(){
@@ -2212,6 +2402,7 @@ void recenseParcours(){
 
 void afficheStatutDesRessourcesParConstruction(){
     // Affiche le statut des alimentations electriques et en eau pour chaque CONSTRUCTION
+    //printf ("afficheStatutDesRessourcesParConstruction", )
     for(int i = 0; i<monJeu.nbElements;i++) {
         if (monJeu.element[i].type == CONSTRUCTION) {
             printf("ELT %02d : WaterLevel %03d/%03d / Powered %s (", i, monJeu.element[i].waterLevel,
@@ -2288,43 +2479,53 @@ void majApresAjoutElement(int numElt) {
     detecteConstructionAlimenteesparChateau();
 
     // DEBUG
-    int debug = 1;
+    int debug = 0;
     if (debug) {
         printf ("AJOUT DE L'ELT %02d\n", numElt);
         afficheTabParcoursChateau();
         afficheTabParcoursCentrale();
         afficheStatutDesRessourcesParConstruction();
-        afficheReseauxEaux();
+        actualiseReseauxEaux();
         // FIN DEBUG
     }
 }
 
-// Renvoie l'index du tabParcours utilisé par l'eau pour cet ELT s'il s'agit d'une CONSTRUCTION
-// Et écrit dans ptr l'origine des approvisionnement en eau
-// Renvoie -1 s'il ne s'agit pas d'une CONSTRUCTION
+// Recherche les reseaux d'eau qui alimentent une CONSTRUCTION
+// Si INDEXELT ne pointe pas sur UNE CONSTRUCTION : Renvoyer -1
+// Si INDEXELT pointe sur une CONSTRUCTION renvoyer 0
+// Et écrit dans PTR l'origine des approvisionnement en eau
 int rechercheReseauxEaux(int indexElt, char *ptr){
     if (monJeu.element[indexElt].type != CONSTRUCTION) return -1;
     if (!ptr) return -1;
     int lg = 0;
-    sprintf(ptr, "ELT %02d : WaterLevel %03d/%03d ", indexElt, monJeu.element[indexElt].waterLevel, monJeu.element[indexElt].nbHabitantElement);
+    sprintf(ptr, "CONSTRUCTION %02d : WaterLevel %03d/%03d ", indexElt, monJeu.element[indexElt].waterLevel, monJeu.element[indexElt].nbHabitantElement);
     for (int j = 0; j < monJeu.nbElements; j++) {
+        // On crée un INDEX J qui va parcourir le TABFOURNITURERESSOURCES de la CONSTRUCTION INDEXELT
+        // On parcours le TABFOURNITURERESSOURCES de la CONSTRUCTION INDEXELT
         if (monJeu.element[indexElt].tabFournitureRessources[j] > 0) {
             lg = strlen (ptr);
-            if (monJeu.element[j].type == CHATEAU) sprintf(&(ptr[lg]), " CHATEAU #%02d %03d", j, monJeu.element[indexElt].tabFournitureRessources[j]);
+            if (monJeu.element[j].type == CHATEAU) sprintf(&(ptr[lg]), " CHATEAU #%02d %03d/%03d", j, monJeu.element[indexElt].tabFournitureRessources[j], monJeu.element[j].capacite);
         }
     }
     return 0;
 }
 
-void afficheReseauxEaux(){
+void actualiseReseauxEaux(){
     // Affiche le statut des alimentations en eau pour chaque CONSTRUCTION
     // Renseigne les tabParcoursChateauActif avec 1 si ACTIF et 0 sinon
-    char ptr[256];
-    for (int i=0;i<256;i++) ptr[i]=0;
+    char ptr[LG_LABEL_ALIMENTATION_EAU];
+    for (int i=0;i<LG_LABEL_ALIMENTATION_EAU;i++) ptr[i]=0;
     int retour = -1;
     for(int i = 0; i<monJeu.nbElements;i++) {
+        // Pour tous les ELT du JEU on écrit dans PTR la QU d'eau reçue de chaque CHATEAU (s'il s'agit d'une CONSTRUCTION
         retour = rechercheReseauxEaux(i, ptr);
-        if (-1 != retour) printf("*********** %s\n", ptr);
+        if (-1 != retour) {
+            // Nous sommes dans le cas ou le ième ELT du JEU est une CONSTRUCTION
+            // PTR contient les informations liées au RESEAU D'EAU
+            // On va afficher le contenu de PTR sur la CONSTRUCTION
+            sprintf(monJeu.element[i].labelAlimentationEau, "%s\n", ptr);
+            printf("%s\n", ptr);
+        }
         // Maintenant on recherche l'index du chemin le plus court entre le
     }
     // Maintenant on met à jour les PARCOURS d'eaux qui sont ACTIFS en renseignant tabParcoursChateauActif[numParcours] = 1 si ACTIF
@@ -2337,7 +2538,8 @@ void afficheReseauxEaux(){
         if ((-1 == source) || (-1 == destination)) continue;
         dejaVu = 0;
         // On initialise tabParcoursChateauActif[i] = 0;
-        monJeu.tabParcoursChateauActif[i] = 0;
+        //monJeu.tabParcoursChateauActif[i] = 0;
+        monJeu.tabParcoursChateau[i].actif = false;
         if (monJeu.element[destination].tabFournitureRessources[source] > 0) {
             // On vérifie si un Parcours n'est pas déjà actif pour cette même SOURCE et même DESTINATION
             for(int j = 0; j<i;j++) {
@@ -2348,17 +2550,20 @@ void afficheReseauxEaux(){
                 }
             }
             if (dejaVu) continue;
-            monJeu.tabParcoursChateauActif[i] = 1;
+            //monJeu.tabParcoursChateauActif[i] = 1;
+            monJeu.tabParcoursChateau[i].actif = true;
+
         }
     }
     // DEBUG
     int debug = 1;
     if (debug) {
         for (int i = 0; i < MAX_PARCOURS_CHATEAU; i++) {
-            if (monJeu.tabParcoursChateauActif[i]) {
-                printf("Parcours %d ACTIF : ", i);
+//            if (monJeu.tabParcoursChateauActif[i]) {
+            if (monJeu.tabParcoursChateau[i].actif) {
+                printf("********* Parcours %d ACTIF : ", i);
                 //graphique
-                al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX+monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
+                //al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX+monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
                 afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
             }
         }
@@ -2512,6 +2717,7 @@ ChangerNiveauConstruction(38, 1);
 // Détection des maisons VIABLES
 // Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
     detecteConstructionsViables();
+    actualiseReseauxEaux();
 // Libération
 //ChangerNiveauConstruction(0, 1);
     if(TRACE)printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
