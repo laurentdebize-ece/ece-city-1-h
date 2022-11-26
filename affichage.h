@@ -45,7 +45,12 @@ typedef struct {
     ALLEGRO_BITMAP *sauvegarde;
 
 }Image;
-
+typedef struct{
+    ALLEGRO_SAMPLE * sonConstructionCentrale;
+    ALLEGRO_SAMPLE * sonConstructionChateauEau;
+    ALLEGRO_SAMPLE * sonConstructionRoute;
+    ALLEGRO_SAMPLE * sonConstructionMaison;
+}Son;
 
 
 void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris, ALLEGRO_FONT* text, int construction, int centrale, int route, int chateau, int returnClic);
