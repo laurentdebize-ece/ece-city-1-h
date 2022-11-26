@@ -37,11 +37,12 @@ typedef struct {
     ALLEGRO_BITMAP *immeuble;
     ALLEGRO_BITMAP *gc1;
     ALLEGRO_BITMAP *routehd,*routehg,*routebd,*routebg,*routegd,*routehb;
+    ALLEGRO_BITMAP *pave,*pave2;
     ALLEGRO_BITMAP *fond;
-    ALLEGRO_BITMAP* cap;
-    ALLEGRO_BITMAP* commu;
-    ALLEGRO_BITMAP* menu;
-    ALLEGRO_BITMAP* sauvegarde;
+    ALLEGRO_BITMAP *cap;
+    ALLEGRO_BITMAP *commu;
+    ALLEGRO_BITMAP *menu;
+    ALLEGRO_BITMAP *sauvegarde;
 
 }Image;
 

@@ -310,62 +310,68 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 
             //CHATEAU D'EAU :
             if (tabTXT[i][j] == 7) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
-                                         al_map_rgba(0,70,255,200));
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                //                     al_map_rgba(0,70,255,200));
                 al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
 
             }
 
             //CENTRALE ELECTRIQUE :
             if (tabTXT[i][j] == 8) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
-                                         al_map_rgba(189,255,0,200));
+                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y + 3*TAILLE_CASE,4*TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                //                     al_map_rgba(189,255,0,200));
                 al_draw_scaled_bitmap(image.centraleelec,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
             }
 
             //TERRAIN VAGUE :
             if (tabTXT[i][j] == 9) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.terrainVague,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.cabane,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //CABANE :
             if (tabTXT[i][j] == 10) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.pave2,0,0,177,89,tabCase[i][j].x,tabCase[i][j].y + 2*TAILLE_CASE,3* TAILLE_CASE,TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
                 al_draw_scaled_bitmap(image.cabane,0,0,168,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //MAISON :
             if (tabTXT[i][j] == 11) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.maison1,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.pave2,0,0,177,89,tabCase[i][j].x,tabCase[i][j].y + 2*TAILLE_CASE,3* TAILLE_CASE,TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.cabane,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //IMMEUBLE :
             if (tabTXT[i][j] == 12) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
                 al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x,tabCase[i][j].y - TAILLE_CASE,3*TAILLE_CASE,4*TAILLE_CASE,0);
 
             }
 
             //GRATTE_CIEL :
             if (tabTXT[i][j] == 13) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
                 al_draw_scaled_bitmap(image.gc1,0,0,118,237,tabCase[i][j].x,tabCase[i][j].y - 3 * TAILLE_CASE,3*TAILLE_CASE,6*TAILLE_CASE,0);
             }
         }
@@ -462,62 +468,72 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
             if (tabTXT[i][j] == 6) {
                 al_draw_scaled_bitmap(image.routebg,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
             }
+
+            //CHATEAU D'EAU :
             if (tabTXT[i][j] == 7) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
-                                         al_map_rgba(0,70,255,200));
-                al_draw_scaled_bitmap(image.chateaudeau,0,0,256,275,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                //                     al_map_rgba(0,70,255,200));
+                al_draw_scaled_bitmap(image.chateaudeau,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
 
             }
+
+            //CENTRALE ELECTRIQUE :
             if (tabTXT[i][j] == 8) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
-                                         al_map_rgba(189,255,0,200));
-                al_draw_scaled_bitmap(image.centraleelec,0,0,291,175,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,3*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.pave2,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y + 3*TAILLE_CASE,4*TAILLE_CASE,4*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+4*TAILLE_CASE,tabCase[i][j].y+6*TAILLE_CASE,
+                //                     al_map_rgba(189,255,0,200));
+                al_draw_scaled_bitmap(image.centraleelec,0,0,237,354,tabCase[i][j].x,tabCase[i][j].y,4*TAILLE_CASE,6*TAILLE_CASE,0);
             }
 
             //TERRAIN VAGUE :
             if (tabTXT[i][j] == 9) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
+                //al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
                 al_draw_scaled_bitmap(image.cabane,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //CABANE :
             if (tabTXT[i][j] == 10) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.pave2,0,0,177,89,tabCase[i][j].x,tabCase[i][j].y + 2*TAILLE_CASE,3* TAILLE_CASE,TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
                 al_draw_scaled_bitmap(image.cabane,0,0,168,177,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //MAISON :
             if (tabTXT[i][j] == 11) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.pave2,0,0,177,89,tabCase[i][j].x,tabCase[i][j].y + 2*TAILLE_CASE,3* TAILLE_CASE,TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
                 al_draw_scaled_bitmap(image.cabane,0,0,177,181,tabCase[i][j].x,tabCase[i][j].y,3*TAILLE_CASE,3*TAILLE_CASE,0);
 
             }
 
             //IMMEUBLE :
             if (tabTXT[i][j] == 12) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
                 al_draw_scaled_bitmap(image.immeuble,0,0,133,195,tabCase[i][j].x,tabCase[i][j].y - TAILLE_CASE,3*TAILLE_CASE,4*TAILLE_CASE,0);
 
             }
 
             //GRATTE_CIEL :
             if (tabTXT[i][j] == 13) {
-                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
-                                         tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
-                                         al_map_rgba(20,20,0,200));
-                al_draw_scaled_bitmap(image.gc1,0,0,118,354,tabCase[i][j].x,tabCase[i][j].y - 3 * TAILLE_CASE,3*TAILLE_CASE,6*TAILLE_CASE,0);
+                al_draw_scaled_bitmap(image.pave,0,0,177,177,tabCase[i][j].x,tabCase[i][j].y,3* TAILLE_CASE,3*TAILLE_CASE,0);
+                //al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,
+                //                       tabCase[i][j].x+3*TAILLE_CASE,tabCase[i][j].y+3*TAILLE_CASE,
+                //                     al_map_rgba(20,20,0,200));
+                al_draw_scaled_bitmap(image.gc1,0,0,118,237,tabCase[i][j].x,tabCase[i][j].y - 3 * TAILLE_CASE,3*TAILLE_CASE,6*TAILLE_CASE,0);
             }
         }
     }
@@ -721,6 +737,8 @@ int carte() {
     image.sauvegarde = al_load_bitmap("../images/sauvegarde.png");
     //image.fond = al_load_bitmap("../images/fond.png");
     image.fond = al_load_bitmap("../images/fond.png");
+    image.pave = al_load_bitmap("../images/pavé.png");
+    image.pave2 = al_load_bitmap("../images/pavé2.png");
     image.terrainVague = al_load_bitmap("../images/t-v 2.png");
     image.cabane = al_load_bitmap("../images/cabane.png");
     image.immeuble = al_load_bitmap("../images/immeuble.png");
@@ -1252,7 +1270,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].niveau = EVOLUTIF;
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
-            monJeu.tabTXT[positionY][positionX] = 10;
+            monJeu.tabTXT[positionY][positionX] = 13;
             monJeu.nbElements++;
             break;
 
