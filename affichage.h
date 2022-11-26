@@ -8,7 +8,10 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
-
+#define SONROUTE 1
+#define SONCHATEAU 2
+#define SONMAISON 3
+#define SONCENTRALE 4
 #define ECRAN_LONGUEUR 2880
 #define ECRAN_LARGEUR 1694
 #define COLONNES_TAB 45
