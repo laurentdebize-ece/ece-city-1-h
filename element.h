@@ -40,8 +40,11 @@
 #define GRILLE_X 45
 #define GRILLE_Y 35
 #define CAPA_CENTRALE 5000
+#define LG_LABEL_ALIMENTATION_EAU 256
+#define LG_LABEL_ALIMENTATION_ELEC 256
+#define LG_LABEL 256
 
-enum type {CHATEAU, CENTRALE, CONSTRUCTION, ROUTE, ECOLE, MUSEE};
+enum type {CHATEAU, CENTRALE, CONSTRUCTION, ROUTE, ECOLE, MUSEE, CASERNE};
 
 
 typedef struct {
@@ -59,7 +62,11 @@ typedef struct {
     bool isPowered; // Est alimenté par une CENTRALE
     bool isWatered; // Est alimenté TOTALEMENT par un CHATEAU
     int waterLevel; // Niveau d'alimentation en eau
+    // Contient pour chaque CONSTRUCTION la quantité d'energie fournie par l'element d'index i dans le jeu
+    // C'est à dire que tabFournitureRessources[i] contient -1 si le ième element du jeu ne fournit rien à cette CONSTRUCTION
+    // Et contient un nombre N (<> de -1) si le ième element du jeu fournit une quantité N d'électricité (si i est une CENTRALE) ou N eaux (si i est un CHATEAU)
     int tabFournitureRessources[MAX_CONSTRUCTION];
+    char labelAlimentationEau[LG_LABEL_ALIMENTATION_EAU];
 }Element;
 
 
