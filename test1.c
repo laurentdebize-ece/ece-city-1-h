@@ -265,7 +265,7 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
                         break;
 
                     case ALLEGRO_EVENT_TIMER:
-                        abort();
+                        //abort();
                         affichageMenuGraphique(image, xSouris, ySouris);
                         break;
 
@@ -526,12 +526,12 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                     if (ROUTE != monJeu.element[indexEltJeu].type) {
                         printf ("ERREUR dans affichage : %dème ELT  %d pas une ROUTE mais %d (PARCOUR %d)\n", j,
                                 indexEltJeu, monJeu.element[indexEltJeu].type, indexParcours);
-                        afficheParcours(indexParcours, -1);
-                        afficheStatutDesRessourcesParConstruction();
-                        afficheTousParcours();
-                        afficheTabParcoursChateau();
-                        afficheTabParcoursCentrale();
-                        abort();
+                        //afficheParcours(indexParcours, -1);
+                        //afficheStatutDesRessourcesParConstruction();
+                        //afficheTousParcours();
+                        //afficheTabParcoursChateau();
+                        //afficheTabParcoursCentrale();
+                        //abort();
                         return;
                     }/*
                     printf("affichage case bleu %d , %d , %d , %d", monJeu.element[indexEltJeu].affichageElement.positionX, monJeu.element[indexEltJeu].affichageElement.positionY,
@@ -1015,8 +1015,8 @@ int issueMenuPause(int xSouris, int ySouris, int entreeMenuPause, Image image, A
             afficheTabParcoursChateau();
             afficheTabParcoursCentrale();
 
-            classeParcoursCentrale();
-            classeParcoursChateau();
+            //classeParcoursCentrale();
+            //classeParcoursChateau();
             reinitEtatRessourcesDesConstructions();
             initCapaciteChateauxEtCentrales();
             detecteConstructionsAlimenteesParCentrale();
@@ -1848,8 +1848,9 @@ void ameliorerConstruction(int numeroElement){
 
 void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si ameliore
     int niveau = monJeu.element[numeroElement].niveau;
-    if (monJeu.element[numeroElement].type == CONSTRUCTION){
-        switch (niveau) {
+    if (monJeu.element[numeroElement].type != CONSTRUCTION) return;
+    int nbHabitantsAvtChangement = monJeu.element[numeroElement].nbHabitantElement;
+    switch (niveau) {
             case RUINE :
                 monJeu.element[numeroElement].nbHabitantElement = 0;
                 break;
@@ -1878,30 +1879,21 @@ void initConstruction(int numeroElement, int ameliorer){//-1 si regresse, 0 si a
                 monJeu.tabTXT[monJeu.element[numeroElement].affichageElement.positionY][monJeu.element[numeroElement].affichageElement.positionX]=13;
 
                 break;
-        }
-        if(monJeu.element[numeroElement].niveau > 5){
-            return;
-        }
-        if(ameliorer == 0){
-            monJeu.nbhabitants = monJeu.nbhabitants + monJeu.element[numeroElement].nbHabitantElement; //on met à jour les habitants totaux
-        }
-        if(ameliorer == -1){//Cas de régression. On regarde cb d'habitant on enlève au total
-            if(monJeu.element[numeroElement].niveau == RUINE || TERRAIN_VAGUE){
-                monJeu.nbhabitants = monJeu.nbhabitants - NB_HAB_CABANE;
-            }
-            if(monJeu.element[numeroElement].niveau == CABANE){
-                monJeu.nbhabitants = monJeu.nbhabitants - 40;
-            }
-            if(monJeu.element[numeroElement].niveau == MAISON){
-                monJeu.nbhabitants = monJeu.nbhabitants - 50;
-            }
-            if(monJeu.element[numeroElement].niveau == IMMEUBLE){
-                monJeu.nbhabitants = monJeu.nbhabitants - 900;
-            }
-        }
-
     }
-    if (monJeu.element[numeroElement].type == ECOLE){//On a fait monter d'un niveau la bibliothèque pour que ce soit une école d'ingé
+    monJeu.nbhabitants = monJeu.nbhabitants - nbHabitantsAvtChangement + monJeu.element[numeroElement].nbHabitantElement;
+
+    // VERIFICATION
+    /*
+    if (monJeu.nbhabitants > 5000) {
+        // DEBUG NB HAB
+        printf("NB HAB %d\n", monJeu.nbhabitants);
+        for (int i=0;i<monJeu.nbElements;i++) printf("NB HAB %D = %d\n",i,monJeu.element[i].nbHabitantElement);
+        afficheStatutDesRessourcesParConstruction();
+        afficheTabParcoursCentrale();
+        afficheTabParcoursChateau();
+        //abort ();
+    }*/
+        if (monJeu.element[numeroElement].type == ECOLE){//On a fait monter d'un niveau la bibliothèque pour que ce soit une école d'ingé
         if(monJeu.element[numeroElement].niveau == 1){// si c'est une école d'ingé et plus une bibliothèque
             puts("ecole d'ingé");
             monJeu.element[numeroElement].niveauEduElement++;//les gens dans l'élement sont plus éduqués
@@ -2428,6 +2420,13 @@ void detecteConstructionsViables(){
 
 void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered et maj de la capacité restante
     //voir ttes les constructions alimentées par des châteaux d'eaux
+    // Une CONSTRUCTION peut etre raccordée à une chateau mais non ALIMENTée si la chateau alimente déjà 5000 personnes
+    // On va parcourir chacune des chateauS
+    // Pour chaque chateau on va regarder les CONSTRUCTIONS connectées en partant du plus PROCHE et définir lesquelles
+    // sont alimentées
+    // Cela suppose que les tabParcourschateau a été classé par ordre du plus cours au plus long avant l'appel à cette fonction
+    classeParcoursChateau();
+
     int indexChateauCourant = -1;
     int indexDestination = -1;
     bool dejaVu[MAX_CONSTRUCTION];
@@ -2501,6 +2500,10 @@ void detecteConstructionsAlimenteesParCentrale(){
     // On va parcourir chacune des CENTRALES
     // Pour chaque CENTRALE on va regarder les CONSTRUCTIONS connectées en partant du plus PROCHE et définir lesquelles
     // sont alimentées
+    // Cela suppose que les tabParcoursCentrale a été classé par ordre du plus cours au plus long avant l'appel à cette fonction
+    classeParcoursCentrale();
+
+
     int indexCentraleCourante = -1;
     int indexDestination = -1;
     bool dejaVu[MAX_CONSTRUCTION];
@@ -2690,12 +2693,13 @@ void recenseParcours(){
             tabCheminParcouru[i]=0;
 
             // On initialise les tabCheminDeConnexionsAuxInfra
+ /*
             for (int p=0; p<MAX_CONSTRUCTION; p++){
                 for (int q=0; q<MAX_CONSTRUCTION;q++){
                     //monJeu.element[i].tabCheminDeConnexionsAuxInfra[p][q]=-1;
                 }
             }
-
+*/
             // Lors du premier appel, la route courante est la source
             //route[distance]=i;
             calculeDistanceAvecLesInfraConnectees(i, i, &distance, tabCheminParcouru, route);
@@ -2782,8 +2786,8 @@ void majApresAjoutElement(int numElt) {
     initTabParcoursCentrale();
     initTabParcoursChateau();
     recenseParcours();
-    classeParcoursCentrale();
-    classeParcoursChateau();
+    //classeParcoursCentrale();
+    //classeParcoursChateau();
     reinitEtatRessourcesDesConstructions();
 
     initCapaciteChateauxEtCentrales();
@@ -2958,159 +2962,8 @@ void actualiseReseauxEaux(){
 ///////////////////////// MAIN ////////////////////
 
 int main() {
-
-    /////////////// TEST ///////////////
-
     initialisationJeu();
-/*
-    ajouterElement(1,10,8);
-    ajouterElement(0,16,8);
-    ajouterElement(3,14,8);
-    ajouterElement(3,15,8);
-    ajouterElement(2,14,4);
-    ajouterElement(3,14,7);
-    ajouterElement(3,13,14);
-    ajouterElement(3,14,14);
-    ajouterElement(3,15,14);
-    ajouterElement(3,16,14);
-    ajouterElement(3,17,14);
-    ajouterElement(3,18,14);
-    ajouterElement(3,19,14);
-    ajouterElement(3,20,14);
-    ajouterElement(3,21,14);
-    ajouterElement(3,22,14);
-    ajouterElement(2,23,14);
-    ajouterElement(2,15,15);
-*/
-    carteDepart();
-    carte();
-
-//    majApresEvolutionNiveauConstruction();
-//    afficheStatutDesRessourcesParConstruction();
-
-    return 0;
-
-
-    /////////// FIN TEST //////////////
-
-
-    initialisationJeu();
-    if(TRACE)printf("DEBUT\n");
-
-    test();
-    carteDepart();
-    carte();
-    return 0;
-
-
-    //ChangerNiveauConstruction(0, 1);
-    for(int i = 0; i<monJeu.nbElements;i++){
-        if(monJeu.element[i].actif == ACTIF){
-            detectionElementsConnectes(i);
-        }
-        //afficherEltConnectes(i);
-    }
-    int distance = 0;
-    int *tabCheminParcouru = calloc (MAX_CONSTRUCTION, sizeof(int));
-    int *route = calloc(MAX_CONSTRUCTION, sizeof(int));
-
-    // BOUCLE PRINCIPALE : ON PARCOURT TOUS LES ELT DU JEU, SI CE NE SONT PAS DES ROUTES, ON REGARDE TOUS LES PARCOURS VERS LES AUTRES ELTS
-    for(int i = 0; i<monJeu.nbElements;i++){
-        if(monJeu.element[i].actif == ACTIF && monJeu.element[i].type != ROUTE){
-            // On initialise le tabCheminParcouru pour éviter de boucler et route pour mémoriser les routes empruntées
-            for (int j=0; j<MAX_CONSTRUCTION;j++){
-                tabCheminParcouru[j]=-1; // on le met à zéro quand on passe dessus
-                route[j]=-1;
-            }
-            tabCheminParcouru[i]=0;
-
-            // On initialise les tabCheminDeConnexionsAuxInfra
-            for (int p=0; p<MAX_CONSTRUCTION; p++){
-                for (int q=0; q<MAX_CONSTRUCTION;q++){
-                    //monJeu.element[i].tabCheminDeConnexionsAuxInfra[p][q]=-1;
-                }
-            }
-
-            // Lors du premier appel, la route courante est la source
-            //route[distance]=i;
-            calculeDistanceAvecLesInfraConnectees(i, i, &distance, tabCheminParcouru, route);
-        }
-        afficherTabDistanceInfraConnectees(i);
-    }
-    // Affichage des PARCOURS
-    afficheTabParcoursConstruction();
-    afficheTabParcoursChateau();
-    afficheTabParcoursCentrale();
-    // Détection des CONSTRUCTIONS alimentées par CENTRALE
-    ChangerNiveauConstruction(0, 1);
-    ChangerNiveauConstruction(0, 1);
-    ChangerNiveauConstruction(0, 1);
-    ChangerNiveauConstruction(0, 1);
-    ChangerNiveauConstruction(0, 1);
-    ChangerNiveauConstruction(38, 1);
-    ChangerNiveauConstruction(38, 1);
-    ChangerNiveauConstruction(38, 1);
-    ChangerNiveauConstruction(38, 1);
-    ChangerNiveauConstruction(38, 1);
-    ChangerNiveauConstruction(23, 1);
-    ChangerNiveauConstruction(23, 1);
-    ChangerNiveauConstruction(23, 1);
-    ChangerNiveauConstruction(23, 1);
-    ChangerNiveauConstruction(23, 1);
-    //ChangerNiveauConstructioute[distance]=i;
-    //calculeDistanceAvecLesInfraConnectees(i, i, &distance, tabCheminParcouru, route);
-
-
-/*
-// Affichage des PARCOURS
-afficheTabParcoursConstruction();
-afficheTabParcoursChateau();
-afficheTabParcoursCentrale();
-// Détection des CONSTRUCTIONS alimentées par CENTRALE
-ChangerNiveauConstruction(0, 1);
-ChangerNiveauConstruction(0, 1);
-ChangerNiveauConstruction(0, 1);
-ChangerNiveauConstruction(0, 1);
-ChangerNiveauConstruction(0, 1);
-ChangerNiveauConstruction(38, 1);
-ChangerNiveauConstruction(38, 1);
-ChangerNiveauConstruction(38, 1);
-ChangerNiveauConstruction(38, 1);
-ChangerNiveauConstruction(38, 1);
- */
-
-
-// On classe le tableau des CENTRALES
-
-    classeParcoursCentrale();
-    classeParcoursChateau();
-    classeParcoursConstruction();
-    afficheTabParcoursConstruction();
-    afficheTabParcoursChateau();
-    afficheTabParcoursCentrale();
-
-
-//detecte toutes les constructions alimentees par toutes les centrales et indique les capacités restantes des centrales
-//detecteConstructionsAlimenteesParCentrale();
-    detecteConstructionAlimenteesparChateau();
-//    ChangerNiveauConstruction(0, 1);
-    if(TRACE)printf ("detecte centrale\n");
-//detecteConstructionsAlimenteesParCentrale();
-// Détection des maisons VIABLES
-// Pour l'instant detecte que ceux qui sont connectés mais pas alimentées
-    detecteConstructionsViables();
-    actualiseReseauxEaux();
-// Libération
-//ChangerNiveauConstruction(0, 1);
-    if(TRACE)printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
-    if(TRACE)printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
-    free (tabCheminParcouru);
-    free (route);
     carteDepart();
     carte();
     return 0;
 }
-
-///////////////////////// FIN MAIN ////////////////////
-
-
