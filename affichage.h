@@ -27,23 +27,22 @@ typedef struct {
 
 typedef struct {
     float x,y;
-}
-Case;
+}Case;
 
 typedef struct {
     ALLEGRO_BITMAP *chateaudeau,*centraleelec,*caserne;
-    ALLEGRO_BITMAP *maison1,*maisonombre,*maison2,*maison2ombre,*maison3,*maison3ombre;
-    ALLEGRO_BITMAP *gc1,*gc1ombre,*gc2,*gc2ombre,*gc3,*gc3ombre;
+    ALLEGRO_BITMAP *terrainVague;
+    ALLEGRO_BITMAP *cabane;
+    ALLEGRO_BITMAP *maison1;
+    ALLEGRO_BITMAP *immeuble;
+    ALLEGRO_BITMAP *gc1;
     ALLEGRO_BITMAP *routehd,*routehg,*routebd,*routebg,*routegd,*routehb;
+    ALLEGRO_BITMAP *pave,*pave2;
     ALLEGRO_BITMAP *fond;
     ALLEGRO_BITMAP* cap;
     ALLEGRO_BITMAP* commu;
     ALLEGRO_BITMAP* menu;
     ALLEGRO_BITMAP* sauvegarde;
-    ALLEGRO_BITMAP* cabane;
-    ALLEGRO_BITMAP* immeuble;
-    ALLEGRO_BITMAP* terrainVague;
-
 }Image;
 
 
@@ -52,10 +51,3 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 int carte();
 
 //#endif //UNTITLED3_TABLEAU_H
-
-
-
-
-
-
-

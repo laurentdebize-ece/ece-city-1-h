@@ -418,7 +418,9 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
             if (tabTXT[i][j] == 0 || j == 40) {}
             if (tabTXT[i][j] == 1) {
-                al_draw_scaled_bitmap(image.routegd,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x,tabCase[i][j].y,tabCase[i][j].x+TAILLE_CASE,tabCase[i][j].y+TAILLE_CASE,
+                                         al_map_rgb(0,0,0));
+                //al_draw_scaled_bitmap(image.routegd,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 2) {
                 al_draw_scaled_bitmap(image.routehb,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
@@ -730,7 +732,9 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
             if (tabTXT[i][j] == 0 || j == 40) {}
             if (tabTXT[i][j] == 1) {
-                al_draw_scaled_bitmap(image.routegd,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
+                al_draw_filled_rectangle(tabCase[i][j].x+2,tabCase[i][j].y+2,tabCase[i][j].x+TAILLE_CASE-2,tabCase[i][j].y+TAILLE_CASE-2,
+                                         al_map_rgb(0,0,0));
+                //al_draw_scaled_bitmap(image.routegd,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
             }
             if (tabTXT[i][j] == 2) {
                 al_draw_scaled_bitmap(image.routehb,0,0,118,118,tabCase[i][j].x,tabCase[i][j].y,TAILLE_CASE,TAILLE_CASE,0);
@@ -1700,7 +1704,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             monJeu.element[monJeu.nbElements].capacite = NON_CAPACITIF;
             monJeu.element[monJeu.nbElements].nbHabitantElement = 0;
             monJeu.nbElements++; //On rajoute 1 élement au jeu global
-            monJeu.tabTXT[positionY][positionX]=1;
+            monJeu.tabTXT[positionY][positionX] = 1;
             break;
 
         case CHATEAU:
