@@ -794,6 +794,29 @@ bool clicDansCase2(int xSouris, int ySouris){
     }
 
 }
+void initSonConstruction(Son son){
+    al_init_acodec_addon();
+    al_reserve_samples(4);
+    son.sonConstructionRoute = al_load_sample("../Son/sonConstructionRoute");
+    son.sonConstructionCentrale = al_load_sample("../Son/sonConstructionCentrale");
+    son.sonConstructionChateauEau = al_load_sample("../Son/sonConstructionChateauEau");
+    son.sonConstructionMaison = al_load_sample("../Son/sonConstructionMaison");
+}
+void sonConstruction(Son son, int typeSon){
+    if(typeSon == 1){
+        al_play_sample(son.sonConstructionRoute, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+    if(typeSon == 2){
+        al_play_sample(son.sonConstructionChateauEau, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+    if(typeSon == 3){
+        al_play_sample(son.sonConstructionMaison, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+    if(typeSon == 4){
+        al_play_sample(son.sonConstructionCentrale, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+}
+
 
 void affichageModeJeu2(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris) {
     //FOND :
@@ -873,6 +896,7 @@ int carte() {
     Case tabCase[LIGNES_TAB][COLONNES_TAB] = {0};
     int tabTXT[LIGNES_TAB][COLONNES_TAB + 1] = {0};
     Image image;
+    Son son;
     int xCase,yCase = Y_TAB;
     int ligneSouris = 0,colonneSouris = 0;
     int xSouris,ySouris;
@@ -922,7 +946,7 @@ int carte() {
     image.immeuble = al_load_bitmap("../images/immeuble.png");
     image.maison1 = al_load_bitmap("../images/maison 1.png");
     image.gc1 = al_load_bitmap("../images/g-c 1.png");
-
+    initSonConstruction(son);
     file = fopen("../test.txt","r");
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
@@ -1016,10 +1040,22 @@ int carte() {
                 //fonction poser element
                 if (construction || centrale || route || chateau) {
                     // Dans ce cas, l'un des 4 ELT est en train d'être ajouté, il faut vérifier si on peut l'ajouter à notre grille
-                    if (construction) ajouterElement(CONSTRUCTION,colonneSouris,ligneSouris);
-                    else if (centrale) ajouterElement(CENTRALE,colonneSouris,ligneSouris);
-                    else if (route) ajouterElement(ROUTE,colonneSouris,ligneSouris);
-                    else if (chateau) ajouterElement(CHATEAU,colonneSouris,ligneSouris);
+                    if (construction){
+                        ajouterElement(CONSTRUCTION,colonneSouris,ligneSouris);
+                        sonConstruction(son,3);
+                    }
+                    else if (centrale){
+                        ajouterElement(CENTRALE,colonneSouris,ligneSouris);
+                        sonConstruction(son,4);
+                    }
+                    else if (route{
+                        ajouterElement(ROUTE,colonneSouris,ligneSouris);
+                        sonConstruction(son,1);
+                    }
+                    else if (chateau){
+                        ajouterElement(CHATEAU,colonneSouris,ligneSouris);
+                        sonConstruction(son,2);
+                    }
                 }
 
                 construction = false;
@@ -1431,6 +1467,7 @@ void ajouterElement(int typeElement, int positionX, int positionY){
                //abort();
 
             }
+            
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_ROUTE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
