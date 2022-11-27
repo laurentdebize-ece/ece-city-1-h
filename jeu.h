@@ -3,6 +3,7 @@
 
 #include "stdbool.h"
 #include "element.h"
+#include <allegro5/allegro_audio.h>
 
 #define NIVEAU_BATIMENT 5
 #define ARGENT_INIT 500000
@@ -19,17 +20,32 @@
 #define MODE_COMMUNISTE 0
 #define MODE_CAPITALISTE 1
 #define MODE_NON_CHOISI -1
-#define MAX_PARCOURS 100
-#define LG_MAX_PARCOURS 50
-#define MAX_PARCOURS_CONSTRUCTION 50
-#define MAX_PARCOURS_CHATEAU 100
-#define MAX_PARCOURS_CENTRALE 100
+// VERIFIER LES LIMITES !!!!!!
+#define MAX_PARCOURS 5000
+#define LG_MAX_PARCOURS 200
+#define MAX_PARCOURS_CONSTRUCTION 1000
+#define MAX_PARCOURS_CHATEAU 1000
+#define MAX_PARCOURS_CENTRALE 1000
+//////// ATTENTION AUX LIMITES
+#define NOM_FICHIER "../mathis.txt"
+#define NB_TIC_TIMER_SAUVEGARDE 20
+#define NB_SEC_PAR_CYCLE 3
 
 enum niveauConstruction {RUINE, TERRAIN_VAGUE ,CABANE, MAISON, IMMEUBLE, GRATTE_CIEL};
+enum modeBoucle {STANDARD, PAUSE, AFFICHAGE_RESEAU_EAU, AFFICHAGE_RESEAU_ELEC};
+enum retourMenuPause {JOUER, QUITTER, SAUVEGARDER, CHARGER};
+
+typedef struct {
+   ALLEGRO_SAMPLE *sonConstructionRoute;
+   ALLEGRO_SAMPLE *sonConstructionCentrale;
+   ALLEGRO_SAMPLE *sonConstructionChateauEau;
+   ALLEGRO_SAMPLE *sonConstructionMaison;
+}Son;
 
 typedef struct {
 
 }BoiteOutils;
+
 
 typedef struct {
     int source; // Index de la source dans le tableau monJeu.elements
@@ -37,6 +53,7 @@ typedef struct {
     int lgParcours; // Longueur du PARCOURS en comptant la source et la destination, soit la distance + 2
     bool estPlusCourt; // Est ce que le parcours pointé par INDEXPARCOURS est le plus court des parcours entre SOURCE et DEST
     int indexParcours; // Index du PARCOURS dans le tableau monJeu.tabParcours
+    bool actif; // TRUE si le parcours est actif et FALSE sinon
 }InfoParcours;
 
 typedef struct {
@@ -63,7 +80,8 @@ typedef struct {
     int tabTXT[LIGNES_TAB][COLONNES_TAB + 1]; // Grille du jeu
     int tabParcoursChateauActif[MAX_PARCOURS_CHATEAU]; // Contient 0 si ce PARCOURS n'est pas utilisé pour fournir de l'eau et 1 sinon
     int tabParcoursCentraleActif[MAX_PARCOURS_CENTRALE]; // Contient 0 si ce PARCOURS n'est pas utilisé pour fournir de l'éléectricité et 1 sinon
-
+    // Contient le MODE dans lequel nous sommes en train de parcourir les EVENT traités par la boucle ALLEGRO
+    int modeBoucle;
 }Jeu;
 
 
@@ -96,6 +114,7 @@ int evolutionConstruction();
 void insererDansTableau(int racine, int branche);
 bool estDansZone (int k, int x, int y);
 void detectionElementsConnectes(int numeroElement);
+bool detecteSiOnPeutPoserConstruction(int numeroElement, int tailleX, int tailleY, int positioncurseurX, int positioncurseurY);
 void test();
 void afficherEltConnectes(int numeroElement);
 void afficheRoute(int *ptrRoute, int distance);
@@ -119,8 +138,15 @@ void majApresAjoutConstruction(int i); // A appeler lorsque l'on ajoute une cons
 void majApresAjoutElement(int numElt);
 void initCapaciteChateauxEtCentrales();
 int rechercheReseauxEaux(int indexElt, char *ptr);
-void afficheReseauxEaux();
-
+void actualiseReseauxEaux();
+int rechercheReseauxElec(int indexElt, char *ptr);
+void actualiseReseauxElec();
+void ecrireFichierTexte(char *nomFichier);
+void lireFichierTexte(char *nomFichier);
+int issueMenuPause(int xSouris, int ySouris, int entreeMenuPause, Image image, ALLEGRO_EVENT_QUEUE* queue);
+void reinitEtatRessourcesDesConstructions();
+void afficheTousParcours();
+void initElementsConnectes();
 
 /// FIN
 
