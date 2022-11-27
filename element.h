@@ -67,6 +67,7 @@ typedef struct {
     // Et contient un nombre N (<> de -1) si le ième element du jeu fournit une quantité N d'électricité (si i est une CENTRALE) ou N eaux (si i est un CHATEAU)
     int tabFournitureRessources[MAX_CONSTRUCTION];
     char labelAlimentationEau[LG_LABEL_ALIMENTATION_EAU];
+    char labelAlimentationElec[LG_LABEL_ALIMENTATION_EAU];
 }Element;
 
 
