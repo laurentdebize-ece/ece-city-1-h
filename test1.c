@@ -9,12 +9,39 @@
 #define ECRAN_LONGUEUR 2880
 #define ECRAN_LARGEUR 1694
 #define OR2 al_map_rgb(255,235,20)
+//#define JAUNE al_map_rgba(218,223,56, 2)
+#define JAUNE al_map_rgba(156,148,73, 2)
 #define BLANC al_map_rgb(255,255,255)
-#define BLEU al_map_rgb(0, 123, 255)
+#define BLEU al_map_rgba(0, 123, 255, 2)
+//#define BLEU al_map_rgba(56, 196, 223, 2)
+#define ROUGE al_map_rgba(248, 96, 96, 2)
 
 #define NOIR al_map_rgb(0,0,0)
 
 ///////////////////////// AFFICHAGE.C ////////////////////
+void initSonConstruction(Son son){
+    al_init_acodec_addon();
+    al_reserve_samples(4);
+    son.sonConstructionRoute = al_load_sample("../Son_sonConstructionRoute.ogg");
+    son.sonConstructionCentrale = al_load_sample("../Son_sonConstructionCentrale.ogg");
+    son.sonConstructionChateauEau = al_load_sample("../Son_sonConstructionChateau.ogg");
+    son.sonConstructionMaison = al_load_sample("../Son_sonConstructionMaison.ogg");
+    //if (!son.sonConstructionRoute )
+}
+void sonConstruction(Son son, int typeSon){
+    if(typeSon == 1){
+        al_play_sample(son.sonConstructionRoute, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+    if(typeSon == 2){
+        al_play_sample(son.sonConstructionChateauEau, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+    if(typeSon == 3){
+        al_play_sample(son.sonConstructionMaison, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+    if(typeSon == 4){
+        al_play_sample(son.sonConstructionCentrale, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+}
 
 void ecrireFichierTextePourSauvegarderFichierTexte(char *nomFichier){
     FILE *ifs = fopen(nomFichier, "w+");
@@ -63,7 +90,7 @@ void musiqueFond(){
     al_init_acodec_addon();
     al_reserve_samples(1);
     ALLEGRO_SAMPLE *son1 = al_load_sample("../son1.ogg");
-    al_play_sample(son1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+    al_play_sample(son1, 0.2, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 
 void surpassageCase (int xSouris, int ySouris){
@@ -265,9 +292,8 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
                 return -1;
             }
             monJeu.modeBoucle = AFFICHAGE_RESEAU_EAU;
-            majApresEvolutionNiveauConstruction();
-            actualiseReseauxEaux();
-            afficheStatutDesRessourcesParConstruction ();
+            //actualiseReseauxEaux();
+            //afficheStatutDesRessourcesParConstruction ();
             /*
             for(int i = 0; i<monJeu.nbElements ; i++){
                 if(monJeu.element[i].type == ROUTE){
@@ -279,7 +305,11 @@ int clicDansCase (int xSouris, int ySouris, Image image, ALLEGRO_EVENT event, AL
     // On verifie si on est sur la fonction AFFICHAGE RESEAU ELEC
     if(xSouris >= 2521 && xSouris <= 2807) {
         if (ySouris >= 867 && ySouris <= 906) {
-            //abort();
+            if (AFFICHAGE_RESEAU_ELEC == monJeu.modeBoucle) {
+                monJeu.modeBoucle = STANDARD;
+                return -1;
+            }
+            monJeu.modeBoucle = AFFICHAGE_RESEAU_ELEC;
         }
     }
     return (-1);
@@ -478,22 +508,7 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
     // Maintenant que l'on a parcouru toute la grille pour refaire l'affichage graphique
     // Nous allons parcourir les ELEMENTS pour afficher le LABEL correspondant au mode d'affichage en cours
     if (AFFICHAGE_RESEAU_EAU == monJeu.modeBoucle) {
-        int i,j;
-        char ptr[LG_LABEL];
-        for (int k=0; k<monJeu.nbElements; k++) {
-            i = monJeu.element[k].affichageElement.positionY;
-            j = monJeu.element[k].affichageElement.positionX;
-            if (monJeu.element[k].type == CONSTRUCTION){
-                // On est dans la BOUCLE ALLEGRO
-                // On est dans le MODEBOUCLE = AFFICHAGE_RESEAU_EAU
-                // On ne veut pas afficher le bitmpa mais le label d'état d'alimentation de la CONSTRUCTION en eau
-                if (monJeu.element[k].labelAlimentationEau) al_draw_text(reseauEau, BLEU, tabCase[i][j].x, tabCase[i][j].y, 0, monJeu.element[k].labelAlimentationEau);
-             }
-            else if (monJeu.element[k].type == CHATEAU){
-                sprintf(ptr, "CHATEAU %02d", k);
-                al_draw_text(reseauEau, BLEU, tabCase[i][j].x, tabCase[i][j].y, 0, ptr);
-            }
-        }
+        al_draw_filled_rectangle(0, 0, 2880, 1694, al_map_rgba(20, 20, 20, 200));
         // Maintenant on va parcourir tous les PARCOURS ACTIFS issus des CHATEAUX d'EAU pour les afficher en bleu
         for (int i = 0; i < MAX_PARCOURS_CHATEAU; i++) {
             if (monJeu.tabParcoursChateau[i].actif) {
@@ -507,7 +522,14 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
                 for(int j=1; j<lg-1; j++){
                     indexEltJeu = monJeu.tabParcours[indexParcours][j];
                     if (ROUTE != monJeu.element[indexEltJeu].type) {
-                        printf ("ERREUR dans affichage\n");
+                        printf ("ERREUR dans affichage : %dème ELT  %d pas une ROUTE mais %d (PARCOUR %d)\n", j,
+                                indexEltJeu, monJeu.element[indexEltJeu].type, indexParcours);
+                        afficheParcours(indexParcours, -1);
+                        afficheStatutDesRessourcesParConstruction();
+                        afficheTousParcours();
+                        afficheTabParcoursChateau();
+                        afficheTabParcoursCentrale();
+                        abort();
                         return;
                     }/*
                     printf("affichage case bleu %d , %d , %d , %d", monJeu.element[indexEltJeu].affichageElement.positionX, monJeu.element[indexEltJeu].affichageElement.positionY,
@@ -523,10 +545,83 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
 
             }
         }
+        int i,j;
+        char ptr[LG_LABEL];
+        ALLEGRO_COLOR couleur = BLANC;
+        for (int k=0; k<monJeu.nbElements; k++) {
+            i = monJeu.element[k].affichageElement.positionY;
+            j = monJeu.element[k].affichageElement.positionX;
+            if (monJeu.element[k].type == CONSTRUCTION){
+                // On est dans la BOUCLE ALLEGRO
+                // On est dans le MODEBOUCLE = AFFICHAGE_RESEAU_EAU
+                // On ne veut pas afficher le bitmpa mais le label d'état d'alimentation de la CONSTRUCTION en eau
+                if (!monJeu.element[k].isWatered) couleur = ROUGE;
+                else couleur = BLANC;
+                if (monJeu.element[k].labelAlimentationEau) al_draw_text(reseauEau, couleur, tabCase[i][j].x, tabCase[i][j].y, 0, monJeu.element[k].labelAlimentationEau);
+            }
+            else if (monJeu.element[k].type == CHATEAU){
+                if (!monJeu.element[k].capacite) couleur = ROUGE;
+                else couleur = BLANC;
+                sprintf(ptr, "CHATEAU#%02d (reste %03d/%03d)", k, monJeu.element[k].capacite, CAPA_CHATEAU);
+                al_draw_text(reseauEau, couleur, tabCase[i][j].x, tabCase[i][j].y, 0, ptr);
+            }
+        }
+    }
+    if (AFFICHAGE_RESEAU_ELEC == monJeu.modeBoucle) {
+        al_draw_filled_rectangle(0, 0, 2880, 1694, al_map_rgba(20, 20, 20, 200));
+        // Maintenant on va parcourir tous les PARCOURS ACTIFS issus des CENTRALE pour les afficher en jaune
+        for (int i = 0; i < MAX_PARCOURS_CENTRALE; i++) {
+            if (monJeu.tabParcoursCentrale[i].actif) {
+                if (TRACE) printf("Parcours %d ACTIF : ", i);
+                //al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX+monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
+                //afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
+                int lg = monJeu.tabParcoursCentrale[i].lgParcours;
+                int indexParcours = monJeu.tabParcoursCentrale[i].indexParcours;
+                int indexEltJeu;
+                int ligneSouris, colonneSouris;
+                for(int j=1; j<lg-1; j++){
+                    indexEltJeu = monJeu.tabParcours[indexParcours][j];
+                    if (ROUTE != monJeu.element[indexEltJeu].type) {
+                        printf ("ERREUR dans affichage 2\n");
+                        return;
+                    }/*
+                    printf("affichage case bleu %d , %d , %d , %d", monJeu.element[indexEltJeu].affichageElement.positionX, monJeu.element[indexEltJeu].affichageElement.positionY,
+                         monJeu.element[indexEltJeu].affichageElement.positionX+monJeu.element[indexEltJeu].affichageElement.largeurX*TAILLE_CASE,
+                         monJeu.element[indexEltJeu].affichageElement.positionY+monJeu.element[indexEltJeu].affichageElement.largeurY*TAILLE_CASE);
+                    */
+                    ligneSouris = monJeu.element[indexEltJeu].affichageElement.positionY;
+                    colonneSouris = monJeu.element[indexEltJeu].affichageElement.positionX;
+                    al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x, tabCase[ligneSouris][colonneSouris].y,
+                                             tabCase[ligneSouris][colonneSouris].x + monJeu.element[indexEltJeu].affichageElement.largeurX*TAILLE_CASE,
+                                             tabCase[ligneSouris][colonneSouris].y + monJeu.element[indexEltJeu].affichageElement.largeurY*TAILLE_CASE, JAUNE);
+                }
 
+            }
+        }
+        int i,j;
+        char ptr[LG_LABEL];
+        ALLEGRO_COLOR couleur = BLANC;
+        for (int k=0; k<monJeu.nbElements; k++) {
+            i = monJeu.element[k].affichageElement.positionY;
+            j = monJeu.element[k].affichageElement.positionX;
+            if (monJeu.element[k].type == CONSTRUCTION){
+                // On est dans la BOUCLE ALLEGRO
+                // On est dans le MODEBOUCLE = AFFICHAGE_RESEAU_ELEC
+                // On ne veut pas afficher le bitmpa mais le label d'état d'alimentation de la CONSTRUCTION en eau
+                if (!monJeu.element[k].isPowered) couleur = ROUGE;
+                else couleur = BLANC;
+                if (monJeu.element[k].labelAlimentationElec) al_draw_text(reseauEau, couleur, tabCase[i][j].x, tabCase[i][j].y, 0, monJeu.element[k].labelAlimentationElec);
+            }
+            else if (monJeu.element[k].type == CENTRALE){
+                if (!monJeu.element[k].capacite) couleur = ROUGE;
+                else couleur = BLANC;
+                sprintf(ptr, "CENTRALE#%02d (reste %04d/%04d)", k, monJeu.element[k].capacite, CAPA_CENTRALE);
+                al_draw_text(reseauEau, couleur, tabCase[i][j].x, tabCase[i][j].y, 0, ptr);
+            }
+        }
     }
 
-    //SOURIS :
+        //SOURIS :
     al_draw_filled_rectangle(tabCase[ligneSouris][colonneSouris].x+3,tabCase[ligneSouris][colonneSouris].y+3,
                              tabCase[ligneSouris][colonneSouris].x+TAILLE_CASE-4,tabCase[ligneSouris][colonneSouris].y+TAILLE_CASE-4,
                              al_map_rgba(20,20,20,200));
@@ -580,8 +675,8 @@ void affichage(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COL
         bool result =  detecteSiOnPeutPoserConstruction(2, LARGEUR_CONSTRUCTION, LONGUEUR_CONSTRUCTION, ligneSouris, colonneSouris);
         if(result == false){
             al_draw_bitmap(image.maison1, xSouris, ySouris, 0);
-            printf("ligne souris : %d", ligneSouris);
-            printf("colone souris : %d", colonneSouris);
+            if (0) printf("ligne souris : %d", ligneSouris);
+            if (0) printf("colone souris : %d", colonneSouris);
             //abort();
         }
         al_draw_bitmap(image.terrainVague, xSouris, ySouris, 0);
@@ -733,7 +828,7 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
     }
 
     //argent
-    monJeu.argent = 500000;
+    //monJeu.argent = 500000;
     char monTxt[50];
     sprintf(monTxt, "%d", monJeu.argent);
 
@@ -752,7 +847,7 @@ void affichageMenu(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB]
     if(xSouris >= 1210 && xSouris <= 1720){
         if(ySouris >= 525 && ySouris <= 625){
             al_draw_rectangle(1210, 525, 1720, 625, BLANC, 6);
-            ecrireFichierTextePourSauvegarderFichierTexte("../file1.txt");
+            //ecrireFichierTextePourSauvegarderFichierTexte("../file1.txt");
         }
     }
     if(xSouris >= 1210 && xSouris <= 1720){
@@ -794,29 +889,6 @@ bool clicDansCase2(int xSouris, int ySouris){
     }
 
 }
-void initSonConstruction(Son son){
-    al_init_acodec_addon();
-    al_reserve_samples(4);
-    son.sonConstructionRoute = al_load_sample("../Son/sonConstructionRoute");
-    son.sonConstructionCentrale = al_load_sample("../Son/sonConstructionCentrale");
-    son.sonConstructionChateauEau = al_load_sample("../Son/sonConstructionChateauEau");
-    son.sonConstructionMaison = al_load_sample("../Son/sonConstructionMaison");
-}
-void sonConstruction(Son son, int typeSon){
-    if(typeSon == 1){
-        al_play_sample(son.sonConstructionRoute, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
-    }
-    if(typeSon == 2){
-        al_play_sample(son.sonConstructionChateauEau, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
-    }
-    if(typeSon == 3){
-        al_play_sample(son.sonConstructionMaison, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
-    }
-    if(typeSon == 4){
-        al_play_sample(son.sonConstructionCentrale, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
-    }
-}
-
 
 void affichageModeJeu2(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_TAB][COLONNES_TAB + 1],Image image,int ligneSouris,int colonneSouris, int xSouris, int ySouris) {
     //FOND :
@@ -850,32 +922,108 @@ void affichageModeJeu2(Case tabCase[LIGNES_TAB][COLONNES_TAB],int tabTXT[LIGNES_
     surpassageCase(xSouris, ySouris);
     al_flip_display();
 }
-
-bool issueMenuPause(int xSouris, int ySouris, int entreeMenuPause, Image image, ALLEGRO_EVENT_QUEUE* queue){
+// cette fonction renvoie 1 si l'utilisateur décide de SAUVEGARDER
+// 2 s'il souhaite CHARGER la dernière  partie
+// et 0 s'il veut QUITTER
+// 3 pour charger le USE CASE
+int issueMenuPause(int xSouris, int ySouris, int entreeMenuPause, Image image, ALLEGRO_EVENT_QUEUE* queue){
     if(xSouris >= 1210 && xSouris <= 1720){
         if(ySouris >= 525 && ySouris <= 625){
+            // option SAUVEGARDER
             //sauvegarder();
-            al_draw_bitmap(image.sauvegarde, 190, 0, 0);
+            ecrireFichierTexte(NOM_FICHIER);
+            //al_draw_bitmap(image.sauvegarde, 190, 0, 0);
             //al_pause_event_queue(queue, true);
-            al_flip_display();
-            sleep(1);
+            //al_flip_display();
+            //sleep(1);
+            return SAUVEGARDER;
+            //puts("CAS 1");
         }
     }
     if(xSouris >= 1210 && xSouris <= 1720){
         if(ySouris >= 643 && ySouris <= 743){
-            //charger  ();
+            // option CHARGER
+            lireFichierTexte(NOM_FICHIER);
+            //puts("CAS 2");
+            return CHARGER;
+        }
+    }
+    if(xSouris >= 1210 && xSouris <= 1720){
+        if(ySouris >= 750 && ySouris <= 760){
+            // option cachée permet de CHARGER le USE CASE
+            ajouterElement(1,10,8);
+            ajouterElement(0,16,8);
+            ajouterElement(3,14,8);
+            ajouterElement(3,15,8);
+            ajouterElement(2,14,4);
+            ajouterElement(3,14,7);
+            ajouterElement(3,13,14);
+            ajouterElement(3,14,14);
+            ajouterElement(3,15,14);
+            ajouterElement(3,16,14);
+            ajouterElement(3,17,14);
+            ajouterElement(3,18,14);
+            ajouterElement(3,19,14);
+            ajouterElement(3,20,14);
+            ajouterElement(3,21,14);
+            ajouterElement(3,22,14);
+            ajouterElement(2,23,14);
+            ajouterElement(2,15,15);
+            return CHARGER;
         }
     }
     if(xSouris >= 1210 && xSouris <= 1720){
         if(ySouris >= 762 && ySouris <= 862){
-            //abort();
-            return true;
+            // Nous sommes dans l'option QUITTER
+            //puts("CAS 3");
+            return QUITTER;
         }
     }
-    //bouton pause
     if(xSouris >= 1210 && xSouris <= 1720){
-        if(ySouris >= 525 && ySouris <= 625){
-            //sauvegarder();
+        if(ySouris >= 863 && ySouris <= 900){
+            // option cachée -- DEBUG CACHE
+
+/*            // Dans un premier temps on réinitialise le statut de l'alimentation en eau et électricité
+            reinitEtatRessourcesDesConstructions();
+            // Puis on rescanne le réseau electrique
+            detecteConstructionsAlimenteesParCentrale();
+            // Puis on rescanne le réseau d'eau
+            detecteConstructionAlimenteesparChateau();
+            // Puis on vérifie la viabilité
+            detecteConstructionsViables();
+            actualiseReseauxEaux();
+            actualiseReseauxElec();
+*/
+            initElementsConnectes();
+            for (int i = 0; i < MAX_CONSTRUCTION; i++) {
+                detectionElementsConnectes(i);
+            }
+            // Initialisation des PARCOURS
+            monJeu.nbParcours = 0;
+            monJeu.nbParcoursCentrale = 0;
+            monJeu.nbParcoursChateau = 0;
+            monJeu.nbParcoursConstruction = 0;
+            initTabParcours();
+            initTabParcoursCentrale();
+            initTabParcoursChateau();
+            recenseParcours();
+
+            afficheTabParcoursChateau();
+            afficheTabParcoursCentrale();
+
+            classeParcoursCentrale();
+            classeParcoursChateau();
+            reinitEtatRessourcesDesConstructions();
+            initCapaciteChateauxEtCentrales();
+            detecteConstructionsAlimenteesParCentrale();
+            detecteConstructionAlimenteesparChateau();
+            actualiseReseauxEaux();
+            actualiseReseauxElec();
+
+            afficheStatutDesRessourcesParConstruction();
+            afficheTousParcours();
+            afficheTabParcoursChateau();
+            afficheTabParcoursCentrale();
         }
     }
 }
@@ -946,7 +1094,14 @@ int carte() {
     image.immeuble = al_load_bitmap("../images/immeuble.png");
     image.maison1 = al_load_bitmap("../images/maison 1.png");
     image.gc1 = al_load_bitmap("../images/g-c 1.png");
-    initSonConstruction(son);
+    //initSonConstruction(son);
+    al_init_acodec_addon();
+    al_reserve_samples(4);
+    son.sonConstructionRoute = al_load_sample("../Son_sonConstructionRoute.ogg");
+    son.sonConstructionCentrale = al_load_sample("../Son_sonConstructionCentrale.ogg");
+    son.sonConstructionChateauEau = al_load_sample("../Son_sonConstructionChateau.ogg");
+    son.sonConstructionMaison = al_load_sample("../Son_sonConstructionMaison.ogg");
+
     file = fopen("../test.txt","r");
     for (int i = 0; i < LIGNES_TAB; ++i) {
         for (int j = 0; j < COLONNES_TAB + 1; ++j) {
@@ -976,10 +1131,15 @@ int carte() {
     int rapportReduction = 60;
     double currentTime = 0;
 
+    int counterAttentePause = 0;
     int returnClic = -10;
     int entrerMenuPause = 0;
+    int retourMenuPause = JOUER;
     int conteur = 0;
-    bool route, centrale, chateau, construction = false;
+    bool route = false;
+    bool centrale = false;
+    bool chateau = false;
+    bool construction = false;
     int impots = 0;
     while (!end3) {
         //Dans le cas ou l'utilisateur fait rien, il est inactif, spectateur du jeu
@@ -1014,9 +1174,11 @@ int carte() {
 
             case ALLEGRO_EVENT_TIMER:
                 if ((counter++)%rapportReduction == 0) {
-                    conteur++;
+                    //conteur++;
+                    if (!entrerMenuPause) monJeu.cycle++;
                     //toutes les 15 secondes
-                    if(conteur%3 == 0){
+                    //if(conteur%3 == 0){
+                    if(monJeu.cycle%NB_SEC_PAR_CYCLE == 0){
                         impots = evolutionConstruction();
                         monJeu.argent += impots;
                     }
@@ -1032,7 +1194,20 @@ int carte() {
                     affichageMenu(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent);
                     break;
                 }
-                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent, construction, centrale, route, chateau, returnClic, reseauEau, conteur);
+                if (SAUVEGARDER == retourMenuPause) {
+                    // NOUS ALLONS AFFICHER L'INFORMATION "SAUVEGARDER" PDT QQ SECONDES
+                    al_draw_bitmap(image.sauvegarde, 190, 0, 0);
+                    //al_pause_event_queue(queue, true);
+                    al_flip_display();
+                    if (NB_TIC_TIMER_SAUVEGARDE < (counterAttentePause++)) {
+                        // On a terminé d'afficher le panneau de SAUVEGARDE
+                        retourMenuPause = JOUER;
+                        counterAttentePause = 0;
+                    }
+                    break;
+                }
+                //affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent, construction, centrale, route, chateau, returnClic, reseauEau, conteur);
+                affichage(tabCase,monJeu.tabTXT,image,ligneSouris,colonneSouris,xSouris,ySouris,argent, construction, centrale, route, chateau, returnClic, reseauEau, monJeu.cycle);
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
@@ -1042,19 +1217,19 @@ int carte() {
                     // Dans ce cas, l'un des 4 ELT est en train d'être ajouté, il faut vérifier si on peut l'ajouter à notre grille
                     if (construction){
                         ajouterElement(CONSTRUCTION,colonneSouris,ligneSouris);
-                        sonConstruction(son,3);
+                        sonConstruction(son, 3);
                     }
                     else if (centrale){
                         ajouterElement(CENTRALE,colonneSouris,ligneSouris);
-                        sonConstruction(son,4);
+                        sonConstruction(son, 4);
                     }
-                    else if (route{
+                    else if (route){
                         ajouterElement(ROUTE,colonneSouris,ligneSouris);
-                        sonConstruction(son,1);
+                        sonConstruction(son, 1);
                     }
                     else if (chateau){
                         ajouterElement(CHATEAU,colonneSouris,ligneSouris);
-                        sonConstruction(son,2);
+                        sonConstruction(son, 2);
                     }
                 }
 
@@ -1063,9 +1238,14 @@ int carte() {
                 //route = false;
                 chateau = false;
                 if (entrerMenuPause){
-                    if (!issueMenuPause(xSouris, ySouris,entrerMenuPause, image, queue)){
-                        entrerMenuPause = false;
+                    retourMenuPause = issueMenuPause(xSouris, ySouris,entrerMenuPause, image, queue);
+                    if (retourMenuPause == QUITTER) return 0;
+                    if (retourMenuPause == SAUVEGARDER) {
                     }
+                    else if (retourMenuPause == CHARGER) {
+                        retourMenuPause = JOUER;
+                    }
+                    entrerMenuPause = false;
                     break;
                 }
                 //centrale passage souris
@@ -1223,8 +1403,18 @@ void initTabParcoursChateau(){
     }
 }
 
-void
-initialisationJeu(){
+void initElementsConnectes(){
+    for (int j = 0; j < MAX_CONSTRUCTION; j++) {
+        monJeu.element[j].nbElementConnects = 0;
+        //Initialise les tableaux de connexité des constructions à -1
+        for (int i = 0; i < MAX_CONSTRUCTION ; i++) {
+            monJeu.element[j].listeIndexElementsConnectes[i] = -1;
+            monJeu.element[j].tabDistanceAvecInfraConnectees[i] = -1;
+        }
+    }
+
+}
+void initialisationJeu(){
 
     monJeu.argent = ARGENT_INIT;
     monJeu.niveauEducation = 0;//niveau edu global = moyenne entre toutes les zones, édu et non édu
@@ -1244,6 +1434,7 @@ initialisationJeu(){
     monJeu.coutConstruction[ROUTE] = PRIX_ROUTE;
     monJeu.nbElements = 0;
     monJeu.modeBoucle = STANDARD;
+
 
 
     for (int j = 0; j < MAX_CONSTRUCTION; j++) {
@@ -1273,13 +1464,27 @@ initialisationJeu(){
 
 
 void afficheParcours(int indexParcours, int lgParcours){
+    if (lgParcours > LG_MAX_PARCOURS) {
+        printf ("ERREUR AFFICHAGE PARCOURS\n");
+        abort();
+    }
+    if (-1 == lgParcours) lgParcours = LG_MAX_PARCOURS;
+    printf ("PRC%03d:", indexParcours);
     for(int i=0; i<lgParcours; i++){
+        if (-1 == monJeu.tabParcours[indexParcours][i]) break;
         printf("%d",monJeu.tabParcours[indexParcours][i]);
         if (i!=(lgParcours-1)) printf("-->");
     }
     puts("");
 }
 
+void afficheTousParcours(){
+    if (!monJeu.nbParcours) return;
+    printf("%2d PARCOURS DANS JEU\n", monJeu.nbParcours);
+    for (int i=0;i<monJeu.nbParcours;i++){
+        afficheParcours(i, LG_MAX_PARCOURS);
+    }
+}
 void afficheTabParcoursConstruction(){
     // Si aucun parcours on sort
     if (!monJeu.nbParcoursConstruction) return;
@@ -1324,6 +1529,13 @@ void afficheTabParcoursCentrale(){
 }
 
 int ajouteParcours (int *ptrParcours, int lgParcours){
+    // On vérifie que l'on peut encore ajouter un PARCOURS
+    if (monJeu.nbParcours >= MAX_PARCOURS) {
+        puts("ERREUR AJOUTER PARCOURS");
+        abort();
+    }
+    // Si le Parcours est <= à 2 cases, on ne l'ajoute pas
+    if (lgParcours <= 2) return -1;
     if (monJeu.nbParcours == MAX_PARCOURS) {
         if(TRACE)printf("ERREUR AJOUTPARCOURS : MAX_PARCOURS atteint\n");
         return -1;
@@ -1377,6 +1589,10 @@ int ajouteParcours (int *ptrParcours, int lgParcours){
     }
     // On copie le parcours dans le tableau de parcours du jeu
     for (int i=0;i<lgParcours;i++){
+        if (i >= LG_MAX_PARCOURS) {
+            puts("ERREUR LG_MAX_PARCOURS");
+            abort ();
+        }
         monJeu.tabParcours[monJeu.nbParcours][i] = ptrParcours[i];
     }
     monJeu.nbParcours ++;
@@ -1447,11 +1663,17 @@ int renvoietailleY(int typeElement){
 }
 
 void ajouterElement(int typeElement, int positionX, int positionY){
+    // On commence par verifier la capacité d'ajout
+    if (monJeu.nbElements >= MAX_CONSTRUCTION) {
+        puts("ERREUR AJOUTER ELEMENT MAX_CONSTRUCTION");
+        abort ();
+    }
+
     // Vérification de l'intégrité des variables X, Y
     int tailleX = renvoietailleX(typeElement);
     int tailleY = renvoietailleY(typeElement);
     if(!detecteSiOnPeutPoserConstruction(typeElement, tailleX, tailleY, positionX, positionY)) return;
-    if (positionX+tailleX >= MAX_COLONNES || positionY+tailleY >= MAX_LIGNES) {
+    if (positionX+tailleX >= MAX_COLONNES+1 || positionY+tailleY >= MAX_LIGNES+1) {
         // IL FAUDRA PRENDRE EN COMPTE LA LARGEUR ET LA HAUTEUR DE L'ELT !!!!!!!!!!
         printf("Erreur position dans AJOUTERELEMENT (%d/%d,%d/%d)\n", positionX, MAX_COLONNES, positionY, MAX_LIGNES);
         return;
@@ -1467,7 +1689,6 @@ void ajouterElement(int typeElement, int positionX, int positionY){
                //abort();
 
             }
-            
             monJeu.element[monJeu.nbElements].actif = ACTIF;
             monJeu.argent = monJeu.argent - PRIX_ROUTE;
             monJeu.element[monJeu.nbElements].affichageElement.positionX = positionX;
@@ -1588,6 +1809,8 @@ void ajouterElement(int typeElement, int positionX, int positionY){
             break;
     }
     majApresAjoutElement(monJeu.nbElements-1);
+    //majApresEvolutionNiveauConstruction();
+
 }
 
 
@@ -1610,11 +1833,12 @@ void UpdateaffichageConsole(){
 
 
 void regresserConstruction(int numeroElement){
-    monJeu.element[numeroElement].niveau = monJeu.element[numeroElement].niveau-1;
+    if (monJeu.element[numeroElement].niveau>0) monJeu.element[numeroElement].niveau = monJeu.element[numeroElement].niveau-1;
+
 }
 
 void ameliorerConstruction(int numeroElement){
-    monJeu.element[numeroElement].niveau = monJeu.element[numeroElement].niveau+1;
+    if (monJeu.element[numeroElement].niveau<5) monJeu.element[numeroElement].niveau = monJeu.element[numeroElement].niveau+1;
 }
 
 
@@ -1720,10 +1944,17 @@ int evolutionConstruction(){
     }
     for (int i=0;i<monJeu.nbElements;i++){
         if(monJeu.element[i].actif != ACTIF) continue;
-        if (monJeu.modeJeu == MODE_COMMUNISTE && !monJeu.element[i].viable) ChangerNiveauConstruction(i,-1);
-        else if(monJeu.element[i].viable){//ça veut dire qu'on est en mode capitaliste
+        //on veut quand mm qu'il soit connecté à la route
+        else if(monJeu.element[i].viable && monJeu.modeJeu == MODE_COMMUNISTE){//ça veut dire qu'on est en mode communiste
             ChangerNiveauConstruction(i,1);
         }
+        else if(!monJeu.element[i].viable && monJeu.modeJeu == MODE_COMMUNISTE){//ça veut dire qu'on est en mode communiste
+            ChangerNiveauConstruction(i,-1);
+        }
+        else{
+            ChangerNiveauConstruction(i, 1);
+        }
+
         impots += monJeu.element[i].nbHabitantElement;
     }
     majApresEvolutionNiveauConstruction();
@@ -1769,8 +2000,8 @@ bool detecteSiOnPeutPoserConstruction(int numeroElement, int tailleX, int taille
             for(int k = 0; k<monJeu.nbElements; k++){
                 //if(numeroElement != k && monJeu.element[k].actif == ACTIF){//if(1)printf("Test interco : %d en (%d,%d) avec %d en %d,%d)\n", numeroElement,x,y,k,monJeu.element[k].affichageElement.positionX,monJeu.element[k].affichageElement.positionY);
                     if(estDansZone (k, x, y)){// == monJeu.element[k].affichageElement.positionX && y == monJeu.element[k].affichageElement.positionY){
-                        printf("position X : %d", positioncurseurX);
-                        printf("position Y = %d", positioncurseurY);
+                        if (0) printf("position X : %d", positioncurseurX);
+                        if (0) printf("position Y = %d", positioncurseurY);
                         return false;
                     }
                 //}
@@ -1807,44 +2038,51 @@ void detectionElementsConnectes(int numeroElement){
         }
     }
 }
-void lireFichierTextePourAjouterElement(char *nomFichier) {
+void lireFichierTexte(char *nomFichier) {
     FILE *ifs = fopen(nomFichier, "r");
-    int typeElement, positionX, positionY , taille, numeroPartie;
+    int typeElement, positionX, positionY , taille, numeroPartie, niveau, argent, cycle;
 
     if (!ifs) {
         if(TRACE)printf("Erreur de lecture fichier\n");
         exit(-1);
     }
-    fscanf(ifs, "%d", &numeroPartie);
-    fscanf(ifs, "%d", &taille);
+    fscanf(ifs, "%d\n", &argent);
+    fscanf(ifs, "%d\n", &cycle);
 
     // creer les aretes du graphe
-    for (int i = 0; i < taille; ++i) {
-        fscanf(ifs, "%d%d%d", &typeElement, &positionX, &positionY);
-        ajouterElement(typeElement, positionX, positionY);
+    while (1) {//for (int i = 0; i < taille; ++i) {
+        if (0 < fscanf(ifs, "TYPE=%03d NIVEAU=%03d X=%03d Y=%03d\n", &typeElement, &niveau, &positionX, &positionY)) {
+            //printf("TYPE=%03d X=%03d Y=%03d\n", typeElement, positionX, positionY);
+            ajouterElement(typeElement, positionX, positionY);
+            monJeu.element[monJeu.nbElements-1].niveau = niveau;
+            initConstruction(monJeu.nbElements-1, 0);
+
+        }
+        else break;
     }
+    monJeu.argent = argent;
+    monJeu.cycle = cycle;
     fclose(ifs);
 }
-/*
+
 void ecrireFichierTexte(char *nomFichier) {
     FILE *ifs = fopen(nomFichier, "w");
-    int typeElement, positionX, positionY , taille, numeroPartie;
 
     if (!ifs) {
-        if(TRACE)printf("Erreur d'ouverture de fichier\n");
+        printf("Erreur d'ouverture de fichier\n");
         exit(-1);
     }
-    fprintf(ifs, "%d", &numeroPartie);
-    fprintf(ifs, "%d", &taille);
+    fprintf(ifs, "%d\n", monJeu.argent);
+    fprintf(ifs, "%d\n", monJeu.cycle);
 
     // creer les aretes du graphe
-    for (int i = 0; i < taille; ++i) {
-        fscanf(ifs, "%d%d%d", &typeElement, &positionX, &positionY);
-        ajouterElement(typeElement, positionX, positionY);
+    for (int i = 0; i < monJeu.nbElements; ++i) {
+        fprintf(ifs, "TYPE=%03d NIVEAU=%03d X=%03d Y=%03d\n", monJeu.element[i].type, monJeu.element[i].niveau, monJeu.element[i].affichageElement.positionX,  monJeu.element[i].affichageElement.positionY);
+        //printf("TYPE=%03d NIVEAU=%03d X=%03d Y=%03d\n", monJeu.element[i].type, monJeu.element[i].affichageElement.positionX,  monJeu.element[i].affichageElement.positionY);
     }
     fclose(ifs);
 }
- */
+
 
 
 void test(){
@@ -1968,7 +2206,7 @@ void test(){
 
 
 
-    lireFichierTextePourAjouterElement("../fichierTexteTest1.txt");
+    //lireFichierTextePourAjouterElement("../fichierMathis.txt");
 
 
     printf("%d", monJeu.argent);
@@ -2156,10 +2394,10 @@ void calculeDistanceAvecLesInfraConnectees(int source, int routeCourante, int *p
 }
 
 void afficherTabDistanceInfraConnectees (int numeroElement){
-    if(TRACE)printf("Distance des INFRA connectées à %d : ", numeroElement);
+    if(1)printf("Distance des INFRA connectées à %d : ", numeroElement);
     for(int i = 0; i < MAX_CONSTRUCTION ; i++){
         if(monJeu.element[numeroElement].tabDistanceAvecInfraConnectees[i] != -1){
-            if(TRACE)printf("INFRA %d à %d cases, ", i, monJeu.element[numeroElement].tabDistanceAvecInfraConnectees[i]);
+            if(1)printf("INFRA %d à %d cases, ", i, monJeu.element[numeroElement].tabDistanceAvecInfraConnectees[i]);
         }
     }
     //puts("");
@@ -2188,13 +2426,25 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
     //voir ttes les constructions alimentées par des châteaux d'eaux
     int indexChateauCourant = -1;
     int indexDestination = -1;
+    bool dejaVu[MAX_CONSTRUCTION];
 
+    // On initialise le tableau des ELT deja vus pour tracer les CHATEAUX deja vus
+    for (int i=0;i<MAX_CONSTRUCTION;i++) {
+        dejaVu[i]=false;
+    }
     for (int i=0; i<monJeu.nbParcoursChateau; i++){
         // Est ce que c'est toujours le mm chateau
+        indexChateauCourant = monJeu.tabParcoursChateau[i].source;
+        if (!dejaVu[indexChateauCourant]) {
+            monJeu.element[indexChateauCourant].capacite = CAPA_CHATEAU;
+            dejaVu[indexChateauCourant] = true;
+        }
+        /*
         if(indexChateauCourant != monJeu.tabParcoursChateau[i].source){
-            //monJeu.element[i].capacite = CAPA_CHATEAU;
+            monJeu.element[i].capacite = CAPA_CHATEAU;
             indexChateauCourant = monJeu.tabParcoursChateau[i].source;
         }
+         */
         // Si pour cette CHATEAU la capacite restante est NULLE on passe le tour
         //if(TRACE)printf ("monJeu.element[%d].capacite =%d\n",i,monJeu.element[i].capacite);
         if (monJeu.element[indexChateauCourant].capacite == 0) continue;
@@ -2203,13 +2453,16 @@ void detecteConstructionAlimenteesparChateau(){//affecte la varibale isWatered e
         indexDestination = monJeu.tabParcoursChateau[i].destination;
         if(monJeu.element[indexDestination].type == CONSTRUCTION) {
             if (!monJeu.element[indexDestination].isWatered){
+                if (0) printf ("ELT %d NOT WATERED\n", indexDestination);
                 // Dans ce cas, le CHATEAU va fournir TOUT ou PARTIE de sa capacité en eau restante à cette construction
                 if(monJeu.element[indexChateauCourant].capacite >= (monJeu.element[indexDestination].nbHabitantElement-monJeu.element[indexDestination].waterLevel)){// est ce que la capacité le permet
                     // Le CHATEAU fournit la CAPACITE nécessaire pour alimenter completement la CONSTRUCTION
                     // La CAPACITE du CHATEAU est réduite d'autant
                     monJeu.element[indexChateauCourant].capacite -= (monJeu.element[indexDestination].nbHabitantElement-monJeu.element[indexDestination].waterLevel);
+                    if (0) printf (" CHATEAU %d CAPACITE RESTANTE %d/%d\n", indexChateauCourant, monJeu.element[indexChateauCourant].capacite, CAPA_CHATEAU);
                     // La CONSTRUCTION devient completement ALIMENTEE en EAU
                     monJeu.element[indexDestination].isWatered = true;
+                    if (0) printf ("ELT %d NOT WATERED==>WATERED\n", indexDestination);
                     // On reneigne le tabFournitureRessources de la CONSTRUCTION en cours
                     monJeu.element[indexDestination].tabFournitureRessources[indexChateauCourant] = (monJeu.element[indexDestination].nbHabitantElement-monJeu.element[indexDestination].waterLevel);
                     monJeu.element[indexDestination].waterLevel = monJeu.element[indexDestination].nbHabitantElement;
@@ -2246,11 +2499,18 @@ void detecteConstructionsAlimenteesParCentrale(){
     // sont alimentées
     int indexCentraleCourante = -1;
     int indexDestination = -1;
+    bool dejaVu[MAX_CONSTRUCTION];
+
+    // On initialise le tableau des ELT deja vus pour tracer les CHATEAUX deja vus
+    for (int i=0;i<MAX_CONSTRUCTION;i++) {
+        dejaVu[i]=false;
+    }
     for (int i=0; i<monJeu.nbParcoursCentrale; i++){
-        // On vérifie si on traite toujours la même CENTRALE
-        if (indexCentraleCourante != monJeu.tabParcoursCentrale[i].source){
-            //monJeu.element[i].capacite = CAPA_CENTRALE;
-            indexCentraleCourante = monJeu.tabParcoursCentrale[i].source;
+        // Est ce que c'est toujours le mm centrale
+        indexCentraleCourante = monJeu.tabParcoursCentrale[i].source;
+        if (!dejaVu[indexCentraleCourante]) {
+            monJeu.element[indexCentraleCourante].capacite = CAPA_CENTRALE;
+            dejaVu[indexCentraleCourante] = true;
         }
         // Si pour cette CENTRALE la capacite restante est NULLE on passe le tour
         if (monJeu.element[indexCentraleCourante].capacite == 0) continue;
@@ -2261,7 +2521,7 @@ void detecteConstructionsAlimenteesParCentrale(){
             if (monJeu.element[indexCentraleCourante].capacite >= monJeu.element[indexDestination].nbHabitantElement){
                 monJeu.element[indexDestination].isPowered = true;
                 // On reneigne le tabFournitureRessources de la CONSTRUCTION en cours
-                monJeu.element[indexDestination].tabFournitureRessources[indexCentraleCourante] = monJeu.element[indexCentraleCourante].capacite;
+                monJeu.element[indexDestination].tabFournitureRessources[indexCentraleCourante] = monJeu.element[indexDestination].nbHabitantElement;
                 monJeu.element[indexCentraleCourante].capacite -= monJeu.element[indexDestination].nbHabitantElement;
                 if(TRACE)printf ("CONSTRUCTION n°%02d (%3d ha) alimentée électriquement (capa restante %3d sur Centrale %2d)\n",
                                  indexDestination, monJeu.element[indexDestination].nbHabitantElement,
@@ -2399,9 +2659,10 @@ void majApresEvolutionNiveauConstruction() {
     detecteConstructionAlimenteesparChateau();
     // Puis on vérifie la viabilité
     detecteConstructionsViables();
+    actualiseReseauxEaux();
+    actualiseReseauxElec();
     // DEBUG
     //afficheStatutDesRessourcesParConstruction();
-    //actualiseReseauxEaux();
 }
 
 void recenseParcours(){
@@ -2410,7 +2671,11 @@ void recenseParcours(){
     int *tabCheminParcouru = calloc (MAX_CONSTRUCTION, sizeof(int));
     int *route = calloc(MAX_CONSTRUCTION, sizeof(int));
 
-    // BOUCLE PRINCIPALE : ON PARCOURT TOUS LES ELT DU JEU, SI CE NE SONT PAS DES ROUTES, ON REGARDE TOUS LES PARCOURS VERS LES AUTRES ELTS
+
+        // BOUCLE PRINCIPALE
+    //
+    // ON PARCOURT TOUS LES ELT DU JEU, SI CE NE SONT PAS DES ROUTES, ON REGARDE TOUS LES PARCOURS VERS LES AUTRES ELTS
+    // EN EMPRUNTANT QUE DES ROUTES !!!!!
     for(int i = 0; i<monJeu.nbElements;i++){
         if(monJeu.element[i].actif == ACTIF && monJeu.element[i].type != ROUTE){
             // On initialise le tabCheminParcouru pour éviter de boucler et route pour mémoriser les routes empruntées
@@ -2439,15 +2704,13 @@ void recenseParcours(){
 
 void afficheStatutDesRessourcesParConstruction(){
     // Affiche le statut des alimentations electriques et en eau pour chaque CONSTRUCTION
-    //printf ("afficheStatutDesRessourcesParConstruction", )
     for(int i = 0; i<monJeu.nbElements;i++) {
         if (monJeu.element[i].type == CONSTRUCTION) {
-            printf("ELT %02d : WaterLevel %03d/%03d / Powered %s (", i, monJeu.element[i].waterLevel,
-                   monJeu.element[i].nbHabitantElement, monJeu.element[i].isPowered?"Yes":"No");
+            printf("ELT %02d : WaterLevel %04d/%04d / Powered %s (", i, monJeu.element[i].waterLevel, monJeu.element[i].nbHabitantElement, monJeu.element[i].isPowered?"Yes":"No");
             for (int j = 0; j < monJeu.nbElements; j++) {
                 if (monJeu.element[i].tabFournitureRessources[j] != -1) {
-                    if (monJeu.element[j].type == CENTRALE) printf(" CENTRALE#%02d %03d", j, monJeu.element[i].tabFournitureRessources[j]);
-                    if (monJeu.element[j].type == CHATEAU) printf(" CHATEAU #%02d %03d", j, monJeu.element[i].tabFournitureRessources[j]);
+                    if (monJeu.element[j].type == CENTRALE) printf(" CENTRALE#%02d %04d", j, monJeu.element[i].tabFournitureRessources[j]);
+                    if (monJeu.element[j].type == CHATEAU) printf(" CHATEAU #%02d %04d", j, monJeu.element[i].tabFournitureRessources[j]);
                 }
             }
             printf (" )\n");
@@ -2494,9 +2757,17 @@ void majApresAjoutElement(int numElt) {
     // Puis on recenseParcours
     // Puis on refait les statutRessources
     int index = -1;
+    /*
+    // La on ne regarde que les ELT qui sont connectés
     for (int i = 0; i < monJeu.element[numElt].nbElementConnects; i++) {
         index = monJeu.element[numElt].listeIndexElementsConnectes[i];
         detectionElementsConnectes(index);
+    }
+     */
+
+    initElementsConnectes();
+    for (int i = 0; i < MAX_CONSTRUCTION; i++) {
+        detectionElementsConnectes(i);
     }
     // Initialisation des PARCOURS
     monJeu.nbParcours = 0;
@@ -2514,6 +2785,8 @@ void majApresAjoutElement(int numElt) {
     initCapaciteChateauxEtCentrales();
     detecteConstructionsAlimenteesParCentrale();
     detecteConstructionAlimenteesparChateau();
+    actualiseReseauxEaux();
+    actualiseReseauxElec();
 
     // DEBUG
     int debug = 0;
@@ -2522,7 +2795,6 @@ void majApresAjoutElement(int numElt) {
         afficheTabParcoursChateau();
         afficheTabParcoursCentrale();
         afficheStatutDesRessourcesParConstruction();
-        actualiseReseauxEaux();
         // FIN DEBUG
     }
 }
@@ -2535,16 +2807,86 @@ int rechercheReseauxEaux(int indexElt, char *ptr){
     if (monJeu.element[indexElt].type != CONSTRUCTION) return -1;
     if (!ptr) return -1;
     int lg = 0;
-    sprintf(ptr, "CONSTRUCTION %02d : WaterLevel %03d/%03d ", indexElt, monJeu.element[indexElt].waterLevel, monJeu.element[indexElt].nbHabitantElement);
-    for (int j = 0; j < monJeu.nbElements; j++) {
+    if (monJeu.element[indexElt].isWatered) sprintf(ptr, "%02d FULLY WATERED AT %04d/%04d BY", indexElt, monJeu.element[indexElt].waterLevel, monJeu.element[indexElt].nbHabitantElement);
+    else if (0 != monJeu.element[indexElt].waterLevel) sprintf(ptr, "%02d NOT FULLY WATERED BY", indexElt);
+    else sprintf(ptr, "%02d NOT WATERED AT ALL", indexElt);
+        for (int j = 0; j < monJeu.nbElements; j++) {
         // On crée un INDEX J qui va parcourir le TABFOURNITURERESSOURCES de la CONSTRUCTION INDEXELT
         // On parcours le TABFOURNITURERESSOURCES de la CONSTRUCTION INDEXELT
-        if (monJeu.element[indexElt].tabFournitureRessources[j] > 0) {
+        if (monJeu.element[indexElt].tabFournitureRessources[j] >= 0) {
             lg = strlen (ptr);
-            if (monJeu.element[j].type == CHATEAU) sprintf(&(ptr[lg]), " CHATEAU #%02d %03d/%03d", j, monJeu.element[indexElt].tabFournitureRessources[j], monJeu.element[j].capacite);
+            if (monJeu.element[j].type == CHATEAU) sprintf(&(ptr[lg]), " CHATEAU#%02d AT %04d", j, monJeu.element[indexElt].tabFournitureRessources[j]);
         }
     }
     return 0;
+}
+
+// Recherche les reseaux ELEC qui alimentent une CONSTRUCTION
+// Si INDEXELT ne pointe pas sur UNE CONSTRUCTION : Renvoyer -1
+// Si INDEXELT pointe sur une CONSTRUCTION renvoyer 0
+// Et écrit dans PTR l'origine des approvisionnement ELEC
+int rechercheReseauxElec(int indexElt, char *ptr){
+    if (monJeu.element[indexElt].type != CONSTRUCTION) return -1;
+    if (!ptr) return -1;
+    int lg = 0;
+    if (monJeu.element[indexElt].isPowered) sprintf(ptr, "%02d POWERED BY", indexElt);
+    else sprintf(ptr, "#%02d NOT POWERED", indexElt);
+    for (int j = 0; j < monJeu.nbElements; j++) {
+        // On crée un INDEX J qui va parcourir le TABFOURNITURERESSOURCES de la CONSTRUCTION INDEXELT
+        // On parcours le TABFOURNITURERESSOURCES de la CONSTRUCTION INDEXELT
+        if (monJeu.element[indexElt].tabFournitureRessources[j] >= 0) {
+            lg = strlen (ptr);
+            if (monJeu.element[j].type == CENTRALE) sprintf(&(ptr[lg]), " CENTRALE#%02d AT %04d/%04d", j, monJeu.element[indexElt].tabFournitureRessources[j],monJeu.element[indexElt].nbHabitantElement);
+        }
+    }
+    return 0;
+}
+
+void actualiseReseauxElec(){
+    // Affiche le statut des alimentations elec pour chaque CONSTRUCTION
+    // Renseigne les tabParcoursCentraleActif avec 1 si ACTIF et 0 sinon
+    char ptr[LG_LABEL_ALIMENTATION_ELEC];
+    for (int i=0;i<LG_LABEL_ALIMENTATION_ELEC;i++) ptr[i]=0;
+    int retour = -1;
+    for(int i = 0; i<monJeu.nbElements;i++) {
+        // Pour tous les ELT du JEU on écrit dans PTR la QU d'eau reçue de chaque CHATEAU (s'il s'agit d'une CONSTRUCTION
+        retour = rechercheReseauxElec(i, ptr);
+        if (-1 != retour) {
+            // Nous sommes dans le cas ou le ième ELT du JEU est une CONSTRUCTION
+            // PTR contient les informations liées au RESEAU D'EAU
+            // On va afficher le contenu de PTR sur la CONSTRUCTION
+            sprintf(monJeu.element[i].labelAlimentationElec, "%s\n", ptr);
+            if (0) printf("%s\n", ptr);
+        }
+        // Maintenant on recherche l'index du chemin le plus court entre le
+    }
+    // Maintenant on met à jour les PARCOURS d'eaux qui sont ACTIFS en renseignant tabParcoursChateauActif[numParcours] = 1 si ACTIF
+    int source, destination, dejaVu;
+    for(int i = 0; i<MAX_PARCOURS_CENTRALE;i++) {
+        // On vérifie si la CONSTRUCTION est bien ALIMENTEE par ce reseau d'eau
+        // Pour cela on recupere l'index de la destination du tabParcoursChateau et on regarde si son tabRessource est > 0
+        source = monJeu.tabParcoursCentrale[i].source;
+        destination = monJeu.tabParcoursCentrale[i].destination;
+        if ((-1 == source) || (-1 == destination)) continue;
+        dejaVu = 0;
+        // On initialise tabParcoursChateauActif[i] = 0;
+        //monJeu.tabParcoursChateauActif[i] = 0;
+        monJeu.tabParcoursCentrale[i].actif = false;
+        if (monJeu.element[destination].tabFournitureRessources[source] >= 0) {
+            // On vérifie si un Parcours n'est pas déjà actif pour cette même SOURCE et même DESTINATION
+            for(int j = 0; j<i;j++) {
+                if (source == monJeu.tabParcoursCentrale[j].source && destination == monJeu.tabParcoursCentrale[j].destination) {
+                    // Dans ce cas on a déjà trouvé un PARCOURS pour cette source et destination
+                    dejaVu = 1;
+                    break;
+                }
+            }
+            if (dejaVu) continue;
+            //monJeu.tabParcoursChateauActif[i] = 1;
+            monJeu.tabParcoursCentrale[i].actif = true;
+
+        }
+    }
 }
 
 void actualiseReseauxEaux(){
@@ -2561,7 +2903,7 @@ void actualiseReseauxEaux(){
             // PTR contient les informations liées au RESEAU D'EAU
             // On va afficher le contenu de PTR sur la CONSTRUCTION
             sprintf(monJeu.element[i].labelAlimentationEau, "%s\n", ptr);
-            printf("%s\n", ptr);
+            if (0) printf("%s\n", ptr);
         }
         // Maintenant on recherche l'index du chemin le plus court entre le
     }
@@ -2577,7 +2919,7 @@ void actualiseReseauxEaux(){
         // On initialise tabParcoursChateauActif[i] = 0;
         //monJeu.tabParcoursChateauActif[i] = 0;
         monJeu.tabParcoursChateau[i].actif = false;
-        if (monJeu.element[destination].tabFournitureRessources[source] > 0) {
+        if (monJeu.element[destination].tabFournitureRessources[source] >= 0) {
             // On vérifie si un Parcours n'est pas déjà actif pour cette même SOURCE et même DESTINATION
             for(int j = 0; j<i;j++) {
                 if (source == monJeu.tabParcoursChateau[j].source && destination == monJeu.tabParcoursChateau[j].destination) {
@@ -2598,10 +2940,10 @@ void actualiseReseauxEaux(){
         for (int i = 0; i < MAX_PARCOURS_CHATEAU; i++) {
 //            if (monJeu.tabParcoursChateauActif[i]) {
             if (monJeu.tabParcoursChateau[i].actif) {
-                printf("********* Parcours %d ACTIF : ", i);
+                if (0) printf("********* Parcours %d ACTIF : ", i);
                 //graphique
                 //al_draw_filled_rectangle(monJeu.element[i].affichageElement.positionX, monJeu.element[i].affichageElement.positionY, monJeu.element[i].affichageElement.positionX+monJeu.element[i].affichageElement.largeurX, monJeu.element[i].affichageElement.positionY + monJeu.element[i].affichageElement.largeurY, BLANC);
-                afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
+                if (0) afficheParcours(monJeu.tabParcoursChateau[i].indexParcours, monJeu.tabParcoursChateau[i].lgParcours);
             }
         }
     }
@@ -2616,37 +2958,32 @@ int main() {
     /////////////// TEST ///////////////
 
     initialisationJeu();
-    if (TRACE) printf("DEBUT\n");
-
-    //test();
-    if (TRACE) printf("APS TEST\n");
-
-    for(int i = 0; i<monJeu.nbElements;i++){
-        if(monJeu.element[i].actif == ACTIF){
-            detectionElementsConnectes(i);
-        }
-        //afficherEltConnectes(i);
-    }
-    recenseParcours();
-    for(int i = 0; i<monJeu.nbElements;i++){
-        //afficherTabDistanceInfraConnectees(i);
-    }
-    classeParcoursCentrale();
-    classeParcoursChateau();
-    classeParcoursConstruction();
-    printf ("///////////////////////////////////////////FIN////////////////////////////////////////\n");
-    afficheTabParcoursConstruction();
-    afficheTabParcoursChateau();
-    afficheTabParcoursCentrale();
-    printf ("//////////////////////////////////////////////////////////////////////////////////////\n");
-    detecteConstructionAlimenteesparChateau();
-    if (TRACE) printf ("detecte centrale\n");
-    //detecteConstructionsViables();
-    if (TRACE) printf("niveau edu de l'école : %d\n", monJeu.element[0].niveauEduElement);
-    if (TRACE) printf("niveau global d'édu de la ville : %d\n", monJeu.niveauEducation);
-    //afficheReseauxEaux();
+/*
+    ajouterElement(1,10,8);
+    ajouterElement(0,16,8);
+    ajouterElement(3,14,8);
+    ajouterElement(3,15,8);
+    ajouterElement(2,14,4);
+    ajouterElement(3,14,7);
+    ajouterElement(3,13,14);
+    ajouterElement(3,14,14);
+    ajouterElement(3,15,14);
+    ajouterElement(3,16,14);
+    ajouterElement(3,17,14);
+    ajouterElement(3,18,14);
+    ajouterElement(3,19,14);
+    ajouterElement(3,20,14);
+    ajouterElement(3,21,14);
+    ajouterElement(3,22,14);
+    ajouterElement(2,23,14);
+    ajouterElement(2,15,15);
+*/
     carteDepart();
     carte();
+
+//    majApresEvolutionNiveauConstruction();
+//    afficheStatutDesRessourcesParConstruction();
+
     return 0;
 
 
@@ -2657,6 +2994,10 @@ int main() {
     if(TRACE)printf("DEBUT\n");
 
     test();
+    carteDepart();
+    carte();
+    return 0;
+
 
     //ChangerNiveauConstruction(0, 1);
     for(int i = 0; i<monJeu.nbElements;i++){
